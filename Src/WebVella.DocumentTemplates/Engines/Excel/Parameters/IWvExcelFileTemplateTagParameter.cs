@@ -1,11 +1,11 @@
 ﻿using WebVella.DocumentTemplates.Core;
 
 namespace WebVella.DocumentTemplates.Engines.Excel;
-public interface IWvExcelTemplateTagParameter
+public interface IWvExcelFileTemplateTagParameter
 {
 	HashSet<Guid> GetDependencies(WvExcelFileTemplateResult result,
-		WvExcelExcelTemplateContext context,
+		WvExcelFileTemplateContext context,
 		WvTemplateTag tag,
 		WvTemplateTagParamGroup parameterGroup,
-		IWvExcelTemplateTagParameter parameter);
+		IWvExcelFileTemplateTagParameter parameter);
 }

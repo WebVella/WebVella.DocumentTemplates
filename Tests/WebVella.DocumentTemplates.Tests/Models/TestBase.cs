@@ -63,35 +63,7 @@ public class TestBase
 		}
 	}
 
-	public static DataTable CreateDataTableFromExisting(DataTable originalTable, List<int>? rowIndices = null)
-	{
-		// Create a new DataTable with the same structure as the original table
-		DataTable newTable = new DataTable();
-
-		foreach (DataColumn column in originalTable.Columns)
-		{
-			newTable.Columns.Add(column.ColumnName, column.DataType);
-		}
-
-		// Check if there is at least one row in the original table
-		if (originalTable.Rows.Count > 0)
-		{
-			var currentIndex = -1;
-			foreach (DataRow row in originalTable.Rows)
-			{
-				currentIndex++;
-				if (rowIndices is not null && !rowIndices.Contains(currentIndex)) continue;
-				DataRow newRow = newTable.NewRow();
-
-				foreach (DataColumn column in originalTable.Columns)
-				{
-					newRow[column.ColumnName] = row[column.ColumnName];
-				}
-				newTable.Rows.Add(newRow);
-			}
-		}
-		return newTable;
-	}
+	
 
 	public static List<string> GetLines(string content)
 	{
@@ -119,7 +91,7 @@ public class TestBase
 		sw.Close();
 	}
 
-	private static void GeneralResultChecks(WvExcelFileTemplateResult result)
+	public static void GeneralResultChecks(WvExcelFileTemplateResult? result)
 	{
 		Assert.NotNull(result);
 		Assert.NotNull(result.Template);
@@ -133,7 +105,7 @@ public class TestBase
 		Assert.True(result.Result.Worksheets.Count > 0);
 	}
 
-	private static void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)
+	public static void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)
 	{
 		Assert.NotNull(range);
 		Assert.NotNull(range.RangeAddress);
@@ -146,7 +118,7 @@ public class TestBase
 		Assert.Equal(lastColumnNumber, range.RangeAddress.LastAddress.ColumnNumber);
 	}
 
-	private static void CheckCellPropertiesCopy(WvExcelFileTemplateResult result)
+	public static void CheckCellPropertiesCopy(WvExcelFileTemplateResult result)
 	{
 		foreach (var context in result.Contexts)
 		{
@@ -164,7 +136,7 @@ public class TestBase
 			CompareStyle(firstTemplateCell, firstResultCell);
 		}
 	}
-	private static void CompareStyle(IXLCell template, IXLCell result)
+	public static void CompareStyle(IXLCell template, IXLCell result)
 	{
 		if (template.Style is null)
 		{
@@ -184,7 +156,7 @@ public class TestBase
 		}
 	}
 
-	private static void CompareStyleAlignment(IXLAlignment template, IXLAlignment result)
+	public static void CompareStyleAlignment(IXLAlignment template, IXLAlignment result)
 	{
 		Assert.Equal(template.TopToBottom, result.TopToBottom);
 		Assert.Equal(template.TextRotation, result.TextRotation);
@@ -197,7 +169,7 @@ public class TestBase
 		Assert.Equal(template.Horizontal, result.Horizontal);
 		Assert.Equal(template.WrapText, result.WrapText);
 	}
-	private static void CompareStyleBorder(IXLBorder template, IXLBorder result)
+	public static void CompareStyleBorder(IXLBorder template, IXLBorder result)
 	{
 		CompareStyleColor(template.DiagonalBorderColor, result.DiagonalBorderColor);
 		Assert.Equal(template.LeftBorder, result.LeftBorder);
@@ -212,18 +184,18 @@ public class TestBase
 		Assert.Equal(template.DiagonalDown, result.DiagonalDown);
 		CompareStyleColor(template.RightBorderColor, result.RightBorderColor);
 	}
-	private static void CompareStyleFormat(IXLNumberFormat template, IXLNumberFormat result)
+	public static void CompareStyleFormat(IXLNumberFormat template, IXLNumberFormat result)
 	{
 		Assert.Equal(template.NumberFormatId, result.NumberFormatId);
 		Assert.Equal(template.Format, result.Format);
 	}
-	private static void CompareStyleFill(IXLFill template, IXLFill result)
+	public static void CompareStyleFill(IXLFill template, IXLFill result)
 	{
 		CompareStyleColor(template.BackgroundColor, result.BackgroundColor);
 		CompareStyleColor(template.PatternColor, result.PatternColor);
 		Assert.Equal(template.PatternType, result.PatternType);
 	}
-	private static void CompareStyleFont(IXLFont template, IXLFont result)
+	public static void CompareStyleFont(IXLFont template, IXLFont result)
 	{
 		Assert.Equal(template.Bold, result.Bold);
 		Assert.Equal(template.Italic, result.Italic);
@@ -238,12 +210,12 @@ public class TestBase
 		Assert.Equal(template.FontCharSet, result.FontCharSet);
 		Assert.Equal(template.FontScheme, result.FontScheme);
 	}
-	private static void CompareProtection(IXLProtection template, IXLProtection result)
+	public static void CompareProtection(IXLProtection template, IXLProtection result)
 	{
 		Assert.Equal(template.Locked, result.Locked);
 		Assert.Equal(template.Hidden, result.Hidden);
 	}
-	private static void CompareStyleColor(XLColor template, XLColor result)
+	public static void CompareStyleColor(XLColor template, XLColor result)
 	{
 		if (template is null)
 		{
@@ -252,22 +224,22 @@ public class TestBase
 		else
 		{
 			Assert.NotNull(result);
-			Assert.Equal(template.ToString(), result.Color.ToString());
+			Assert.Equal(template.ToString(), result.ToString());
 		}
 	}
 
-	private static void CompareRowProperties(IXLRow template, IXLRow result)
+	public static void CompareRowProperties(IXLRow template, IXLRow result)
 	{
 		Assert.Equal(template.OutlineLevel,result.OutlineLevel);
 		Assert.Equal(template.Height,result.Height);
 	}
-	private static void CompareColumnProperties(IXLColumn template, IXLColumn result)
+	public static void CompareColumnProperties(IXLColumn template, IXLColumn result)
 	{
 		Assert.Equal(template.OutlineLevel,result.OutlineLevel);
 		Assert.Equal(template.Width,result.Width);
 	}
 
-	private static XLWorkbook LoadWorkbook(string fileName)
+	public static XLWorkbook LoadWorkbook(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
 		var fi = new FileInfo(path);
@@ -277,7 +249,7 @@ public class TestBase
 		Assert.NotNull(templateWB);
 		return templateWB;
 	}
-	private static void SaveWorkbook(XLWorkbook workbook, string fileName)
+	public static void SaveWorkbook(XLWorkbook workbook, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
 		if(debugFolder is null) throw new Exception("debugFolder not found");

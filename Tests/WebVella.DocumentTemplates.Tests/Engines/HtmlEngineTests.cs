@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using WebVella.DocumentTemplates.Engines.Html;
+using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -49,7 +50,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "test"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -62,7 +63,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "test<br>test2"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -90,7 +91,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>Component: {{sku(F=H,S=', ')}} with ETA: <strong>{{name(F=H,S=', ')}}</strong></p>"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0,1,2 });
+		var data = SampleData.CreateNew(new List<int> { 0,1,2 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -108,7 +109,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div>{{name}}</div>"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0,1 });
+		var data = SampleData.CreateNew(new List<int> { 0,1 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -122,7 +123,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div><div>{{name}}</div></div>"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0,1 });
+		var data = SampleData.CreateNew(new List<int> { 0,1 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -139,7 +140,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>test</p><p>{{name}}</p>"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0,1 });
+		var data = SampleData.CreateNew(new List<int> { 0,1 });
 		WvHtmlTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));

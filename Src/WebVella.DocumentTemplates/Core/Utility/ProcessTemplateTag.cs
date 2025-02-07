@@ -16,7 +16,7 @@ public partial class WvTemplateUtility
 			return result;
 		}
 		//if all tags are index - return one with processed template
-		if (!result.IsMultiValueTemplate)
+		if (result.AllTagsAreIndexedOrWithSeparator)
 		{
 			var resultValue = GenerateTemplateTagResult(template, result.Tags, dataSource, null, culture);
 			if (resultValue is not null && resultValue.Value is not null)
@@ -32,6 +32,9 @@ public partial class WvTemplateUtility
 			if (resultValue is not null && resultValue.Value is not null)
 			{
 				result.Values.Add(resultValue.Value);
+			}
+			else{ 
+				result.Values.Add(String.Empty);
 			}
 		}
 		return result;

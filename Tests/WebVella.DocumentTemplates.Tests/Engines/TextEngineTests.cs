@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using WebVella.DocumentTemplates.Engines.Text;
+using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -15,10 +16,8 @@ public class TextEngineTests : TestBase
 		var template = new WvTextTemplate();
 		//When
 		WvTextTemplateResult? result = null;
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 		var action = () => result = template.Process(null, DefaultCulture);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-							  //Then
+		//Then
 		var ex = Record.Exception(action);
 		Assert.NotNull(ex);
 		Assert.IsType<ArgumentException>(ex);
@@ -50,7 +49,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -66,7 +65,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test test2 is test {{"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -82,7 +81,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}}{{name}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -98,7 +97,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 1 });
+		var data = SampleData.CreateNew(new List<int> { 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -114,7 +113,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -130,7 +129,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}" + Environment.NewLine
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -147,7 +146,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku(F=H,S=',',B=\", \")}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -163,7 +162,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=',')}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -179,7 +178,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=', ')}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));
@@ -195,7 +194,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "Component: {{sku(F=H,S=', ')}} with ETA: {{name(F=H,S=', ')}}"
 		};
-		var data = CreateDataTableFromExisting(SampleData, new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.False(String.IsNullOrWhiteSpace(result.Result));

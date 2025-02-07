@@ -7,7 +7,7 @@ namespace WebVella.DocumentTemplates.Engines.Text;
 public class WvTextTemplate : WvTemplateBase
 {
 	public string? Template { get; set; }
-	public WvTextTemplateResult? Process(DataTable dataSource, CultureInfo? culture = null)
+	public WvTextTemplateResult? Process(DataTable? dataSource, CultureInfo? culture = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
 		if (dataSource is null) throw new ArgumentException("No datasource provided!",nameof(dataSource));

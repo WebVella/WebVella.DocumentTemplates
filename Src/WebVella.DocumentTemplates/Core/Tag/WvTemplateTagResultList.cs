@@ -10,11 +10,20 @@ public class WvTemplateTagResultList
 			return Tags.All(x => x.Type == WvTemplateTagType.Data);
 		}
 	}
-	public bool IsMultiValueTemplate
+	public bool AllTagsAreIndexedOrWithSeparator
 	{
 		get
 		{
-			return Tags.Any(x => x.IndexList.Count() == 0 && x.Flow != WvTemplateTagDataFlow.Horizontal);
+			//All tags should have indexes or have no index by separator defined
+			foreach (WvTemplateTag tag in Tags) {
+				if(tag.IndexList.Count > 0) continue;
+				if(tag.ParamGroups.Any(g => g.Parameters.Any(x=> x.Type.FullName == typeof(WvTemplateTagSeparatorParameter).FullName)))
+					continue;
+
+				return false;
+			}
+			return true;
+			
 		}
 	}
 	public List<object> Values { get; set; } = new();

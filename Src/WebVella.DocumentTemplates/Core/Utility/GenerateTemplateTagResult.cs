@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
@@ -8,7 +7,7 @@ public partial class WvTemplateUtility
 	public static WvTemplateTagResult GenerateTemplateTagResult(string? template, List<WvTemplateTag> tags, DataTable dataSource, int? rowIndex, CultureInfo culture)
 	{
 		var result = new WvTemplateTagResult();
-		if(String.IsNullOrEmpty(template)) return result;
+		if (String.IsNullOrEmpty(template)) return result;
 		result.ValueString = template;
 		if (String.IsNullOrWhiteSpace(template)) return result;
 		result.Tags = tags;
