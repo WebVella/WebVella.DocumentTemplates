@@ -15,7 +15,7 @@ public class TextEngineTests : TestBase
 		//Given
 		var template = new WvTextTemplate();
 		//When
-		WvTextTemplateResult? result = null;
+		WvTextTemplateProcessResult? result = null;
 		var action = () => result = template.Process(null, DefaultCulture);
 		//Then
 		var ex = Record.Exception(action);
@@ -33,10 +33,11 @@ public class TextEngineTests : TestBase
 		var template = new WvTextTemplate() { Template = templateString };
 		var ds = new DataTable();
 		//When
-		WvTextTemplateResult? result = template.Process(ds, DefaultCulture);
+		WvTextTemplateProcessResult? result = template.Process(ds, DefaultCulture);
 		//Then
 		Assert.NotNull(result);
-		Assert.Equal(templateString, result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.Equal(templateString, result.ResultItems[0].Result);
 
 	}
 	#endregion
@@ -50,12 +51,13 @@ public class TextEngineTests : TestBase
 			Template = "test"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal(template.Template, result.Result);
+		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -66,12 +68,13 @@ public class TextEngineTests : TestBase
 			Template = "test test2 is test {{"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal(template.Template, result.Result);
+		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -82,12 +85,13 @@ public class TextEngineTests : TestBase
 			Template = "{{sku}}{{name}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}", result.Result);
+		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}", result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -98,12 +102,13 @@ public class TextEngineTests : TestBase
 			Template = "{{sku}} test {{name}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}", result.Result);
+		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}", result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -114,12 +119,13 @@ public class TextEngineTests : TestBase
 			Template = "{{sku}} test {{name}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}{data.Rows[1]["sku"]} test {data.Rows[1]["name"]}", result.Result);
+		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}{data.Rows[1]["sku"]} test {data.Rows[1]["name"]}", result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -130,10 +136,11 @@ public class TextEngineTests : TestBase
 			Template = "{{sku}} test {{name}}" + Environment.NewLine
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Equal(2, lines.Count);
 		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}", lines[0]);
 		Assert.Equal($"{data.Rows[1]["sku"]} test {data.Rows[1]["name"]}", lines[1]);
@@ -147,10 +154,11 @@ public class TextEngineTests : TestBase
 			Template = "{{sku(F=H,S=',',B=\", \")}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]}", lines[0]);
 	}
@@ -163,10 +171,11 @@ public class TextEngineTests : TestBase
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=',')}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"test {data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]} {data.Rows[0]["name"]},{data.Rows[1]["name"]},{data.Rows[2]["name"]}", lines[0]);
 	}
@@ -179,10 +188,11 @@ public class TextEngineTests : TestBase
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=', ')}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"test {data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]} {data.Rows[0]["name"]}, {data.Rows[1]["name"]}, {data.Rows[2]["name"]}", lines[0]);
 	}
@@ -195,12 +205,32 @@ public class TextEngineTests : TestBase
 			Template = "Component: {{sku(F=H,S=', ')}} with ETA: {{name(F=H,S=', ')}}"
 		};
 		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
-		WvTextTemplateResult? result = template.Process(data);
+		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		var lines = GetLines(result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"Component: {data.Rows[0]["sku"]}, {data.Rows[1]["sku"]}, {data.Rows[2]["sku"]} with ETA: {data.Rows[0]["name"]}, {data.Rows[1]["name"]}, {data.Rows[2]["name"]}", lines[0]);
+	}
+
+	[Fact]
+	public void Text_Tag_DataGroup()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{sku}}{{name}}",
+			GroupDataByColumns = new List<string>{ "sku" }
+		};
+		var data = SampleData.CreateNew();
+		data.Rows[1]["sku"] = data.Rows[0]["sku"];
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Equal(4, result.ResultItems.Count);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}{data.Rows[0]["sku"]}{data.Rows[1]["name"]}", result.ResultItems[0].Result);
 	}
 	#endregion
 }

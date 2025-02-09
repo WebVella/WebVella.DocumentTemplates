@@ -2,42 +2,52 @@
 using System.Globalization;
 using System.Text;
 using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Extensions;
 namespace WebVella.DocumentTemplates.Engines.Text;
 public class WvTextFileTemplate : WvTemplateBase
 {
 	public byte[]? Template { get; set; } = null;
-	public WvTextFileTemplateResult? Process(DataTable dataSource, CultureInfo? culture = null, Encoding? encoding = null)
+	public WvTextFileTemplateProcessResult Process(DataTable dataSource, CultureInfo? culture = null, Encoding? encoding = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
 		if (encoding == null) encoding = Encoding.UTF8;
 		if (dataSource is null) throw new ArgumentException("No datasource provided!", nameof(dataSource));
-		var result = new WvTextFileTemplateResult()
+		var result = new WvTextFileTemplateProcessResult()
 		{
-			Template = Template
+			Template = Template,
+			GroupByDataColumns = GroupDataByColumns,
+			ResultItems = new()
 		};
 
-		result.Result = Template;
-
-		if (Template is null) return result;
-
-		var fileStringContent = encoding.GetString(result.Template ?? new byte[0]);
-
-		if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
-
-		var textTemplate = new WvTextTemplate
+		if (Template is null)
 		{
-			Template = fileStringContent.RemoveZeroBitSpaceCharacters()
+			result.ResultItems.Add(new WvTextFileTemplateProcessResultItem
+			{
+				Result = null
+			});
+			return result;
 		};
 
-		WvTextTemplateResult? textTemplateResult = textTemplate.Process(dataSource, culture);
+		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
+		foreach (var grouptedDs in datasourceGroups)
+		{
+			var fileStringContent = encoding.GetString(result.Template ?? new byte[0]);
 
-		if (textTemplateResult == null) return result;
-		result.Result = null;
+			if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
 
-		if(!String.IsNullOrWhiteSpace(textTemplateResult.Result)){ 
-			result.Result = encoding.GetBytes(textTemplateResult.Result ?? String.Empty);
+			var textTemplate = new WvTextTemplate
+			{
+				Template = fileStringContent.RemoveZeroBitSpaceCharacters()
+			};
+
+			WvTextTemplateProcessResult textTemplateResult = textTemplate.Process(grouptedDs, culture);
+
+			if (textTemplateResult.ResultItems.Count == 0) continue;
+
+			result.ResultItems.Add(new WvTextFileTemplateProcessResultItem
+			{
+				Result = encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty)
+			});
 		}
 		return result;
 	}

@@ -9,29 +9,52 @@ namespace WebVella.DocumentTemplates.Engines.Excel;
 public class WvExcelFileTemplate : WvTemplateBase
 {
 	public XLWorkbook? Template { get; set; }
-	public WvExcelFileTemplateResult? Process(DataTable? dataSource, CultureInfo? culture = null)
+	public WvExcelFileTemplateProcessResult Process(DataTable? dataSource, CultureInfo? culture = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
 		if (Template is null) return null;
-		if (dataSource is null) throw new ArgumentException("No datasource provided!",nameof(dataSource));
-		var result = new WvExcelFileTemplateResult() { Template = Template};
-		ProcessExcelTemplatePlacement(result, dataSource, culture);
-		ProcessExcelTemplateDependencies(result, dataSource);
-		ProcessExcelTemplateData(result, dataSource, culture);
+		if (dataSource is null) throw new ArgumentException("No datasource provided!", nameof(dataSource));
+		var result = new WvExcelFileTemplateProcessResult()
+		{
+			Template = Template,
+			GroupByDataColumns = GroupDataByColumns,
+			ResultItems = new()
+		};
+		if (Template is null)
+		{
+			result.ResultItems.Add(new WvExcelFileTemplateProcessResultItem
+			{
+				Result = null
+			});
+			return result;
+		};
+
+		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
+		foreach (var grouptedDs in datasourceGroups)
+		{
+			var resultItem = new WvExcelFileTemplateProcessResultItem{ 
+				Result = null
+			};
+			ProcessExcelTemplatePlacement(Template,resultItem, grouptedDs, culture);
+			ProcessExcelTemplateDependencies(resultItem, grouptedDs);
+			ProcessExcelTemplateData(resultItem, grouptedDs, culture);
+
+			result.ResultItems.Add(resultItem);
+		}
 		return result;
 	}
 
-	public void ProcessExcelTemplatePlacement(WvExcelFileTemplateResult result, DataTable dataSource, CultureInfo culture)
+	public void ProcessExcelTemplatePlacement(XLWorkbook template, WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
 	{
-		if (result is null) throw new Exception("No result provided!");
+		if (resultItem is null) throw new Exception("No result provided!");
 		if (dataSource is null) throw new Exception("No datasource provided!");
-		if (result.Template is null) throw new Exception("No Template provided!");
-		if (result.Result is null) result.Result = new XLWorkbook();
-		foreach (IXLWorksheet tempWs in result.Template.Worksheets)
+		if (template is null) throw new Exception("No Template provided!");
+		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
+		foreach (IXLWorksheet tempWs in template.Worksheets)
 		{
 			var tempWsUsedRowsCount = tempWs.LastRowUsed()?.RowNumber() ?? 1;
 			var tempWsUsedColumnsCount = tempWs.LastColumnUsed()?.ColumnNumber() ?? 1;
-			var resultWs = result.Result.AddWorksheet();
+			var resultWs = resultItem.Result.AddWorksheet();
 			resultWs.Name = tempWs.Name;
 			var resultCurrentRow = 1;
 			for (var rowIndex = 0; rowIndex < tempWsUsedRowsCount; rowIndex++)
@@ -162,7 +185,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 
 
 					//Create context
-					var context = new WvExcelFileTemplateContext()
+					var context = new WvExcelFileTemplateProcessContext()
 					{
 						Id = Guid.NewGuid(),
 						TagProcessResult = tagProcessResult,
@@ -174,7 +197,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 						ResultRangeSlots = resultRangeSlots,
 						IsDataSet = contextDataProcessed
 					};
-					result.Contexts.Add(context);
+					resultItem.Contexts.Add(context);
 
 					//Boz: for optimization purposes is move from inside the loop
 					CopyCellProperties(tempCell, context.ResultRange);
@@ -198,9 +221,9 @@ public class WvExcelFileTemplate : WvTemplateBase
 		}
 	}
 
-	public void ProcessExcelTemplateDependencies(WvExcelFileTemplateResult result, DataTable dataSource)
+	public void ProcessExcelTemplateDependencies(WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource)
 	{
-		foreach (var context in result.Contexts)
+		foreach (var context in resultItem.Contexts)
 		{
 			HashSet<Guid> contextDependancies = new();
 			foreach (var tag in context.TagProcessResult.Tags)
@@ -214,7 +237,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 						{
 							var excelParam = (IWvExcelFileTemplateTagParameter)baseParam;
 							contextDependancies.Union(excelParam.GetDependencies(
-								result: result,
+								resultItem: resultItem,
 								context: context,
 								tag: tag,
 								parameterGroup: tagParamGroup,
@@ -227,22 +250,22 @@ public class WvExcelFileTemplate : WvTemplateBase
 			context.Dependencies.Union(contextDependancies);
 			foreach (var contextId in contextDependancies)
 			{
-				result.Contexts.Single(x => x.Id == contextId).Dependants.Add(context.Id);
+				resultItem.Contexts.Single(x => x.Id == contextId).Dependants.Add(context.Id);
 			}
 		}
 	}
 
-	public void ProcessExcelTemplateData(WvExcelFileTemplateResult result, DataTable dataSource, CultureInfo culture)
+	public void ProcessExcelTemplateData(WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
 	{
 		int processAttemptsLimit = 200;
-		if (result is null) throw new Exception("No result provided!");
+		if (resultItem is null) throw new Exception("No result provided!");
 		if (dataSource is null) throw new Exception("No datasource provided!");
-		if (result.Result is null) result.Result = new XLWorkbook();
+		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
 		#region << Process Worksheet Names>>
 		if (dataSource.Rows.Count > 0)
 		{
 			var firstRowDt = dataSource.CreateNew(new List<int> { 0 });
-			var resultWorksheets = result.Result.Worksheets.ToList();
+			var resultWorksheets = resultItem.Result.Worksheets.ToList();
 			for (int i = 0; i < resultWorksheets.Count; i++)
 			{
 				var resultWs = resultWorksheets[i];
@@ -262,18 +285,18 @@ public class WvExcelFileTemplate : WvTemplateBase
 		#endregion
 
 		#region << Process Worksheet Data>>
-		var contextDict = result.Contexts.ToDictionary(x => x.Id);
+		var contextDict = resultItem.Contexts.ToDictionary(x => x.Id);
 		Queue<Guid> queue = new Queue<Guid>();
-		foreach (var contextId in result.Contexts.Where(x => x.Dependencies.Count == 0).Select(x => x.Id))
+		foreach (var contextId in resultItem.Contexts.Where(x => x.Dependencies.Count == 0).Select(x => x.Id))
 		{
 			queue.Enqueue(contextId);
 		}
 		while (queue.Count > 0)
 		{
 			var contextId = queue.Dequeue();
-			if (!result.ContextProcessLog.ContainsKey(contextId))
-				result.ContextProcessLog[contextId] = 1;
-			if (result.ContextProcessLog[contextId] > processAttemptsLimit) continue;
+			if (!resultItem.ContextProcessLog.ContainsKey(contextId))
+				resultItem.ContextProcessLog[contextId] = 1;
+			if (resultItem.ContextProcessLog[contextId] > processAttemptsLimit) continue;
 
 			var context = contextDict[contextId];
 			if (context.ResultWorksheet is null) continue;
@@ -291,16 +314,16 @@ public class WvExcelFileTemplate : WvTemplateBase
 					slot.Value = XLCellValue.FromObject(context.TagProcessResult.Values[i]);
 				}
 			}
-			result.ProcessedContexts.Add(contextId);
+			resultItem.ProcessedContexts.Add(contextId);
 			foreach (var dependantId in context.Dependants)
 			{
-				if (result.ProcessedContexts.Contains(dependantId))
+				if (resultItem.ProcessedContexts.Contains(dependantId))
 					throw new Exception("Dependant was calculated before the context it depends on");
 				queue.Enqueue(dependantId);
 			}
 		};
 
-		if (result.ProcessedContexts.Count < result.Contexts.Count)
+		if (resultItem.ProcessedContexts.Count < resultItem.Contexts.Count)
 		{
 			throw new Exception("Not all excel cells were processed. Check for possible circular logic in formulas.");
 		}
@@ -380,9 +403,9 @@ public class WvExcelFileTemplate : WvTemplateBase
 		return allTagsHorizontal;
 	}
 
-	public static WvTemplateContext? FindContextByCell(WvExcelFileTemplateResult result, int worksheetPosition, int row, int column)
+	public static WvExcelFileTemplateProcessContext? FindContextByCell(WvExcelFileTemplateProcessResultItem resultItem, int worksheetPosition, int row, int column)
 	{
-		foreach (var item in result.Contexts)
+		foreach (var item in resultItem.Contexts)
 		{
 			if (item.TemplateWorksheet is null) continue;
 			if (item.TemplateRange is null) continue;

@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Text;
+﻿using System.Text;
 using WebVella.DocumentTemplates.Engines.Text;
 using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
@@ -18,14 +17,17 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -38,14 +40,17 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -58,14 +63,17 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -78,14 +86,17 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -98,14 +109,17 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -118,15 +132,43 @@ public class TextFileEngineTests : TestBase
 		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
-			var template = new WvTextFileTemplate{ 
+			var template = new WvTextFileTemplate
+			{
 				Template = LoadFile(templateFile)
 			};
-			var result = template.Process(SampleData, encoding:Encoding.UTF8);
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Template);
-			Assert.NotNull(result.Result);
-			var resultString = Encoding.UTF8.GetString(result.Result);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
+		}
+	}
+
+	[Fact]
+	public void Template1_GroupBy()
+	{
+		var templateFile = "Template1.txt";
+
+		lock (locker)
+		{
+			var template = new WvTextFileTemplate
+			{
+				Template = LoadFile(templateFile),
+				GroupDataByColumns = new List<string> { "sku" }
+			};
+			var data = SampleData.CreateNew();
+			data.Rows[1]["sku"] = data.Rows[0]["sku"];
+			var result = template.Process(data, encoding: Encoding.UTF8);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.NotNull(result.ResultItems);
+			Assert.Equal(4, result.ResultItems.Count);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			Assert.Equal($"1{Environment.NewLine}2{Environment.NewLine}item1{Environment.NewLine}item2{Environment.NewLine}", resultString);
 		}
 	}
 }

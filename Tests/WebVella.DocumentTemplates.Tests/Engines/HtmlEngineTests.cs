@@ -15,11 +15,9 @@ public class HtmlEngineTests : TestBase
 		//Given
 		var template = new WvHtmlTemplate();
 		//When
-		WvHtmlTemplateResult? result = null;
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+		WvHtmlTemplateProcessResult? result = null;
 		var action = () => result = template.Process(null, DefaultCulture);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-							  //Then
+		//Then
 		var ex = Record.Exception(action);
 		Assert.NotNull(ex);
 		Assert.IsType<ArgumentException>(ex);
@@ -35,10 +33,11 @@ public class HtmlEngineTests : TestBase
 		var template = new WvHtmlTemplate() { Template = templateString };
 		var ds = new DataTable();
 		//When
-		WvHtmlTemplateResult? result = template.Process(ds, DefaultCulture);
+		WvHtmlTemplateProcessResult? result = template.Process(ds, DefaultCulture);
 		//Then
 		Assert.NotNull(result);
-		Assert.Equal(templateString, result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.Equal(templateString, result.ResultItems[0].Result);
 
 	}
 	#endregion
@@ -51,10 +50,11 @@ public class HtmlEngineTests : TestBase
 			Template = "test"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal(template.Template, result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
 	[Fact]
 	public void Text_NoTag2()
@@ -64,10 +64,11 @@ public class HtmlEngineTests : TestBase
 			Template = "test<br>test2"
 		};
 		var data = SampleData.CreateNew(new List<int> { 1 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal(template.Template, result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -78,10 +79,11 @@ public class HtmlEngineTests : TestBase
 			Template = "test<br>{{name[0]}}"
 		};
 		var data = SampleData;
-		WvHtmlTemplateResult? result = template.Process(data);
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal("test<br>item1", result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("test<br>item1", result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -91,12 +93,12 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>Component: {{sku(F=H,S=', ')}} with ETA: <strong>{{name(F=H,S=', ')}}</strong></p>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0,1,2 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal("<p>Component: sku1, sku2, sku3 with ETA: <strong>item1, item2, item3</strong></p>", result.Result);
-
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<p>Component: sku1, sku2, sku3 with ETA: <strong>item1, item2, item3</strong></p>", result.ResultItems[0].Result);
 	}
 
 	#endregion
@@ -109,11 +111,12 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div>{{name}}</div>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0,1 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal("<div>test</div><div>item1</div><div>item2</div>", result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div>test</div><div>item1</div><div>item2</div>", result.ResultItems[0].Result);
 	}
 
 	[Fact]
@@ -123,11 +126,12 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div><div>{{name}}</div></div>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0,1 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal("<div>test</div><div><div>item1</div></div><div><div>item2</div></div>", result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div>test</div><div><div>item1</div></div><div><div>item2</div></div>", result.ResultItems[0].Result);
 	}
 	#endregion
 
@@ -140,11 +144,12 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>test</p><p>{{name}}</p>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0,1 });
-		WvHtmlTemplateResult? result = template.Process(data);
+		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
-		Assert.False(String.IsNullOrWhiteSpace(result.Result));
-		Assert.Equal("<p>test</p><p>item1</p><p>item2</p>", result.Result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<p>test</p><p>item1</p><p>item2</p>", result.ResultItems[0].Result);
 	}
 	#endregion
 }

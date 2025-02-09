@@ -6,7 +6,7 @@ namespace WebVella.DocumentTemplates.Engines.Text;
 public class WvWordFileTemplate : WvTemplateBase
 {
 	public string? Template { get; set; }
-	public WvWordFileTemplateResult? Process(DataTable dataSource, CultureInfo? culture = null)
+	public WvWordFileTemplateProcessResult Process(DataTable dataSource, CultureInfo? culture = null)
 	{
 		return null;
 	}

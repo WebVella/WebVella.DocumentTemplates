@@ -91,18 +91,19 @@ public class TestBase
 		sw.Close();
 	}
 
-	public static void GeneralResultChecks(WvExcelFileTemplateResult? result)
+	public static void GeneralResultChecks(WvExcelFileTemplateProcessResult? result)
 	{
 		Assert.NotNull(result);
 		Assert.NotNull(result.Template);
-		Assert.NotNull(result.Result);
-		Assert.NotNull(result.Contexts);
+		Assert.NotNull(result.ResultItems);
+		Assert.True(result.ResultItems.Count > 0);
 
 		Assert.NotNull(result.Template.Worksheets);
 		Assert.True(result.Template.Worksheets.Count > 0);
 
-		Assert.NotNull(result.Result.Worksheets);
-		Assert.True(result.Result.Worksheets.Count > 0);
+		Assert.NotNull(result.ResultItems[0].Result);
+		Assert.NotNull(result.ResultItems[0].Result!.Worksheets);
+		Assert.True(result.ResultItems[0].Result!.Worksheets.Count > 0);
 	}
 
 	public static void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)
@@ -118,9 +119,9 @@ public class TestBase
 		Assert.Equal(lastColumnNumber, range.RangeAddress.LastAddress.ColumnNumber);
 	}
 
-	public static void CheckCellPropertiesCopy(WvExcelFileTemplateResult result)
+	public static void CheckCellPropertiesCopy(WvExcelFileTemplateProcessResultItem resultItem)
 	{
-		foreach (var context in result.Contexts)
+		foreach (var context in resultItem.Contexts)
 		{
 			var firstTemplateCell = context.TemplateRange?.Cell(1, 1);
 			var firstResultCell = context.ResultRange?.Cell(1, 1);
@@ -230,13 +231,13 @@ public class TestBase
 
 	public static void CompareRowProperties(IXLRow template, IXLRow result)
 	{
-		Assert.Equal(template.OutlineLevel,result.OutlineLevel);
-		Assert.Equal(template.Height,result.Height);
+		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
+		Assert.Equal(template.Height, result.Height);
 	}
 	public static void CompareColumnProperties(IXLColumn template, IXLColumn result)
 	{
-		Assert.Equal(template.OutlineLevel,result.OutlineLevel);
-		Assert.Equal(template.Width,result.Width);
+		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
+		Assert.Equal(template.Width, result.Width);
 	}
 
 	public static XLWorkbook LoadWorkbook(string fileName)
@@ -252,9 +253,9 @@ public class TestBase
 	public static void SaveWorkbook(XLWorkbook workbook, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
-		if(debugFolder is null) throw new Exception("debugFolder not found");
+		if (debugFolder is null) throw new Exception("debugFolder not found");
 		var projectFolder = debugFolder.Parent?.Parent;
-		if(projectFolder is null) throw new Exception("projectFolder not found");
+		if (projectFolder is null) throw new Exception("projectFolder not found");
 
 		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
 		workbook.SaveAs(path);
