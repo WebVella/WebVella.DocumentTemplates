@@ -78,7 +78,7 @@ public class DataTableExtensionsTests
 	public void Type_ShouldReturnEmptyIfEmpty()
 	{
 		DataTable? originalDt = new DataTable();
-		DataTable? resultDt = originalDt.CreateNew();
+		DataTable? resultDt = originalDt.CreateAsNew();
 		Assert.NotNull(resultDt);
 		Assert.Empty(resultDt.Rows);
 		Assert.Empty(resultDt.Columns);
@@ -88,7 +88,7 @@ public class DataTableExtensionsTests
 	public void Type_ShouldReturnClone()
 	{
 		DataTable? originalDt = SampleData;
-		DataTable? resultDt = originalDt.CreateNew();
+		DataTable? resultDt = originalDt.CreateAsNew();
 		Assert.NotNull(resultDt);
 		Assert.NotEmpty(resultDt.Rows);
 		Assert.NotEmpty(resultDt.Columns);
@@ -113,7 +113,7 @@ public class DataTableExtensionsTests
 	{
 		var rowIndices = new List<int> { 1, 2 };
 		DataTable? originalDt = SampleData;
-		DataTable? resultDt = originalDt.CreateNew(rowIndices);
+		DataTable? resultDt = originalDt.CreateAsNew(rowIndices);
 		Assert.NotNull(resultDt);
 		Assert.NotEmpty(resultDt.Rows);
 		Assert.NotEmpty(resultDt.Columns);

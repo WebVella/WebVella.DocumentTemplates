@@ -14,6 +14,10 @@ public class WvTemplateTag
 	{
 		get
 		{
+			if(!String.IsNullOrEmpty(FlowSeparator)){ 
+				return WvTemplateTagDataFlow.Horizontal;
+			}
+
 			foreach (var paramGroup in ParamGroups)
 			{
 				foreach (var param in paramGroup.Parameters)
@@ -25,6 +29,7 @@ public class WvTemplateTag
 					}
 				}
 			}
+
 			return WvTemplateTagDataFlow.Vertical;
 		}
 	}

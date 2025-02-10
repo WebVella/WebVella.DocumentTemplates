@@ -159,7 +159,7 @@ public class TextFileEngineTests : TestBase
 				Template = LoadFile(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
-			var data = SampleData.CreateNew();
+			var data = SampleData.CreateAsNew();
 			data.Rows[1]["sku"] = data.Rows[0]["sku"];
 			var result = template.Process(data, encoding: Encoding.UTF8);
 			Assert.NotNull(result);

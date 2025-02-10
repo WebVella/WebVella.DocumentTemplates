@@ -49,7 +49,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "test"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -63,7 +63,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "test<br>test2"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -93,7 +93,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>Component: {{sku(F=H,S=', ')}} with ETA: <strong>{{name(F=H,S=', ')}}</strong></p>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -111,7 +111,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div>{{name}}</div>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -126,7 +126,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<div>test</div><div><div>{{name}}</div></div>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -144,7 +144,7 @@ public class HtmlEngineTests : TestBase
 		{
 			Template = "<p>test</p><p>{{name}}</p>"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);

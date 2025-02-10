@@ -9,6 +9,7 @@ public class TestBase
 {
 	public DataTable SampleData;
 	public DataTable TypedData;
+	public DataTable EmailData;
 	public CultureInfo DefaultCulture = new CultureInfo("en-US");
 	public TestBase()
 	{
@@ -61,9 +62,29 @@ public class TestBase
 			}
 			TypedData = ds;
 		}
+		//Email Data
+		{
+			var ds = new DataTable();
+			ds.Columns.Add("sender_email", typeof(string));
+			ds.Columns.Add("recipient_email", typeof(string));
+			ds.Columns.Add("subject", typeof(string));
+			for (short i = 0; i < 5; i++)
+			{
+				var position = i + 1;
+				var dsrow = ds.NewRow();
+				dsrow["sender_email"] = $"sender{position}@test.com";
+				dsrow["recipient_email"] = $"recipient{position}@test.com";
+				dsrow["subject"] = $"subject{position}";
+
+				ds.Rows.Add(dsrow);
+			}
+
+			EmailData = ds;
+
+		}
 	}
 
-	
+
 
 	public static List<string> GetLines(string content)
 	{
@@ -250,6 +271,25 @@ public class TestBase
 		Assert.NotNull(templateWB);
 		return templateWB;
 	}
+
+	public static byte[] LoadWorkbookAsBytes(string fileName)
+	{
+		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
+		var fi = new FileInfo(path);
+		Assert.NotNull(fi);
+		Assert.True(fi.Exists);
+		var templateWB = new XLWorkbook(path);
+		Assert.NotNull(templateWB);
+		byte[]? content = null;
+		using (var ms = new MemoryStream())
+		{
+			templateWB.SaveAs(ms);
+			content = ms?.ToArray();
+		}
+		Assert.NotNull(content);
+		return content;
+	}
+
 	public static void SaveWorkbook(XLWorkbook workbook, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -259,5 +299,19 @@ public class TestBase
 
 		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
 		workbook.SaveAs(path);
+	}
+
+	public static void SaveWorkbookFromBytes(byte[] content, string fileName)
+	{
+		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
+		if (debugFolder is null) throw new Exception("debugFolder not found");
+		var projectFolder = debugFolder.Parent?.Parent;
+		if (projectFolder is null) throw new Exception("projectFolder not found");
+
+		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
+		using (FileStream fs = new FileStream(path, FileMode.Create))
+		{
+			fs.Write(content, 0, content.Length);
+		}
 	}
 }

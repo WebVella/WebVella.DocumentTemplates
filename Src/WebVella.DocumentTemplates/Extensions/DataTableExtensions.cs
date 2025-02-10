@@ -16,7 +16,7 @@ public static class DataTableExtensions
 		}
 		return newTable;
 	}
-	public static DataTable CreateNew(this DataTable originalTable, List<int>? rowIndices = null)
+	public static DataTable CreateAsNew(this DataTable originalTable, List<int>? rowIndices = null)
 	{
 		if (originalTable is null) throw new ArgumentNullException(nameof(originalTable));
 		// Create a new DataTable with the same structure as the original table

@@ -8,6 +8,6 @@ public class WvWordFileTemplate : WvTemplateBase
 	public string? Template { get; set; }
 	public WvWordFileTemplateProcessResult Process(DataTable dataSource, CultureInfo? culture = null)
 	{
-		return null;
+		return new WvWordFileTemplateProcessResult() { Template = Template };
 	}
 }

@@ -457,4 +457,38 @@ public class ExcelEngineTests : TestBase
 
 	#region << Excel Function >>
 	#endregion
+
+	#region << Group By >>
+	[Fact]
+	public void ExcelData1_GroupBy()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateData1.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile),
+				GroupDataByColumns = new List<string>{ "sku" }
+			};
+			var dataSource = SampleData;
+			dataSource.Rows[1]["sku"] = dataSource.Rows[0]["sku"];
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Equal(4, result!.ResultItems.Count);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal((string)SampleData.Rows[0]["name"], ws.Name);
+
+			var row1SkuValueString = ws.Cell(1, 2).Value.ToString();
+			var row2SkuValueString = ws.Cell(2, 2).Value.ToString();
+			Assert.Equal(row1SkuValueString, row2SkuValueString);
+		}
+	}
+	#endregion
 }

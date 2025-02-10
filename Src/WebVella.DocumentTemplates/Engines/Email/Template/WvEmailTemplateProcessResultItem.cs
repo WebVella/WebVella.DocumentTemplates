@@ -1,7 +1,8 @@
 ﻿using WebVella.DocumentTemplates.Core;
-namespace WebVella.DocumentTemplates.Engines.Text;
+using WebVella.DocumentTemplates.Engines.Email.Models;
+namespace WebVella.DocumentTemplates.Engines.Email;
 public class WvEmailTemplateProcessResultItem : WvTemplateProcessResultItemBase
 {
-	public new string? Result { get; set; } = null;
+	public new WvEmail? Result { get; set; } = null;
 	public new List<WvEmailTemplateProcessContext> Contexts { get; set; } = new();
 }

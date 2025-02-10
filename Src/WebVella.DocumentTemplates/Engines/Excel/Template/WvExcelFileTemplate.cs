@@ -12,7 +12,6 @@ public class WvExcelFileTemplate : WvTemplateBase
 	public WvExcelFileTemplateProcessResult Process(DataTable? dataSource, CultureInfo? culture = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
-		if (Template is null) return null;
 		if (dataSource is null) throw new ArgumentException("No datasource provided!", nameof(dataSource));
 		var result = new WvExcelFileTemplateProcessResult()
 		{
@@ -33,7 +32,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 		foreach (var grouptedDs in datasourceGroups)
 		{
 			var resultItem = new WvExcelFileTemplateProcessResultItem{ 
-				Result = null
+				Result = new XLWorkbook()
 			};
 			ProcessExcelTemplatePlacement(Template,resultItem, grouptedDs, culture);
 			ProcessExcelTemplateDependencies(resultItem, grouptedDs);
@@ -264,7 +263,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 		#region << Process Worksheet Names>>
 		if (dataSource.Rows.Count > 0)
 		{
-			var firstRowDt = dataSource.CreateNew(new List<int> { 0 });
+			var firstRowDt = dataSource.CreateAsNew(new List<int> { 0 });
 			var resultWorksheets = resultItem.Result.Worksheets.ToList();
 			for (int i = 0; i < resultWorksheets.Count; i++)
 			{
@@ -272,9 +271,10 @@ public class WvExcelFileTemplate : WvTemplateBase
 				var templateResult = WvTemplateUtility.ProcessTemplateTag(resultWs.Name, firstRowDt, culture);
 				if (templateResult != null && templateResult.Values.Count > 0
 					&& templateResult.Values[0] is not null
-					&& templateResult.Values[0] is string)
+					&& templateResult.Values[0] is string
+					&& !String.IsNullOrWhiteSpace((string)templateResult.Values[0]))
 				{
-					resultWs.Name = templateResult.Values[0]?.ToString() ?? "";
+					resultWs.Name = templateResult!.Values[0]!.ToString() ?? "";
 				}
 				else
 				{

@@ -50,7 +50,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -67,7 +67,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test test2 is test {{"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -84,7 +84,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}}{{name}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -101,7 +101,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -118,7 +118,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -135,7 +135,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku}} test {{name}}" + Environment.NewLine
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -153,7 +153,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "{{sku(F=H,S=',',B=\", \")}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -170,7 +170,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=',')}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -187,7 +187,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "test {{sku(F=H,S=',')}} {{name(F=H,S=', ')}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -204,7 +204,7 @@ public class TextEngineTests : TestBase
 		{
 			Template = "Component: {{sku(F=H,S=', ')}} with ETA: {{name(F=H,S=', ')}}"
 		};
-		var data = SampleData.CreateNew(new List<int> { 0, 1, 2 });
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
@@ -215,6 +215,23 @@ public class TextEngineTests : TestBase
 	}
 
 	[Fact]
+	public void Text_Tag_HorizontalIsForcedIfSeparator()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{sku(S=',')}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]}", lines[0]);
+	}
+
+	[Fact]
 	public void Text_Tag_DataGroup()
 	{
 		var template = new WvTextTemplate()
@@ -222,7 +239,7 @@ public class TextEngineTests : TestBase
 			Template = "{{sku}}{{name}}",
 			GroupDataByColumns = new List<string>{ "sku" }
 		};
-		var data = SampleData.CreateNew();
+		var data = SampleData.CreateAsNew();
 		data.Rows[1]["sku"] = data.Rows[0]["sku"];
 		WvTextTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
