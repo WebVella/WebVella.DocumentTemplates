@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using System.Data;
 using System.Globalization;
 using System.Text;
@@ -39,6 +40,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 			};
 			ProcessExcelTemplateInitTemplateContexts(result);
 			ProcessExcelTemplateCalculateDependencies(result);
+			ProcessExcelTemplateGenerateResultContexts(result, resultItem, grouptedDs, culture);
 			//ProcessExcelTemplatePlacementAndContexts(Template, resultItem, grouptedDs, culture);
 			//ProcessExcelTemplateDependencies(resultItem, grouptedDs);
 			//ProcessExcelTemplateData(resultItem, grouptedDs, culture);
@@ -49,6 +51,11 @@ public class WvExcelFileTemplate : WvTemplateBase
 		return result;
 	}
 
+	/// <summary>
+	/// Parses the Template excel and generates contexts
+	/// </summary>
+	/// <param name="result"></param>
+	/// <exception cref="ArgumentException"></exception>
 	public void ProcessExcelTemplateInitTemplateContexts(WvExcelFileTemplateProcessResult? result)
 	{
 		if (result is null) throw new ArgumentException("No result provided!", nameof(result));
@@ -59,7 +66,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 		var processedAddresses = new HashSet<string>();
 		foreach (IXLWorksheet ws in result.Template.Worksheets)
 		{
-			var (usedRowsCount,usedColumnsCount) = ws.GetUsedRangeWithEmbeds();
+			var (usedRowsCount, usedColumnsCount) = ws.GetUsedRangeWithEmbeds();
 
 			for (var rowPosition = 1; rowPosition <= usedRowsCount; rowPosition++)
 			{
@@ -182,13 +189,115 @@ public class WvExcelFileTemplate : WvTemplateBase
 		}
 	}
 
-	public void ProcessExcelTemplateCalculateDependencies(WvExcelFileTemplateProcessResult result){ 
-		foreach (var context in result.TemplateContexts) {
+	/// <summary>
+	/// Generates dependencies between the contexts based on formula fields ranges
+	/// </summary>
+	/// <param name="result"></param>
+	public void ProcessExcelTemplateCalculateDependencies(WvExcelFileTemplateProcessResult result)
+	{
+		foreach (var context in result.TemplateContexts)
+		{
 			context.CalculateDependencies(result.TemplateContexts);
 		}
 	}
 
-	private string getCellAddress(int row, int col) => $"{row}:{col}";
+	/// <summary>
+	/// Creates result contexts and result Excel by processing the template contexts, fill them with data
+	/// and situate them on the result Excel based on their parent Context
+	/// </summary>
+	/// <param name="result"></param>
+	/// <param name="resultItem"></param>
+	/// <param name="dataSource"></param>
+	/// <param name="culture"></param>
+	public void ProcessExcelTemplateGenerateResultContexts(WvExcelFileTemplateProcessResult result,
+	 WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
+	{
+		if (resultItem is null) throw new Exception("No result provided!");
+		if (dataSource is null) throw new Exception("No datasource provided!");
+		if (result.Template is null) throw new Exception("No Template provided!");
+		if (result.TemplateContexts is null) throw new Exception("No Template provided!");
+		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
+		if (result.TemplateContexts.Count == 0) return;
+		var templateContextsDict = result.TemplateContexts.ToDictionary(x => x.Id);
+		var resultContextsDict = new Dictionary<Guid, WvExcelFileResultItemContext>();
+		int processAttemptsLimit = 200;
+		Queue<Guid> queue = new Queue<Guid>();
+		foreach (var contextId in result.TemplateContexts.Select(x => x.Id))
+		{
+			queue.Enqueue(contextId);
+		}
+
+		#region << Create Result Worksheets>>
+		if (result.Template.Worksheets.Count == 0) return;
+		var firstRowDt = dataSource.CreateAsNew(new List<int> { 0 });
+		foreach (var templateWs in result.Template.Worksheets.OrderBy(x => x.Position))
+		{
+			var resultWs = resultItem.Result.AddWorksheet();
+			resultWs.Name = templateWs.Name;
+			var templateResult = WvTemplateUtility.ProcessTemplateTag(templateWs.Name, firstRowDt, culture);
+			if (templateResult != null && templateResult.Values.Count > 0
+				&& templateResult.Values[0] is not null
+				&& templateResult.Values[0] is string
+				&& !String.IsNullOrWhiteSpace((string)templateResult.Values[0]))
+			{
+				resultWs.Name = templateResult!.Values[0]!.ToString() ?? "";
+			}
+			else
+			{
+				resultWs.Name = $"Worksheet {templateWs.Position}";
+			}
+
+		}
+		#endregion
+
+		while (queue.Count > 0)
+		{
+			var contextId = queue.Dequeue();
+			var templateContext = templateContextsDict[contextId];
+
+			//Check Limit
+			if (processLimitIsReached(
+				templateContext: templateContext,
+				resultItem: resultItem,
+				limit: processAttemptsLimit
+			)) continue;
+
+			//Check if unfulfilled Dependency
+			if (hasUnfulfilledDependencies(
+				templateContext: templateContext,
+				resultContextsDict: resultContextsDict,
+				queue: queue
+			)) continue;
+
+			//Check if there is fulfulled dependency with error
+			if (hasfulfilledDependencyWithError(
+				templateContext: templateContext,
+				resultItem: resultItem,
+				resultContextsDict: resultContextsDict
+			)) continue;
+
+			//Generate result region
+			try
+			{
+				generateResultRegion(
+					templateContext: templateContext,
+					resultItem: resultItem,
+					dataSource: dataSource,
+					culture: culture
+				);
+			}
+			catch (Exception ex)
+			{
+				resultItem.ResultContexts.Add(new WvExcelFileResultItemContext
+				{
+					Id = templateContext.Id,
+					Error = WvExcelFileResultItemContextError.ProcessError,
+					ErrorMessage = ex.Message,
+					Range = templateContext.Range
+				});
+			}
+		}
+	}
 
 	/// <summary>
 	/// Calculates how template regions translate to result regions and creates the necessary contexts
@@ -601,4 +710,69 @@ public class WvExcelFileTemplate : WvTemplateBase
 		}
 		return null;
 	}
+
+	#region << Private >>
+	private bool processLimitIsReached(WvExcelFileTemplateContext templateContext,
+		WvExcelFileTemplateProcessResultItem resultItem, int limit)
+	{
+
+		if (!resultItem.ContextProcessLog.ContainsKey(templateContext.Id))
+			resultItem.ContextProcessLog[templateContext.Id] = 1;
+
+		if (resultItem.ContextProcessLog[templateContext.Id] > limit)
+		{
+			resultItem.ResultContexts.Add(new WvExcelFileResultItemContext
+			{
+				Id = templateContext.Id,
+				Error = WvExcelFileResultItemContextError.DependencyOverflow,
+				Range = templateContext.Range
+			});
+			return true;
+		};
+		resultItem.ContextProcessLog[templateContext.Id]++;
+		return false;
+	}
+	private bool hasUnfulfilledDependencies(WvExcelFileTemplateContext templateContext,
+		Dictionary<Guid, WvExcelFileResultItemContext> resultContextsDict,
+		Queue<Guid> queue)
+	{
+		if (templateContext.ContextDependencies.Any(x => !resultContextsDict.Keys.Contains(x)))
+		{
+			queue.Enqueue(templateContext.Id);
+			return true;
+		}
+
+		return false;
+	}
+
+	private bool hasfulfilledDependencyWithError(WvExcelFileTemplateContext templateContext,
+		WvExcelFileTemplateProcessResultItem resultItem,
+		Dictionary<Guid, WvExcelFileResultItemContext> resultContextsDict)
+	{
+		if (templateContext.ContextDependencies.Any(x => resultContextsDict[x].Error is not null))
+		{
+			var firstDependecyContextIdWithError = templateContext.ContextDependencies
+				.Where(x => resultContextsDict[x].Error is not null).First();
+
+			var dependencyError = resultContextsDict[firstDependecyContextIdWithError].Error;
+			resultItem.ResultContexts.Add(new WvExcelFileResultItemContext
+			{
+				Id = templateContext.Id,
+				Error = dependencyError,
+				Range = templateContext.Range
+			});
+			return true;
+		}
+		return false;
+	}
+
+	private void generateResultRegion(WvExcelFileTemplateContext templateContext,
+		WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
+	{
+		//Context region should start its expansion based on its context and rules
+	}
+
+	private string getCellAddress(int row, int col) => $"{row}:{col}";
+
+	#endregion
 }

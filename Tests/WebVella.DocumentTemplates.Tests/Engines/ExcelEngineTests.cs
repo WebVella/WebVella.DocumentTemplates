@@ -122,7 +122,7 @@ public class ExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, context.Flow);
 			Assert.Null(context.LeftContext);
 			Assert.Null(context.TopContext);
-			Assert.Null(context.Context);
+			Assert.Null(context.ParentContext);
 			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
 		}
 	}
@@ -158,7 +158,7 @@ public class ExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, context.Flow);
 			Assert.Null(context.LeftContext);
 			Assert.Null(context.TopContext);
-			Assert.Null(context.Context);
+			Assert.Null(context.ParentContext);
 			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
 		}
 	}
@@ -193,7 +193,7 @@ public class ExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, context.Flow);
 			Assert.Null(context.LeftContext);
 			Assert.Null(context.TopContext);
-			Assert.Null(context.Context);
+			Assert.Null(context.ParentContext);
 			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
 		}
 	}
@@ -228,7 +228,7 @@ public class ExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, context.Flow);
 			Assert.Null(context.LeftContext);
 			Assert.Null(context.TopContext);
-			Assert.Null(context.Context);
+			Assert.Null(context.ParentContext);
 			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
 		}
 	}
@@ -262,8 +262,8 @@ public class ExcelEngineTests : TestBase
 			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
 			Assert.NotNull(contextA1);
 			Assert.NotNull(contextB1);
-			Assert.NotNull(contextB1.Context);
-			Assert.Equal(contextA1.Id, contextB1.Context.Id);
+			Assert.NotNull(contextB1.ParentContext);
+			Assert.Equal(contextA1.Id, contextB1.ParentContext.Id);
 		}
 	}
 
@@ -295,8 +295,8 @@ public class ExcelEngineTests : TestBase
 			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
 			Assert.NotNull(contextA1);
 			Assert.NotNull(contextB1);
-			Assert.NotNull(contextB1.Context);
-			Assert.Equal(contextA1.Id, contextB1.Context.Id);
+			Assert.NotNull(contextB1.ParentContext);
+			Assert.Equal(contextA1.Id, contextB1.ParentContext.Id);
 		}
 	}
 
@@ -330,8 +330,8 @@ public class ExcelEngineTests : TestBase
 			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 4).FirstOrDefault();
 			Assert.NotNull(contextA1);
 			Assert.NotNull(contextB1);
-			Assert.NotNull(contextB1.Context);
-			Assert.Equal(contextA1.Id, contextB1.Context.Id);
+			Assert.NotNull(contextB1.ParentContext);
+			Assert.Equal(contextA1.Id, contextB1.ParentContext.Id);
 		}
 	}
 
@@ -365,8 +365,8 @@ public class ExcelEngineTests : TestBase
 			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
 			Assert.NotNull(contextA1);
 			Assert.NotNull(contextB1);
-			Assert.NotNull(contextB1.Context);
-			Assert.Equal(contextA1.Id, contextB1.Context.Id);
+			Assert.NotNull(contextB1.ParentContext);
+			Assert.Equal(contextA1.Id, contextB1.ParentContext.Id);
 		}
 	}
 
@@ -400,8 +400,8 @@ public class ExcelEngineTests : TestBase
 			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
 			Assert.NotNull(contextA1);
 			Assert.NotNull(contextB1);
-			Assert.NotNull(contextB1.Context);
-			Assert.Equal(contextA1.Id, contextB1.Context.Id);
+			Assert.NotNull(contextB1.ParentContext);
+			Assert.Equal(contextA1.Id, contextB1.ParentContext.Id);
 		}
 	}
 
@@ -441,8 +441,8 @@ public class ExcelEngineTests : TestBase
 			Assert.NotNull(context.TopContext.Range);
 			Assert.NotNull(context.LeftContext);
 			Assert.NotNull(context.LeftContext.Range);
-			Assert.Equal(context.TopContext.Range.RangeAddress.FirstAddress.RowNumber,picture.TopLeftCell.Address.RowNumber - 1);
-			Assert.Equal(context.LeftContext.Range.RangeAddress.FirstAddress.ColumnNumber,picture.TopLeftCell.Address.ColumnNumber - 1);
+			Assert.Equal(context.TopContext.Range.RangeAddress.FirstAddress.RowNumber, picture.TopLeftCell.Address.RowNumber - 1);
+			Assert.Equal(context.LeftContext.Range.RangeAddress.FirstAddress.ColumnNumber, picture.TopLeftCell.Address.ColumnNumber - 1);
 		}
 	}
 	#endregion
@@ -464,9 +464,73 @@ public class ExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			var result = template.Process(TypedData,DefaultCulture);
+			var result = template.Process(TypedData, DefaultCulture);
 			//Then
 			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Single(b1Context.ContextDependencies);
+			Assert.Equal(a1Context.Id, b1Context.ContextDependencies.First());
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_CheckDependencies2()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{position}}";
+			ws.Cell(1, 2).Value = "{{=SUM(B100:C200)}}";
+
+			var template = new WvExcelFileTemplate
+			{
+				Template = wb
+			};
+			//When
+			var result = template.Process(TypedData, DefaultCulture);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Empty(b1Context.ContextDependencies);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_CheckDependencies3()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{position}}";
+			ws.Cell(1, 2).Value = "{{=SUM(A1:C5)}}";
+
+			var template = new WvExcelFileTemplate
+			{
+				Template = wb
+			};
+			//When
+			var result = template.Process(TypedData, DefaultCulture);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Single(b1Context.ContextDependencies);
+			Assert.Equal(a1Context.Id, b1Context.ContextDependencies.First());
 		}
 	}
 
@@ -981,7 +1045,7 @@ public class ExcelEngineTests : TestBase
 	#endregion
 
 	#region << Utilities >>
-	
+
 	//GetApplicableRangeForFunctionTag
 	[Fact]
 	public void GetApplicableRangeForFunctionTag_Test1()
@@ -998,10 +1062,10 @@ public class ExcelEngineTests : TestBase
 			Assert.NotNull(ranges);
 			Assert.Single(ranges);
 			var range = ranges[0];
-			Assert.Equal(1,range.FirstRow);
-			Assert.Equal(1,range.FirstColumn);
-			Assert.Equal(1,range.LastRow);
-			Assert.Equal(1,range.LastColumn);
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(1, range.FirstColumn);
+			Assert.Equal(1, range.LastRow);
+			Assert.Equal(1, range.LastColumn);
 		}
 	}
 
@@ -1020,10 +1084,10 @@ public class ExcelEngineTests : TestBase
 			Assert.NotNull(ranges);
 			Assert.Single(ranges);
 			var range = ranges[0];
-			Assert.Equal(1,range.FirstRow);
-			Assert.Equal(1,range.FirstColumn);
-			Assert.Equal(1,range.LastRow);
-			Assert.Equal(1,range.LastColumn);
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(1, range.FirstColumn);
+			Assert.Equal(1, range.LastRow);
+			Assert.Equal(1, range.LastColumn);
 		}
 	}
 
@@ -1042,10 +1106,10 @@ public class ExcelEngineTests : TestBase
 			Assert.NotNull(ranges);
 			Assert.Single(ranges);
 			var range = ranges[0];
-			Assert.Equal(1,range.FirstRow);
-			Assert.Equal(2,range.FirstColumn);
-			Assert.Equal(3,range.LastRow);
-			Assert.Equal(3,range.LastColumn);
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(2, range.FirstColumn);
+			Assert.Equal(3, range.LastRow);
+			Assert.Equal(3, range.LastColumn);
 		}
 	}
 
@@ -1058,16 +1122,16 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "name!A1:C4";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
-			Assert.Equal("name",result.Worksheet);
-			Assert.Equal(1,result.FirstRow);
-			Assert.Equal(1,result.FirstColumn);
-			Assert.Equal(4,result.LastRow);
-			Assert.Equal(3,result.LastColumn);
+			Assert.Equal("name", result.Worksheet);
+			Assert.Equal(1, result.FirstRow);
+			Assert.Equal(1, result.FirstColumn);
+			Assert.Equal(4, result.LastRow);
+			Assert.Equal(3, result.LastColumn);
 		}
 	}
 
@@ -1078,16 +1142,16 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "name!C5";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
-			Assert.Equal("name",result.Worksheet);
-			Assert.Equal(5,result.FirstRow);
-			Assert.Equal(3,result.FirstColumn);
-			Assert.Equal(5,result.LastRow);
-			Assert.Equal(3,result.LastColumn);
+			Assert.Equal("name", result.Worksheet);
+			Assert.Equal(5, result.FirstRow);
+			Assert.Equal(3, result.FirstColumn);
+			Assert.Equal(5, result.LastRow);
+			Assert.Equal(3, result.LastColumn);
 		}
 	}
 
@@ -1098,16 +1162,16 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "A1:C4";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.True(String.IsNullOrWhiteSpace(result.Worksheet));
-			Assert.Equal(1,result.FirstRow);
-			Assert.Equal(1,result.FirstColumn);
-			Assert.Equal(4,result.LastRow);
-			Assert.Equal(3,result.LastColumn);
+			Assert.Equal(1, result.FirstRow);
+			Assert.Equal(1, result.FirstColumn);
+			Assert.Equal(4, result.LastRow);
+			Assert.Equal(3, result.LastColumn);
 		}
 	}
 
@@ -1118,16 +1182,16 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "C5";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.True(String.IsNullOrWhiteSpace(result.Worksheet));
-			Assert.Equal(5,result.FirstRow);
-			Assert.Equal(3,result.FirstColumn);
-			Assert.Equal(5,result.LastRow);
-			Assert.Equal(3,result.LastColumn);
+			Assert.Equal(5, result.FirstRow);
+			Assert.Equal(3, result.FirstColumn);
+			Assert.Equal(5, result.LastRow);
+			Assert.Equal(3, result.LastColumn);
 		}
 	}
 
@@ -1138,7 +1202,7 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "invalid";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
@@ -1153,13 +1217,13 @@ public class ExcelEngineTests : TestBase
 		{
 			//Given
 			var address = "invalid123";
-			
+
 			//When
 			var result = WvExcelRangeHelpers.GetRangeFromString(address);
 			//Then
 			Assert.Null(result);
 		}
 	}
-	
+
 	#endregion
 }

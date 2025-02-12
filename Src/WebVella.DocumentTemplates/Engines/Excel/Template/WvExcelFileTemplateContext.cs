@@ -12,7 +12,7 @@ public class WvExcelFileTemplateContext
 	public IXLPicture? Picture { get; set; }
 	public WvExcelFileTemplateContext? TopContext { get; set; }
 	public WvExcelFileTemplateContext? LeftContext { get; set; }
-	public WvExcelFileTemplateContext? Context
+	public WvExcelFileTemplateContext? ParentContext
 	{
 		get
 		{

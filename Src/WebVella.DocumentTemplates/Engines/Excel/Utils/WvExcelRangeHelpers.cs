@@ -39,6 +39,20 @@ public static class WvExcelRangeHelpers
 		|| result.LastRow == 0
 		|| result.LastColumn == 0) return null;
 
+		if(result.FirstRow > result.LastRow){ 
+			result = result with { 
+				FirstRow = result.LastRow,
+				LastRow = result.FirstRow,
+			};
+		}
+
+		if(result.FirstColumn > result.LastColumn){ 
+			result = result with { 
+				FirstColumn = result.LastColumn,
+				LastColumn = result.FirstColumn,
+			};
+		}
+
 		return result;
 	}
 

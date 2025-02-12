@@ -1,4 +1,5 @@
 ﻿using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.Excel.Models;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
 public static class TemplateContextExtensions
@@ -30,6 +31,42 @@ public static class TemplateContextExtensions
 		}
 		return result;
 	}
+	public static List<WvExcelFileTemplateContext> GetIntersections(
+		this List<WvExcelFileTemplateContext> contextList,
+		int worksheetPosition,
+		WvExcelRange range,
+		WvExcelFileTemplateContextType? type = null)
+	{
+		if (range.FirstRow <= 0 || range.LastRow <= 0
+			|| range.FirstColumn <= 0 || range.LastColumn <= 0)
+			throw new ArgumentException("range positions should be > 0", nameof(range));
+
+		if (range.FirstRow > range.LastRow)
+			throw new ArgumentException("first row should be <= than last row", nameof(range));
+		if (range.FirstColumn > range.LastColumn)
+			throw new ArgumentException("first column should be <= than last row", nameof(range));
+
+		var result = new List<WvExcelFileTemplateContext>();
+
+		foreach (var context in contextList)
+		{
+			if (type is not null && context.Type != type.Value) continue;
+			if (context.WorksheetPosition != worksheetPosition) continue;
+
+			if (context.Range is null) continue;
+
+			var contextRange = new WvExcelRange()
+			{
+				FirstRow = context.Range!.FirstRow().RowNumber(),
+				LastRow = context.Range!.LastRow().RowNumber(),
+				FirstColumn = context.Range!.FirstColumn().ColumnNumber(),
+				LastColumn = context.Range!.LastColumn().ColumnNumber()
+			};
+			if (CheckIntersection(range, contextRange))
+				result.Add(context);
+		}
+		return result.Where(x => type == null || x.Type == type.Value).ToList();
+	}
 
 	public static void CalculateDependencies(this WvExcelFileTemplateContext context, List<WvExcelFileTemplateContext> contextList)
 	{
@@ -42,11 +79,36 @@ public static class TemplateContextExtensions
 		foreach (var value in rangeValues)
 		{
 			var tags = WvTemplateUtility.GetTagsFromTemplate(value.ToString());
-			foreach (var tag in tags) {
-				if(tag.Type != Core.WvTemplateTagType.Function) continue;
-				if(String.IsNullOrWhiteSpace(tag.FunctionName)) continue;
+			foreach (var tag in tags)
+			{
+				if (tag.Type != Core.WvTemplateTagType.Function) continue;
+				if (String.IsNullOrWhiteSpace(tag.FunctionName)) continue;
+				var valueAddressList = tag.GetApplicableRangeForFunctionTag();
+				if (valueAddressList is null || valueAddressList.Count == 0) continue;
+				foreach (var address in valueAddressList)
+				{
+					var intersects = contextList
+						.GetIntersections(context.WorksheetPosition, address)
+						.Where(x=> x.Id != context.Id).ToList();
+					foreach (var interContext in intersects)
+					{
+						if (context.ContextDependencies.Contains(interContext.Id)) continue;
+						context.ContextDependencies.Add(interContext.Id);
+					}
+
+				}
 			}
 		}
 	}
 
+	private static bool CheckIntersection(WvExcelRange range1, WvExcelRange range2)
+	{
+		// Check if the ranges intersect
+		bool intersects = !(range1.LastRow < range2.FirstRow ||
+						   range1.LastColumn < range2.FirstColumn ||
+						   range1.FirstRow > range2.LastRow ||
+						   range1.FirstColumn > range2.LastColumn);
+
+		return intersects;
+	}
 }

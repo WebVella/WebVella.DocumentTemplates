@@ -1,5 +1,5 @@
 ﻿namespace WebVella.DocumentTemplates.Engines.Excel.Models;
-public class WvExcelRange
+public record WvExcelRange
 {
 	public string? Worksheet { get; set; }
 	public int FirstRow { get; set; }
