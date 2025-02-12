@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public partial class WvTemplateUtility
+public static partial class WvTemplateUtility
 {
 	public static (string?, object?) ReplaceSingleValueDataTagInTemplate(string? templateResultString, object? templateResultObject, WvTemplateTag tag, DataTable dataSource, int? contextRowIndex)
 	{

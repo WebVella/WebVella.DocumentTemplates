@@ -633,6 +633,90 @@ public class DataTemplateTagTest : TestBase
 		Assert.Equal(paramValue3, result[0].ParamGroups[0].Parameters[2].ValueString);
 	}
 
+	[Fact]
+	public void ExactTemplateWithFunctionSupported()
+	{
+		//Given
+		var function = "SUM";
+		string template = "{{=" + function + "(A1:B1)}}";
+		//When
+		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
+		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
+
+	}
+
+	[Fact]
+	public void ExactTemplateWithFunctionNotSupported()
+	{
+		//Given
+		var function = "SUM123";
+		string template = "{{=" + function + "(A1:B1)}}";
+		//When
+		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
+		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
+
+	}
+
+
+	[Fact]
+	public void ExactTemplateWithExcelFunctionSupported()
+	{
+		//Given
+		var function = "SUM";
+		string template = "{{==" + function + "(A1:B1)}}";
+		//When
+		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
+		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
+
+	}
+
+	[Fact]
+	public void ExactTemplateWithExcelFunctionNotSupported()
+	{
+		//Given
+		var function = "SUM123";
+		string template = "{{==" + function + "(A1:B1)}}";
+		//When
+		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
+		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
+
+	}
 	#endregion
 
 	#region << Processing >>

@@ -8,4 +8,5 @@ public class WvExcelFileTemplateProcessContext : WvTemplateProcessContextBase
 	public IXLRange? TemplateRange { get; set; }
 	public IXLRange? ResultRange { get; set; }
 	public List<WvExcelFileTemplateContextRangeAddress> ResultRangeSlots { get; set; } = new();
+
 }

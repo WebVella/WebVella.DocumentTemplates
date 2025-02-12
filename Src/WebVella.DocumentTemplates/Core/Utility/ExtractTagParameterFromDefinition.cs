@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public partial class WvTemplateUtility
+public static partial class WvTemplateUtility
 {
 public static IWvTemplateTagParameterBase? ExtractTagParameterFromDefinition(string parameterDefinition, WvTemplateTagType tagType)
 	{

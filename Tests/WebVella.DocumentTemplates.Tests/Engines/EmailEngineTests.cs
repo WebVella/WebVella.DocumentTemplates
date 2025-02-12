@@ -617,7 +617,7 @@ public class EmailEngineTests : TestBase
 			var ds = EmailData;
 
 			//When
-			WvEmailTemplateProcessResult? result = template.Process(ds, DefaultCulture); ;
+			WvEmailTemplateProcessResult? result = template.Process(ds, DefaultCulture);
 
 			//Then
 			Assert.NotNull(result);
@@ -651,7 +651,7 @@ public class EmailEngineTests : TestBase
 			var ds = EmailData;
 
 			//When
-			WvEmailTemplateProcessResult? result = template.Process(ds, DefaultCulture); ;
+			WvEmailTemplateProcessResult? result = template.Process(ds, DefaultCulture);
 
 			//Then
 			Assert.NotNull(result);

@@ -1,9 +1,11 @@
 ﻿using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using System.Data;
 using System.Globalization;
 using System.Text;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.Excel.Utility;
 using WebVella.DocumentTemplates.Extensions;
 namespace WebVella.DocumentTemplates.Engines.Excel;
 public class WvExcelFileTemplate : WvTemplateBase
@@ -31,19 +33,172 @@ public class WvExcelFileTemplate : WvTemplateBase
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
 		{
-			var resultItem = new WvExcelFileTemplateProcessResultItem{ 
+			var resultItem = new WvExcelFileTemplateProcessResultItem
+			{
 				Result = new XLWorkbook()
 			};
-			ProcessExcelTemplatePlacement(Template,resultItem, grouptedDs, culture);
-			ProcessExcelTemplateDependencies(resultItem, grouptedDs);
-			ProcessExcelTemplateData(resultItem, grouptedDs, culture);
+			ProcessExcelTemplateInitTemplateContexts(result);
+			ProcessExcelTemplateCalculateDependencies(result);
+			//ProcessExcelTemplatePlacementAndContexts(Template, resultItem, grouptedDs, culture);
+			//ProcessExcelTemplateDependencies(resultItem, grouptedDs);
+			//ProcessExcelTemplateData(resultItem, grouptedDs, culture);
+			//ProcessExcelTemplateEmbeddings(Template, resultItem);
 
 			result.ResultItems.Add(resultItem);
 		}
 		return result;
 	}
 
-	public void ProcessExcelTemplatePlacement(XLWorkbook template, WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
+	public void ProcessExcelTemplateInitTemplateContexts(WvExcelFileTemplateProcessResult? result)
+	{
+		if (result is null) throw new ArgumentException("No result provided!", nameof(result));
+		if (result.Template is null) throw new ArgumentException("No Template provided!", nameof(result));
+		if (result.Template.Worksheets is null || result.Template.Worksheets.Count == 0) throw new ArgumentException("No worksheets in template provided!", nameof(result));
+
+		//Cell contexts
+		var processedAddresses = new HashSet<string>();
+		foreach (IXLWorksheet ws in result.Template.Worksheets)
+		{
+			var (usedRowsCount,usedColumnsCount) = ws.GetUsedRangeWithEmbeds();
+
+			for (var rowPosition = 1; rowPosition <= usedRowsCount; rowPosition++)
+			{
+				for (var colPosition = 1; colPosition <= usedColumnsCount; colPosition++)
+				{
+					var cellAddress = getCellAddress(rowPosition, colPosition);
+					if (processedAddresses.Contains(cellAddress)) continue;
+
+					IXLCell cell = ws.Cell(rowPosition, colPosition);
+					var mergedRange = cell.MergedRange();
+					//Mark all cell addresses in the range
+					if (mergedRange is not null)
+					{
+						int mergeRangeFirstRow = mergedRange.FirstRow().RowNumber();
+						int mergeRangeLastRow = mergedRange.LastRow().RowNumber();
+						int mergeRangeFirstColumn = mergedRange.FirstColumn().ColumnNumber();
+						int mergeRangeLastColumn = mergedRange.LastColumn().ColumnNumber();
+
+						for (var mergeRangeRow = mergeRangeFirstRow; mergeRangeRow <= mergeRangeLastRow; mergeRangeRow++)
+						{
+							for (var mergeRangeCol = mergeRangeFirstColumn; mergeRangeCol <= mergeRangeLastColumn; mergeRangeCol++)
+							{
+								processedAddresses.Add(getCellAddress(mergeRangeRow, mergeRangeCol));
+							}
+						}
+					}
+					else
+					{
+						processedAddresses.Add(cellAddress);
+					}
+
+					var cellFlow = WvTemplateTagDataFlow.Vertical;
+					var cellTags = WvTemplateUtility.GetTagsFromTemplate(cell.Value.ToString());
+					if (cellTags.Count > 0 && !cellTags.Any(x => x.Flow == WvTemplateTagDataFlow.Vertical))
+					{
+						cellFlow = WvTemplateTagDataFlow.Horizontal;
+					}
+
+					WvExcelFileTemplateContext? topContext = null;
+					WvExcelFileTemplateContext? leftContext = null;
+					if (rowPosition > 1) topContext = result.TemplateContexts.GetByAddress(
+						worksheetPosition: ws.Position,
+						row: rowPosition - 1,
+						column: colPosition,
+						type: WvExcelFileTemplateContextType.CellRange).FirstOrDefault();
+
+					if (colPosition > 1) leftContext = result.TemplateContexts.GetByAddress(
+						worksheetPosition: ws.Position,
+						row: rowPosition,
+						column: colPosition - 1,
+						type: WvExcelFileTemplateContextType.CellRange).FirstOrDefault();
+
+					//Create context
+					var context = new WvExcelFileTemplateContext()
+					{
+						Id = Guid.NewGuid(),
+						WorksheetPosition = ws.Position,
+						Range = mergedRange is not null ? mergedRange : cell.AsRange(),
+						Type = WvExcelFileTemplateContextType.CellRange,
+						Flow = cellFlow,
+						TopContext = topContext,
+						LeftContext = leftContext,
+						Picture = null,
+						ContextDependencies = new()
+					};
+					result.TemplateContexts.Add(context);
+				}
+			}
+		}
+
+		//Picture contexts
+		foreach (IXLWorksheet ws in result.Template.Worksheets)
+		{
+			foreach (IXLPicture picture in ws.Pictures)
+			{
+				int rowPosition = picture.TopLeftCell.Address.RowNumber;
+				int colPosition = picture.TopLeftCell.Address.ColumnNumber;
+				var cell = ws.Cell(rowPosition, colPosition);
+
+				//Create context
+				var context = new WvExcelFileTemplateContext()
+				{
+					Id = Guid.NewGuid(),
+					WorksheetPosition = ws.Position,
+					Picture = picture,
+					Flow = WvTemplateTagDataFlow.Vertical,
+					Type = WvExcelFileTemplateContextType.Picture,
+					TopContext = null,
+					LeftContext = null,
+					ContextDependencies = new()
+				};
+				//Copy top left context from cellRange if present
+				var cellContext = result.TemplateContexts
+					.GetByAddress(ws.Position, rowPosition, colPosition)
+					.Where(x => x.Type == WvExcelFileTemplateContextType.CellRange)
+					.FirstOrDefault();
+				if (cellContext != null)
+				{
+					context.TopContext = cellContext.TopContext;
+					context.LeftContext = cellContext.LeftContext;
+
+				}
+				else
+				{
+					if (rowPosition > 1) context.TopContext = result.TemplateContexts.GetByAddress(
+						worksheetPosition: ws.Position,
+						row: rowPosition - 1,
+						column: colPosition,
+						type: WvExcelFileTemplateContextType.CellRange).FirstOrDefault();
+
+					if (colPosition > 1) context.LeftContext = result.TemplateContexts.GetByAddress(
+						worksheetPosition: ws.Position,
+						row: rowPosition,
+						column: colPosition - 1,
+						type: WvExcelFileTemplateContextType.CellRange).FirstOrDefault();
+				}
+
+				result.TemplateContexts.Add(context);
+			}
+		}
+	}
+
+	public void ProcessExcelTemplateCalculateDependencies(WvExcelFileTemplateProcessResult result){ 
+		foreach (var context in result.TemplateContexts) {
+			context.CalculateDependencies(result.TemplateContexts);
+		}
+	}
+
+	private string getCellAddress(int row, int col) => $"{row}:{col}";
+
+	/// <summary>
+	/// Calculates how template regions translate to result regions and creates the necessary contexts
+	/// </summary>
+	/// <param name="template"></param>
+	/// <param name="resultItem"></param>
+	/// <param name="dataSource"></param>
+	/// <param name="culture"></param>
+	/// <exception cref="Exception"></exception>
+	public void ProcessExcelTemplatePlacementAndContexts(XLWorkbook template, WvExcelFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
 	{
 		if (resultItem is null) throw new Exception("No result provided!");
 		if (dataSource is null) throw new Exception("No datasource provided!");
@@ -84,10 +239,8 @@ public class WvExcelFileTemplate : WvTemplateBase
 						templateMergedRowCount = mergedRange.RowCount();
 						templateMergedColumnCount = mergedRange.ColumnCount();
 					}
-
 					tempRangeEndRowNumber = tempRangeEndRowNumber + templateMergedRowCount - 1;
 					tempRangeEndColumnNumber = tempRangeEndColumnNumber + templateMergedColumnCount - 1;
-
 					var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(tempCell.Value.ToString(), dataSource, culture);
 					var contextDataProcessed = false;
 					if (tagProcessResult.Tags.Count > 0)
@@ -180,9 +333,6 @@ public class WvExcelFileTemplate : WvTemplateBase
 							lastCellRow: tempRangeEndRowNumber,
 							lastCellColumn: tempRangeEndColumnNumber);
 
-					//Copy column styles
-
-
 					//Create context
 					var context = new WvExcelFileTemplateProcessContext()
 					{
@@ -198,7 +348,8 @@ public class WvExcelFileTemplate : WvTemplateBase
 					};
 					resultItem.Contexts.Add(context);
 
-					//Boz: for optimization purposes is move from inside the loop
+					//Copy column styles
+					//Boz: for optimization purposes is moved outside the loop
 					CopyCellProperties(tempCell, context.ResultRange);
 					var templateRange = mergedRange is not null ? mergedRange : tempCell.AsRange();
 					CopyColumnsProperties(templateRange, context.ResultRange, tempWs, resultWs);
@@ -328,6 +479,34 @@ public class WvExcelFileTemplate : WvTemplateBase
 			throw new Exception("Not all excel cells were processed. Check for possible circular logic in formulas.");
 		}
 		#endregion
+	}
+
+	public void ProcessExcelTemplateEmbeddings(XLWorkbook template, WvExcelFileTemplateProcessResultItem resultItem)
+	{
+		if (resultItem is null) throw new Exception("No result provided!");
+		if (template is null) throw new Exception("No Template provided!");
+		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
+
+		var index = 0;
+		foreach (IXLWorksheet ws in template.Worksheets)
+		{
+			if (resultItem.Result.Worksheets.Count < index + 1) break;
+
+			IXLWorksheet resultWs = resultItem.Result.Worksheets.ToList()[index];
+			foreach (var picture in ws.Pictures)
+			{
+				IXLCell pictureAnchor = picture.TopLeftCell;
+				var resultPicture = picture.CopyTo(resultWs);
+				var newAnchor = resultWs.Cell(7, 1);
+				resultPicture.MoveTo(newAnchor);
+				WvExcelFileEngineUtility.GetResultRangeTopLeftForTemplateRangeTopLeft(
+				contextList: resultItem.Contexts,
+				worksheet: ws,
+				templateRangeTopLeft: picture.TopLeftCell);
+
+			}
+			index++;
+		}
 	}
 
 	private static void CopyCellProperties(IXLCell template, IXLRange result)

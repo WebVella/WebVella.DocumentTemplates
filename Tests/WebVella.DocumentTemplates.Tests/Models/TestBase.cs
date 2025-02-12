@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using System.Data;
 using System.Globalization;
 using System.Text;
@@ -110,6 +111,17 @@ public class TestBase
 		StreamWriter sw = new StreamWriter(path, false, Encoding.ASCII);
 		sw.Write(content);
 		sw.Close();
+	}
+
+	public static MemoryStream LoadFileAsStream(string fileName)
+	{
+		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
+		var fi = new FileInfo(path);
+		if (!fi.Exists) throw new FileNotFoundException();
+		MemoryStream ms = new MemoryStream();
+		using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
+			file.CopyTo(ms);
+		return ms;
 	}
 
 	public static void GeneralResultChecks(WvExcelFileTemplateProcessResult? result)

@@ -51,5 +51,6 @@ public class WvTemplateTag
 		}
 	}
 	public virtual List<WvTemplateTagParamGroup> ParamGroups { get; set; } = new List<WvTemplateTagParamGroup>();
-
+	//Will be filled in if the function is supported by the system
+	public string? FunctionName { get; set; } = null;
 }

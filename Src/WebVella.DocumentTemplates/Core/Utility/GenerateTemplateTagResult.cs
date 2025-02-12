@@ -2,7 +2,7 @@
 using System.Globalization;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public partial class WvTemplateUtility
+public static partial class WvTemplateUtility
 {
 	public static WvTemplateTagResult GenerateTemplateTagResult(string? template, List<WvTemplateTag> tags, DataTable dataSource, int? rowIndex, CultureInfo culture)
 	{

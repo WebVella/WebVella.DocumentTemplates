@@ -2,9 +2,9 @@
 using Markdig;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public partial class WvTemplateUtility
+public static partial class WvTemplateUtility
 {
-public static string ConvertPlainTextToHtml(string text)
+	public static string ConvertPlainTextToHtml(string text)
 	{
 		if (String.IsNullOrWhiteSpace(text)) return text;
 
