@@ -152,12 +152,15 @@ public class TestBase
 		Assert.Equal(lastColumnNumber, range.RangeAddress.LastAddress.ColumnNumber);
 	}
 
-	public static void CheckCellPropertiesCopy(WvExcelFileTemplateProcessResultItem resultItem)
+	public static void CheckCellPropertiesCopy(List<WvExcelFileTemplateContext> templateContexts,
+		WvExcelFileTemplateProcessResultItem resultItem)
 	{
-		foreach (var context in resultItem.Contexts)
+		foreach (var tempContext in templateContexts)
 		{
-			var firstTemplateCell = context.TemplateRange?.Cell(1, 1);
-			var firstResultCell = context.ResultRange?.Cell(1, 1);
+			var resultContext = resultItem.ResultContexts.FirstOrDefault(x=> x.TemplateContextId == tempContext.Id);
+			Assert.NotNull(resultContext);
+			var firstTemplateCell = tempContext.Range?.Cell(1, 1);
+			var firstResultCell = resultContext.Range?.Cell(1, 1);
 			Assert.NotNull(firstTemplateCell);
 			Assert.NotNull(firstResultCell);
 

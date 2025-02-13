@@ -5,6 +5,6 @@ public class WvExcelFileTemplateProcessResultItem : WvTemplateProcessResultItemB
 {
 	public new XLWorkbook? Result { get; set; } = new();
 	public List<WvExcelFileResultItemContext> ResultContexts { get; set; } = new();
-
-	public new List<WvExcelFileTemplateProcessContext> Contexts { get; set; } = new List<WvExcelFileTemplateProcessContext>();
+	public Dictionary<Guid,int> ContextProcessLog { get; set; } = new();	
+	public HashSet<Guid> ProcessedContexts { get; set; } = new();
 }

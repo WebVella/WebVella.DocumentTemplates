@@ -5,7 +5,7 @@ namespace WebVella.DocumentTemplates.Engines.Excel;
 public class WvExcelFileTemplateContext
 {
 	public Guid Id { get; set; }
-	public int WorksheetPosition { get; set; }
+	public IXLWorksheet? Worksheet { get; set; }
 	public WvTemplateTagDataFlow Flow { get; set; } = WvTemplateTagDataFlow.Vertical;
 	public WvExcelFileTemplateContextType Type { get; set; } = WvExcelFileTemplateContextType.CellRange;
 	public IXLRange? Range { get; set; }

@@ -2,20 +2,18 @@
 using WebVella.DocumentTemplates.Engines.Excel.Models;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
-public static class TemplateContextExtensions
+public static class TemplateContextBranchExtensions
 {
-	public static List<WvExcelFileTemplateContext> GetByAddress(
-		this List<WvExcelFileTemplateContext> contextList,
+	public static List<WvExcelFileTemplateContextBranch> GetByAddress(
+		this List<WvExcelFileTemplateContextBranch> contextList,
 		int worksheetPosition,
 		int row,
-		int column,
-		WvExcelFileTemplateContextType? type = null)
+		int column)
 	{
-		var result = new List<WvExcelFileTemplateContext>();
+		var result = new List<WvExcelFileTemplateContextBranch>();
 		if (row < 1 || column < 1) return result;
 		foreach (var context in contextList)
 		{
-			if (type is not null && context.Type != type.Value) continue;
 			if (context.Worksheet is null || context.Worksheet.Position != worksheetPosition) continue;
 
 			if (context.Range is null) continue;
@@ -31,11 +29,10 @@ public static class TemplateContextExtensions
 		}
 		return result;
 	}
-	public static List<WvExcelFileTemplateContext> GetIntersections(
-		this List<WvExcelFileTemplateContext> contextList,
+	public static List<WvExcelFileTemplateContextBranch> GetIntersections(
+		this List<WvExcelFileTemplateContextBranch> contextList,
 		int worksheetPosition,
-		WvExcelRange range,
-		WvExcelFileTemplateContextType? type = null)
+		WvExcelRange range)
 	{
 		if (range.FirstRow <= 0 || range.LastRow <= 0
 			|| range.FirstColumn <= 0 || range.LastColumn <= 0)
@@ -46,11 +43,10 @@ public static class TemplateContextExtensions
 		if (range.FirstColumn > range.LastColumn)
 			throw new ArgumentException("first column should be <= than last row", nameof(range));
 
-		var result = new List<WvExcelFileTemplateContext>();
+		var result = new List<WvExcelFileTemplateContextBranch>();
 
 		foreach (var context in contextList)
 		{
-			if (type is not null && context.Type != type.Value) continue;
 			if (context.Worksheet is null || context.Worksheet.Position != worksheetPosition) continue;
 
 			if (context.Range is null) continue;
@@ -65,43 +61,8 @@ public static class TemplateContextExtensions
 			if (CheckIntersection(range, contextRange))
 				result.Add(context);
 		}
-		return result.Where(x => type == null || x.Type == type.Value).ToList();
+		return result;
 	}
-
-	public static void CalculateDependencies(this WvExcelFileTemplateContext context, List<WvExcelFileTemplateContext> contextList)
-	{
-		if (context is null) throw new ArgumentNullException(nameof(context));
-		if (contextList is null || contextList.Count == 0) return;
-		if (context.Worksheet is null) return;
-		if (context.Range is null) return;
-		if (context.Type != WvExcelFileTemplateContextType.CellRange) return;
-		var rangeValues = context.Range.CellsUsed().Select(x => x.Value).ToList();
-		if (rangeValues.Count == 0) return;
-		foreach (var value in rangeValues)
-		{
-			var tags = WvTemplateUtility.GetTagsFromTemplate(value.ToString());
-			foreach (var tag in tags)
-			{
-				if (tag.Type != Core.WvTemplateTagType.Function) continue;
-				if (String.IsNullOrWhiteSpace(tag.FunctionName)) continue;
-				var valueAddressList = tag.GetApplicableRangeForFunctionTag();
-				if (valueAddressList is null || valueAddressList.Count == 0) continue;
-				foreach (var address in valueAddressList)
-				{
-					var intersects = contextList
-						.GetIntersections(context.Worksheet!.Position, address)
-						.Where(x=> x.Id != context.Id).ToList();
-					foreach (var interContext in intersects)
-					{
-						if (context.ContextDependencies.Contains(interContext.Id)) continue;
-						context.ContextDependencies.Add(interContext.Id);
-					}
-
-				}
-			}
-		}
-	}
-
 	private static bool CheckIntersection(WvExcelRange range1, WvExcelRange range2)
 	{
 		// Check if the ranges intersect
