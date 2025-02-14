@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -476,7 +475,7 @@ public class ExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.Single(result!.Template!.Worksheets);
-			Assert.Equal(2,result.TemplateContexts.Count);
+			Assert.Equal(2, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 3);
 
@@ -491,7 +490,7 @@ public class ExcelEngineTests : TestBase
 
 			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[0].Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[1].Range!, 1, 2, 1, 3);
-			CheckCellPropertiesCopy(result.TemplateContexts,result!.ResultItems[0]!);
+			CheckCellPropertiesCopy(result.TemplateContexts, result!.ResultItems[0]!);
 			var tempWs = result.Template.Worksheets.First();
 			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
 			CompareRowProperties(tempWs.Row(1), resultWs.Row(1));
@@ -546,7 +545,7 @@ public class ExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.Single(result!.Template!.Worksheets);
-			Assert.Equal(6,result.TemplateContexts.Count);
+			Assert.Equal(6, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
 			CheckRangeDimensions(result!.TemplateContexts[2]!.Range!, 1, 3, 1, 3);
@@ -628,7 +627,7 @@ public class ExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.Single(result!.Template!.Worksheets);
-			Assert.Equal(4,result.TemplateContexts.Count);
+			Assert.Equal(4, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
 			CheckRangeDimensions(result!.TemplateContexts[2]!.Range!, 2, 1, 2, 1);
@@ -671,14 +670,14 @@ public class ExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.Single(result!.Template!.Worksheets);
-			Assert.Equal(6,result.TemplateContexts.Count);
+			Assert.Equal(6, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
 			CheckRangeDimensions(result!.TemplateContexts[2]!.Range!, 1, 3, 1, 3);
 			CheckRangeDimensions(result!.TemplateContexts[3]!.Range!, 2, 1, 2, 1);
 			CheckRangeDimensions(result!.TemplateContexts[4]!.Range!, 2, 2, 2, 2);
 			CheckRangeDimensions(result!.TemplateContexts[5]!.Range!, 2, 3, 2, 3);
-			
+
 
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
@@ -719,15 +718,15 @@ public class ExcelEngineTests : TestBase
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			
+
 			//Check template
 			Assert.NotNull(result.Template);
 			Assert.NotNull(result.TemplateContexts);
 			Assert.Equal(3, result.TemplateContexts.Count);
 
 			CheckRangeDimensions(result!.TemplateContexts[0].Range!, 1, 1, 1, 2);
-			CheckRangeDimensions(result!.TemplateContexts[1].Range!, 1, 3, 1,3);
-			CheckRangeDimensions(result!.TemplateContexts[2].Range!, 1, 4, 1,4);
+			CheckRangeDimensions(result!.TemplateContexts[1].Range!, 1, 3, 1, 3);
+			CheckRangeDimensions(result!.TemplateContexts[2].Range!, 1, 4, 1, 4);
 
 
 			Assert.NotNull(result!.ResultItems);
@@ -736,11 +735,11 @@ public class ExcelEngineTests : TestBase
 
 			Assert.NotNull(resultItem.Result);
 			Assert.Single(resultItem.Result!.Worksheets);
-			Assert.Equal(3,resultItem.ResultContexts.Count);
+			Assert.Equal(3, resultItem.ResultContexts.Count);
 
-			CheckRangeDimensions(resultItem.ResultContexts[0].Range!, 1, 1, 5,2);
-			CheckRangeDimensions(resultItem.ResultContexts[1].Range!, 1, 3, 5,3);
-			CheckRangeDimensions(resultItem.ResultContexts[2].Range!, 1, 4, 1,4);
+			CheckRangeDimensions(resultItem.ResultContexts[0].Range!, 1, 1, 5, 2);
+			CheckRangeDimensions(resultItem.ResultContexts[1].Range!, 1, 3, 5, 3);
+			CheckRangeDimensions(resultItem.ResultContexts[2].Range!, 1, 4, 1, 4);
 
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 
@@ -898,7 +897,8 @@ public class ExcelEngineTests : TestBase
 			{
 				Template = wb
 			};
-			var resultItem = new WvExcelFileTemplateProcessResultItem(){
+			var resultItem = new WvExcelFileTemplateProcessResultItem()
+			{
 				Result = new XLWorkbook()
 			};
 			var dataSource = ds;
@@ -914,8 +914,8 @@ public class ExcelEngineTests : TestBase
 			WvExcelFileEngineUtility.ProcessExcelTemplateCalculateDependencies(result);
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Restart();
-			var templContextDict = result.TemplateContexts.ToDictionary(x=> x.Id);
-			WvExcelFileEngineUtility.ProcessExcelTemplateGenerateResultContexts(result,resultItem, ds, culture, templContextDict);
+			var templContextDict = result.TemplateContexts.ToDictionary(x => x.Id);
+			WvExcelFileEngineUtility.ProcessExcelTemplateGenerateResultContexts(result, resultItem, ds, culture, templContextDict);
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Stop();
 			//Then
@@ -977,14 +977,14 @@ public class ExcelEngineTests : TestBase
 			Assert.NotNull(result!.ResultItems[0]!.Result);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
 			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
-			Assert.Equal("position",worksheet.Cell(1,1).Value.ToString());
-			Assert.Equal("1",worksheet.Cell(2,1).Value.ToString());
-			Assert.Equal("2",worksheet.Cell(3,1).Value.ToString());
-			Assert.Equal("3",worksheet.Cell(4,1).Value.ToString());
-			Assert.Equal("4",worksheet.Cell(5,1).Value.ToString());
-			Assert.Equal("5",worksheet.Cell(6,1).Value.ToString());
-			Assert.Equal("15",worksheet.Cell(7,1).Value.ToString());
-			Assert.Equal("item1 TOTAL: 15",worksheet.Cell(8,1).Value.ToString());
+			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
+			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
+			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
+			Assert.Equal("3", worksheet.Cell(4, 1).Value.ToString());
+			Assert.Equal("4", worksheet.Cell(5, 1).Value.ToString());
+			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
+			Assert.Equal("15", worksheet.Cell(7, 1).Value.ToString());
+			Assert.Equal("item1 TOTAL: 15", worksheet.Cell(8, 1).Value.ToString());
 
 
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
@@ -1017,11 +1017,11 @@ public class ExcelEngineTests : TestBase
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var errorCell = result!.ResultItems[0]!.Result!.Worksheets.First().Cell(6,1);
+			var errorCell = result!.ResultItems[0]!.Result!.Worksheets.First().Cell(6, 1);
 			Assert.NotNull(errorCell);
 			Assert.True(errorCell.Value.IsError);
 			var error = errorCell.Value.GetError();
-			Assert.Equal(XLError.IncompatibleValue,error);
+			Assert.Equal(XLError.IncompatibleValue, error);
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
