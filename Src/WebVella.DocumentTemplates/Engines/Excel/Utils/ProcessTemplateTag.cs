@@ -124,4 +124,107 @@ public static partial class WvExcelFileEngineUtility
 		if (resultRow.RelativeGridMaxColumn < lastColumn) resultRow.RelativeGridMaxColumn = lastColumn;
 	}
 
+	private static WvTemplateTagResultList postProcessTemplateTagListForFunction(
+		WvTemplateTagResultList input,
+		DataTable dataSource,
+		WvExcelFileTemplateProcessResult result,
+		WvExcelFileTemplateProcessResultItem resultItem,
+		IXLWorksheet worksheet
+		)
+	{
+		if (!input.Tags.Any(x => x.Type == WvTemplateTagType.Function)) return input;
+		if (input.Values.Count == 0) return input;
+
+		var resultTagList = new WvTemplateTagResultList()
+		{
+			Tags = input.Tags.ToList(),
+			Values = new(),
+		};
+
+		foreach (var tag in input.Tags.Where(x => x.Type == WvTemplateTagType.Function))
+		{
+			if (String.IsNullOrWhiteSpace(tag.FunctionName))
+				throw new Exception($"Unsupported function name: {tag.Name} in tag");
+			switch (tag.FunctionName)
+			{
+				case "sum":
+					{
+						if (tag.ParamGroups.Count > 0
+							&& tag.ParamGroups[0].Parameters.Count > 0
+							&& !String.IsNullOrWhiteSpace(tag.ParamGroups[0].Parameters[0].ValueString)
+							&& !String.IsNullOrWhiteSpace(tag.FullString))
+						{
+							var range = WvExcelRangeHelpers.GetRangeFromString(tag.ParamGroups[0].Parameters[0].ValueString ?? String.Empty);
+							if (range is not null)
+							{
+								var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
+									worksheetPosition: worksheet.Position,
+									range: range,
+									type: WvExcelFileTemplateContextType.CellRange
+								);
+								long sum = 0;
+								var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
+								var processedCellsHS = new HashSet<string>();
+								foreach (var resContext in resultContexts)
+								{
+									var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
+									var lastAddress = resContext.Range!.RangeAddress.LastAddress;
+									for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
+									{
+										for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
+										{
+											var resultCell = worksheet.Cell(rowNum, colNum);
+											if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
+											var mergedRange = resultCell.MergedRange();
+											var mergedRows = 1;
+											var mergedCols = 1;
+											if (mergedRange != null)
+											{
+												foreach (var cell in mergedRange.Cells())
+												{
+													processedCellsHS.Add(cell.Address.ToString() ?? "");
+												}
+												mergedRows = mergedRange.RowCount();
+												mergedCols = mergedRange.ColumnCount();
+											}
+											else
+											{
+												processedCellsHS.Add(resultCell.Address.ToString() ?? "");
+											}
+
+											var valueString = resultCell.Value.ToString();
+											if (long.TryParse(valueString, out long longValue))
+											{
+												sum += longValue;
+											}
+										}
+									}
+								}
+
+								foreach (var tagValue in input.Values)
+								{
+									if (tagValue is null) continue;
+									if (tagValue is not null && tagValue is string)
+									{
+										if(input.Tags.Count == 1)
+											resultTagList.Values.Add(sum);
+										else
+											resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString()));
+									}
+									else
+									{
+										resultTagList.Values.Add(tagValue!);
+									}
+								}
+							}
+						}
+						break;
+					}
+				default:
+					throw new Exception($"Unsupported function name: {tag.Name} in tag");
+			}
+		}
+
+		return resultTagList;
+	}
 }

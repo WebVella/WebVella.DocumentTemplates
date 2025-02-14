@@ -10,13 +10,15 @@ public class WvTemplateTagResultList
 			return Tags.All(x => x.Type == WvTemplateTagType.Data);
 		}
 	}
-	public bool AllTagsAreIndexedOrWithSeparator
+	public bool AllTagsAreIndexedFunctionOrWithSeparator
 	{
 		get
 		{
 			//All tags should have indexes or have no index by separator defined
 			foreach (WvTemplateTag tag in Tags) {
 				if(tag.IndexList.Count > 0) continue;
+				if(tag.Type == WvTemplateTagType.Function) continue;
+				if(tag.Type == WvTemplateTagType.ExcelFunction) continue;
 				if(tag.ParamGroups.Any(g => g.Parameters.Any(x=> x.Type.FullName == typeof(WvTemplateTagSeparatorParameter).FullName)))
 					continue;
 

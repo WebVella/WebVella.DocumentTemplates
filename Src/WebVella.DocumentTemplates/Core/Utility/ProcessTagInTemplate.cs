@@ -36,12 +36,12 @@ public static partial class WvTemplateUtility
 			else if (tag.Type == WvTemplateTagType.Function)
 			{
 				newResultObject = templateResultString;//temporary
-				throw new NotImplementedException();
+				//Processed by processor
 			}
 			else if (tag.Type == WvTemplateTagType.ExcelFunction)
 			{
 				newResultObject = templateResultString;//temporary
-				throw new NotImplementedException();
+				//Processed by processor
 			}
 			return (templateResultString, newResultObject);
 		}

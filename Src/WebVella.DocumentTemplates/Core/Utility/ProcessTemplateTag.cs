@@ -5,7 +5,10 @@ using System.Text.RegularExpressions;
 namespace WebVella.DocumentTemplates.Core.Utility;
 public static partial class WvTemplateUtility
 {
-	public static WvTemplateTagResultList ProcessTemplateTag(string? template, DataTable dataSource, CultureInfo culture)
+	public static WvTemplateTagResultList ProcessTemplateTag(
+		string? template, 
+		DataTable dataSource, 
+		CultureInfo culture)
 	{
 		var result = new WvTemplateTagResultList();
 		result.Tags = GetTagsFromTemplate(template);
@@ -16,7 +19,7 @@ public static partial class WvTemplateUtility
 			return result;
 		}
 		//if all tags are index - return one with processed template
-		if (result.AllTagsAreIndexedOrWithSeparator)
+		if (result.AllTagsAreIndexedFunctionOrWithSeparator)
 		{
 			var resultValue = GenerateTemplateTagResult(template, result.Tags, dataSource, null, culture);
 			if (resultValue is not null && resultValue.Value is not null)

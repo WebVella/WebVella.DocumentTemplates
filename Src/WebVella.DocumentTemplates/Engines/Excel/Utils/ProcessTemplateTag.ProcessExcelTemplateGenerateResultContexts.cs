@@ -31,7 +31,7 @@ public static partial class WvExcelFileEngineUtility
 		//Init
 		if (result.TemplateContexts.Count == 0) return;
 		int processAttemptsLimit = 200;
-		
+
 		createResultWorksheets(
 			result: result,
 			resultItem: resultItem,
@@ -46,10 +46,6 @@ public static partial class WvExcelFileEngineUtility
 			foreach (var templateRow in result.TemplateRows.Where(x =>
 				x.Worksheet?.Position == resultWorksheet.Position))
 			{
-				var sw = new Stopwatch();
-				sw.Start();
-				var ellapsed = new List<long>();
-
 				Queue<Guid> queue = new Queue<Guid>();
 				templateRow.Contexts.ForEach(x => queue.Enqueue(x));
 
@@ -89,6 +85,7 @@ public static partial class WvExcelFileEngineUtility
 					{
 						AddTemplateCellRangeContextInResult(
 							templateContext: templateContext,
+							result:result,
 							resultItem: resultItem,
 							resultRow: resultRow,
 							dataSource: dataSource,
@@ -103,14 +100,18 @@ public static partial class WvExcelFileEngineUtility
 							Error = WvExcelFileTemplateProcessResultItemContextError.ProcessError,
 							ErrorMessage = ex.Message
 						});
+						AddTemplateCellRangeContextErrorInResult(
+							templateContext: templateContext,
+							resultItem: resultItem,
+							resultRow: resultRow,
+							errorType: WvExcelFileTemplateProcessResultItemContextError.ProcessError,
+							errorMessage: ex.Message
+						);
 					}
 				}
 
-				ellapsed.Add(sw.ElapsedMilliseconds);
-				sw.Restart();
-				currentResultRowStartRow = 1;
 				if (resultRow.RelativeGrid.Any())
-					currentResultRowStartRow = resultRow.RelativeGridMaxRow + 1;
+					currentResultRowStartRow += resultRow.RelativeGridMaxRow;
 
 				resultItem.ResultRows.Add(resultRow);
 				FillInEmptyResultRowGridItems(
@@ -119,9 +120,6 @@ public static partial class WvExcelFileEngineUtility
 					resultRow: resultRow,
 					templateContextDict: templateContextDict
 				);
-				ellapsed.Add(sw.ElapsedMilliseconds);
-				sw.Restart();
-
 			}
 			#endregion
 
@@ -230,6 +228,7 @@ public static partial class WvExcelFileEngineUtility
 
 	private static void AddTemplateCellRangeContextInResult(
 		WvExcelFileTemplateContext templateContext,
+		WvExcelFileTemplateProcessResult result,
 		WvExcelFileTemplateProcessResultItem resultItem,
 		WvExcelFileTemplateProcessResultItemRow resultRow,
 		DataTable dataSource, CultureInfo culture)
@@ -286,13 +285,25 @@ public static partial class WvExcelFileEngineUtility
 				var isFlowHorizontal = IsFlowHorizontal(tagProcessResult);
 				if (tagProcessResult.Tags.Count > 0)
 				{
+					//Postprocess results if function
+					if(tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.Function)){ 
+						tagProcessResult = postProcessTemplateTagListForFunction(
+							input:tagProcessResult,
+							dataSource:dataSource,
+							result:result,
+							resultItem:resultItem,
+							worksheet:resultRow.Worksheet!
+						);
+					}
 					for (var i = 0; i < tagProcessResult.Values.Count; i++)
 					{
 						//Vertical
 						var endRow = currentRow + (mergedRows - 1);
 						var endCol = currentCol + (mergedCols - 1);
 						IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, endRow, endCol);
+
 						resultRange.Value = XLCellValue.FromObject(tagProcessResult.Values[i]);
+
 						if (mergedRows > 1 || mergedCols > 1)
 							resultRange.Merge();
 						CopyCellProperties(tempCell, resultRange);
@@ -385,6 +396,92 @@ public static partial class WvExcelFileEngineUtility
 		column: resultColumn
 		);
 
+	}
+
+	private static void AddTemplateCellRangeContextErrorInResult(
+		WvExcelFileTemplateContext templateContext,
+		WvExcelFileTemplateProcessResultItem resultItem,
+		WvExcelFileTemplateProcessResultItemRow resultRow,
+		WvExcelFileTemplateProcessResultItemContextError errorType,
+		string errorMessage)
+	{
+		#region << Validation >>
+		if (templateContext.Range is null)
+			throw new ArgumentException("context has no range", nameof(templateContext));
+		if (templateContext.Worksheet is null)
+			throw new ArgumentException("context has no Worksheet", nameof(templateContext));
+		if (resultRow is null)
+			throw new ArgumentException("resultRow has no value", nameof(resultRow));
+		#endregion
+
+		#region << Init >>
+		//Context should start working from top to bottom, left to right
+		//of the available grid space
+		var resultStartRow = resultRow.ResultFirstRow;
+		var resultStartCol = resultRow.RelativeGridMaxColumn + 1;
+		var processedTemplateCells = new HashSet<string>();
+		var templateFirstAddress = templateContext.Range.RangeAddress.FirstAddress;
+		var templateLastAddress = templateContext.Range.RangeAddress.LastAddress;
+		var currentRow = resultStartRow;
+		var currentCol = resultStartCol;
+		#endregion
+
+
+		for (var rowNum = templateFirstAddress.RowNumber;
+			rowNum <= templateLastAddress.RowNumber; rowNum++)
+		{
+			for (var colNum = templateFirstAddress.ColumnNumber;
+				colNum <= templateLastAddress.ColumnNumber; colNum++)
+			{
+				IXLCell tempCell = templateContext.Worksheet.Cell(rowNum, colNum);
+				//Check and maintain processed List
+				if (processedTemplateCells.Contains(tempCell.Address.ToString() ?? "")) continue;
+				var mergedRange = tempCell.MergedRange();
+				var mergedRows = 1;
+				var mergedCols = 1;
+				if (mergedRange != null)
+				{
+					foreach (var cell in mergedRange.Cells())
+					{
+						processedTemplateCells.Add(cell.Address.ToString() ?? "");
+					}
+					mergedRows = mergedRange.RowCount();
+					mergedCols = mergedRange.ColumnCount();
+				}
+				else
+				{
+					processedTemplateCells.Add(tempCell.Address.ToString() ?? "");
+				}
+
+				IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
+				IXLCell resultCell = resultRow.Worksheet!.Cell(currentRow, currentCol);
+				resultRange.Value = XLError.IncompatibleValue;
+				var comment = resultCell.CreateComment();
+				comment.AddText(errorMessage);
+				addRangeToGrid(
+					firstRow: currentRow,
+					firstColumn: currentCol,
+					lastRow: currentRow,
+					lastColumn: currentCol,
+					contextId: templateContext.Id,
+					resultRow: resultRow,
+					resultFirstRow: resultRow.ResultFirstRow);
+				CopyCellProperties(tempCell, resultRange);
+				currentRow = currentRow + (mergedRows - 1);
+
+			}
+		}
+
+		var resultItemContext = new WvExcelFileTemplateProcessResultItemContext
+		{
+			TemplateContextId = templateContext.Id,
+			Range = resultRow.Worksheet!.Range(resultStartRow, resultStartCol, currentRow, currentCol),
+
+		};
+		resultItem.ResultContexts.Add(resultItemContext);
+
+		CopyColumnsProperties(templateContext.Range, resultItemContext.Range, templateContext.Worksheet, resultRow.Worksheet);
+		CopyRowProperties(templateContext.Range, resultItemContext.Range, templateContext.Worksheet, resultRow.Worksheet);
 	}
 
 	private static void FillInEmptyResultRowGridItems(

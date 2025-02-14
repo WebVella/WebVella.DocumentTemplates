@@ -954,7 +954,77 @@ public class ExcelEngineTests : TestBase
 
 	#endregion
 
+	#region << Functions >>
+	[Fact]
+	public void Function_1()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateFunction1.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal("position",worksheet.Cell(1,1).Value.ToString());
+			Assert.Equal("1",worksheet.Cell(2,1).Value.ToString());
+			Assert.Equal("2",worksheet.Cell(3,1).Value.ToString());
+			Assert.Equal("3",worksheet.Cell(4,1).Value.ToString());
+			Assert.Equal("4",worksheet.Cell(5,1).Value.ToString());
+			Assert.Equal("5",worksheet.Cell(6,1).Value.ToString());
+			Assert.Equal("15",worksheet.Cell(7,1).Value.ToString());
+			Assert.Equal("item1 TOTAL: 15",worksheet.Cell(8,1).Value.ToString());
+
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+	#endregion
+
 	#region << Excel Function >>
+	#endregion
+
+	#region << error >>
+	[Fact]
+	public void Error_1()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateError1.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var errorCell = result!.ResultItems[0]!.Result!.Worksheets.First().Cell(6,1);
+			Assert.NotNull(errorCell);
+			Assert.True(errorCell.Value.IsError);
+			var error = errorCell.Value.GetError();
+			Assert.Equal(XLError.IncompatibleValue,error);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
 	#endregion
 
 	#region << Group By >>
