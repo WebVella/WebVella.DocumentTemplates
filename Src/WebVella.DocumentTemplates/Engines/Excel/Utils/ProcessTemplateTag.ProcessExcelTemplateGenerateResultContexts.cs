@@ -85,7 +85,7 @@ public static partial class WvExcelFileEngineUtility
 					{
 						AddTemplateCellRangeContextInResult(
 							templateContext: templateContext,
-							result:result,
+							result: result,
 							resultItem: resultItem,
 							resultRow: resultRow,
 							dataSource: dataSource,
@@ -282,73 +282,100 @@ public static partial class WvExcelFileEngineUtility
 				}
 
 				var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(tempCell.Value.ToString(), dataSource, culture);
-				var isFlowHorizontal = IsFlowHorizontal(tagProcessResult);
-				if (tagProcessResult.Tags.Count > 0)
+				if (tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.ExcelFunction))
 				{
-					//Postprocess results if function
-					if(tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.Function)){ 
-						tagProcessResult = postProcessTemplateTagListForFunction(
-							input:tagProcessResult,
-							dataSource:dataSource,
-							result:result,
-							resultItem:resultItem,
-							worksheet:resultRow.Worksheet!
-						);
-					}
-					for (var i = 0; i < tagProcessResult.Values.Count; i++)
-					{
-						//Vertical
-						var endRow = currentRow + (mergedRows - 1);
-						var endCol = currentCol + (mergedCols - 1);
-						IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, endRow, endCol);
-
-						resultRange.Value = XLCellValue.FromObject(tagProcessResult.Values[i]);
-
-						if (mergedRows > 1 || mergedCols > 1)
-							resultRange.Merge();
-						CopyCellProperties(tempCell, resultRange);
-						addRangeToGrid(
-							firstRow: currentRow,
-							firstColumn: currentCol,
-							lastRow: endRow,
-							lastColumn: endCol,
-							contextId: templateContext.Id,
-							resultRow: resultRow,
-							resultFirstRow: resultRow.ResultFirstRow);
-
-						if (isFlowHorizontal)
-						{
-							currentRow = (i != tagProcessResult.Values.Count - 1 ? currentRow : endRow);
-							currentCol = endCol + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
-						}
-						else
-						{
-							currentRow = endRow + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
-							currentCol = (i != tagProcessResult.Values.Count - 1 ? currentCol : endCol);
-						}
-					}
-
+					//Excel Functions Can have only one result				
+					var excelFunction = generateExcelFunction(
+						input: tagProcessResult,
+						dataSource: dataSource,
+						result: result,
+						resultItem: resultItem,
+						worksheet: resultRow.Worksheet!
+					);
+					IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
+					resultRange.FormulaA1 = excelFunction;
+					addRangeToGrid(
+									firstRow: currentRow,
+									firstColumn: currentCol,
+									lastRow: currentRow,
+									lastColumn: currentCol,
+									contextId: templateContext.Id,
+									resultRow: resultRow,
+									resultFirstRow: resultRow.ResultFirstRow);
+					CopyCellProperties(tempCell, resultRange);
+					currentCol = currentCol + (mergedCols - 1);
 				}
 				else
 				{
-					IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
-					resultRange.Value = tempCell.Value;
-					addRangeToGrid(
-						firstRow: currentRow,
-						firstColumn: currentCol,
-						lastRow: currentRow,
-						lastColumn: currentCol,
-						contextId: templateContext.Id,
-						resultRow: resultRow,
-						resultFirstRow: resultRow.ResultFirstRow);
-					CopyCellProperties(tempCell, resultRange);
-					if (isFlowHorizontal)
+					var isFlowHorizontal = IsFlowHorizontal(tagProcessResult);
+					if (tagProcessResult.Tags.Count > 0)
 					{
-						currentCol = currentCol + (mergedCols - 1);
+						//Postprocess results if function
+						if (tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.Function))
+						{
+							tagProcessResult = postProcessTemplateTagListForFunction(
+								input: tagProcessResult,
+								dataSource: dataSource,
+								result: result,
+								resultItem: resultItem,
+								worksheet: resultRow.Worksheet!
+							);
+						}
+						for (var i = 0; i < tagProcessResult.Values.Count; i++)
+						{
+							//Vertical
+							var endRow = currentRow + (mergedRows - 1);
+							var endCol = currentCol + (mergedCols - 1);
+							IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, endRow, endCol);
+
+							resultRange.Value = XLCellValue.FromObject(tagProcessResult.Values[i]);
+
+							if (mergedRows > 1 || mergedCols > 1)
+								resultRange.Merge();
+							CopyCellProperties(tempCell, resultRange);
+							addRangeToGrid(
+								firstRow: currentRow,
+								firstColumn: currentCol,
+								lastRow: endRow,
+								lastColumn: endCol,
+								contextId: templateContext.Id,
+								resultRow: resultRow,
+								resultFirstRow: resultRow.ResultFirstRow);
+
+							if (isFlowHorizontal)
+							{
+								currentRow = (i != tagProcessResult.Values.Count - 1 ? currentRow : endRow);
+								currentCol = endCol + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
+							}
+							else
+							{
+								currentRow = endRow + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
+								currentCol = (i != tagProcessResult.Values.Count - 1 ? currentCol : endCol);
+							}
+						}
+
 					}
 					else
 					{
-						currentRow = currentRow + (mergedRows - 1);
+						IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
+						resultRange.Value = tempCell.Value;
+						addRangeToGrid(
+							firstRow: currentRow,
+							firstColumn: currentCol,
+							lastRow: currentRow,
+							lastColumn: currentCol,
+							contextId: templateContext.Id,
+							resultRow: resultRow,
+							resultFirstRow: resultRow.ResultFirstRow);
+						CopyCellProperties(tempCell, resultRange);
+						if (isFlowHorizontal)
+						{
+							currentCol = currentCol + (mergedCols - 1);
+						}
+						else
+						{
+							currentRow = currentRow + (mergedRows - 1);
+						}
 					}
 				}
 			}
