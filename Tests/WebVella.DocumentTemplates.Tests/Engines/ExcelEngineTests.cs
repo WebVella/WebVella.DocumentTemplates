@@ -1066,13 +1066,80 @@ public class ExcelEngineTests : TestBase
 
 			Assert.Single(functionContext1.ContextDependencies);
 			Assert.Single(functionContext2.ContextDependencies);
-			Assert.Equal(2,functionContext3.ContextDependencies.Count);
+			Assert.Equal(2, functionContext3.ContextDependencies.Count);
 
-			Assert.Contains(positionContext1!.Id,functionContext1.ContextDependencies);
-			Assert.Contains(positionContext2!.Id,functionContext2.ContextDependencies);
+			Assert.Contains(positionContext1!.Id, functionContext1.ContextDependencies);
+			Assert.Contains(positionContext2!.Id, functionContext2.ContextDependencies);
 
-			Assert.Contains(functionContext1!.Id,functionContext3.ContextDependencies);
-			Assert.Contains(functionContext2!.Id,functionContext3.ContextDependencies);
+			Assert.Contains(functionContext1!.Id, functionContext3.ContextDependencies);
+			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
+
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
+			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
+			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
+			Assert.Equal("3", worksheet.Cell(4, 1).Value.ToString());
+			Assert.Equal("4", worksheet.Cell(5, 1).Value.ToString());
+			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
+			Assert.Equal("15", worksheet.Cell(7, 1).Value.ToString());
+			Assert.Equal("15", worksheet.Cell(7, 2).Value.ToString());
+			Assert.Equal("30", worksheet.Cell(7, 3).Value.ToString());
+
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+	[Fact]
+	public void Function_Dependancies_Range()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateFunction4.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			var positionContext1 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
+			var positionContext2 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 2);
+
+			var functionContext1 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
+			var functionContext2 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 2);
+			var functionContext3 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 3);
+
+			Assert.NotNull(functionContext1);
+			Assert.NotNull(functionContext2);
+			Assert.NotNull(functionContext3);
+
+			Assert.Single(functionContext1.ContextDependencies);
+			Assert.Single(functionContext2.ContextDependencies);
+			Assert.Equal(2, functionContext3.ContextDependencies.Count);
+
+			Assert.Contains(positionContext1!.Id, functionContext1.ContextDependencies);
+			Assert.Contains(positionContext2!.Id, functionContext2.ContextDependencies);
+
+			Assert.Contains(functionContext1!.Id, functionContext3.ContextDependencies);
+			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
 
 			Assert.Single(result!.Template!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
@@ -1208,13 +1275,88 @@ public class ExcelEngineTests : TestBase
 
 			Assert.Single(functionContext1.ContextDependencies);
 			Assert.Single(functionContext2.ContextDependencies);
-			Assert.Equal(2,functionContext3.ContextDependencies.Count);
+			Assert.Equal(2, functionContext3.ContextDependencies.Count);
 
-			Assert.Contains(positionContext1!.Id,functionContext1.ContextDependencies);
-			Assert.Contains(positionContext2!.Id,functionContext2.ContextDependencies);
+			Assert.Contains(positionContext1!.Id, functionContext1.ContextDependencies);
+			Assert.Contains(positionContext2!.Id, functionContext2.ContextDependencies);
 
-			Assert.Contains(functionContext1!.Id,functionContext3.ContextDependencies);
-			Assert.Contains(functionContext2!.Id,functionContext3.ContextDependencies);
+			Assert.Contains(functionContext1!.Id, functionContext3.ContextDependencies);
+			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
+
+
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
+			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
+			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
+			Assert.Equal("3", worksheet.Cell(4, 1).Value.ToString());
+			Assert.Equal("4", worksheet.Cell(5, 1).Value.ToString());
+			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
+			IXLCell excelFunctionCell1 = worksheet.Cell(7, 1);
+			IXLCell excelFunctionCell2 = worksheet.Cell(7, 2);
+			IXLCell excelFunctionCell3 = worksheet.Cell(7, 3);
+			Assert.True(excelFunctionCell1.HasFormula);
+			Assert.True(excelFunctionCell2.HasFormula);
+			Assert.True(excelFunctionCell3.HasFormula);
+			Assert.Equal("SUM(A2:A6)", excelFunctionCell1.FormulaA1);
+			Assert.Equal("SUM(B2:B6)", excelFunctionCell2.FormulaA1);
+			Assert.Equal("SUM(A7:A7,B7:B7)", excelFunctionCell3.FormulaA1);
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void Excel_Function_Dependencies_range()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateExcelFunction4.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+
+			var positionContext1 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
+			var positionContext2 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 2);
+
+			var functionContext1 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
+			var functionContext2 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 2);
+			var functionContext3 = result!.TemplateContexts
+				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 3
+					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 3);
+
+			Assert.NotNull(functionContext1);
+			Assert.NotNull(functionContext2);
+			Assert.NotNull(functionContext3);
+
+			Assert.Single(functionContext1.ContextDependencies);
+			Assert.Single(functionContext2.ContextDependencies);
+			Assert.Equal(2, functionContext3.ContextDependencies.Count);
+
+			Assert.Contains(positionContext1!.Id, functionContext1.ContextDependencies);
+			Assert.Contains(positionContext2!.Id, functionContext2.ContextDependencies);
+
+			Assert.Contains(functionContext1!.Id, functionContext3.ContextDependencies);
+			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
 
 
 			Assert.Single(result!.Template!.Worksheets);
