@@ -74,7 +74,6 @@ public static class TemplateContextExtensions
 		if (contextList is null || contextList.Count == 0) return;
 		if (context.Worksheet is null) return;
 		if (context.Range is null) return;
-		if (context.Type != WvExcelFileTemplateContextType.CellRange) return;
 		var rangeValues = context.Range.CellsUsed().Select(x => x.Value).ToList();
 		if (rangeValues.Count == 0) return;
 		foreach (var value in rangeValues)
@@ -82,7 +81,8 @@ public static class TemplateContextExtensions
 			var tags = WvTemplateUtility.GetTagsFromTemplate(value.ToString());
 			foreach (var tag in tags)
 			{
-				if (tag.Type != Core.WvTemplateTagType.Function) continue;
+				if (tag.Type != Core.WvTemplateTagType.ExcelFunction
+					&& tag.Type != Core.WvTemplateTagType.Function) continue;
 				if (String.IsNullOrWhiteSpace(tag.FunctionName)) continue;
 				var valueAddressList = tag.GetApplicableRangeForFunctionTag();
 				if (valueAddressList is null || valueAddressList.Count == 0) continue;

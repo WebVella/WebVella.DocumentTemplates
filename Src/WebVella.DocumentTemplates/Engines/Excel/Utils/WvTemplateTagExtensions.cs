@@ -16,24 +16,26 @@ public static partial class WvTemplateTagExtensions
 		{
 			if (tag.FunctionName == "sum")
 			{
-				if (String.IsNullOrWhiteSpace(tag.ParamGroups[0].FullString)) return result;
-
-				var address = tag.ParamGroups[0].FullString!.Replace("(", "").Replace(")", "");
-				var range = WvExcelRangeHelpers.GetRangeFromString(address);
-				if (range is null) return result;
-				result.Add(range);
+				foreach (var parameter in tag.ParamGroups[0].Parameters)
+				{
+					if(String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
+					var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString);
+					if (range is null) return result;
+					result.Add(range);
+				}
 			}
 		}
 		else if (tag.Type == WvTemplateTagType.ExcelFunction)
 		{
 			if (tag.FunctionName == "sum")
 			{
-				if (String.IsNullOrWhiteSpace(tag.ParamGroups[0].FullString)) return result;
-
-				var address = tag.ParamGroups[0].FullString!.Replace("(", "").Replace(")", "");
-				var range = WvExcelRangeHelpers.GetRangeFromString(address);
-				if (range is null) return result;
-				result.Add(range);
+				foreach (var parameter in tag.ParamGroups[0].Parameters)
+				{
+					if(String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
+					var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString);
+					if (range is null) return result;
+					result.Add(range);
+				}
 			}
 		}
 		return result;

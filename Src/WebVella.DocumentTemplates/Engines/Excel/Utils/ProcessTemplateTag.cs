@@ -151,70 +151,72 @@ public static partial class WvExcelFileEngineUtility
 					{
 						if (tag.ParamGroups.Count > 0
 							&& tag.ParamGroups[0].Parameters.Count > 0
-							&& !String.IsNullOrWhiteSpace(tag.ParamGroups[0].Parameters[0].ValueString)
 							&& !String.IsNullOrWhiteSpace(tag.FullString))
 						{
-							var range = WvExcelRangeHelpers.GetRangeFromString(tag.ParamGroups[0].Parameters[0].ValueString ?? String.Empty);
-							if (range is not null)
+							long sum = 0;
+							foreach (var parameter in tag.ParamGroups[0].Parameters)
 							{
-								var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
-									worksheetPosition: worksheet.Position,
-									range: range,
-									type: WvExcelFileTemplateContextType.CellRange
-								);
-								long sum = 0;
-								var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
-								var processedCellsHS = new HashSet<string>();
-								foreach (var resContext in resultContexts)
+								if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
+								var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString ?? String.Empty);
+								if (range is not null)
 								{
-									var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
-									var lastAddress = resContext.Range!.RangeAddress.LastAddress;
-									for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
+									var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
+										worksheetPosition: worksheet.Position,
+										range: range,
+										type: WvExcelFileTemplateContextType.CellRange
+									);
+									var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
+									var processedCellsHS = new HashSet<string>();
+									foreach (var resContext in resultContexts)
 									{
-										for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
+										var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
+										var lastAddress = resContext.Range!.RangeAddress.LastAddress;
+										for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
 										{
-											var resultCell = worksheet.Cell(rowNum, colNum);
-											if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
-											var mergedRange = resultCell.MergedRange();
-											var mergedRows = 1;
-											var mergedCols = 1;
-											if (mergedRange != null)
+											for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
 											{
-												foreach (var cell in mergedRange.Cells())
+												var resultCell = worksheet.Cell(rowNum, colNum);
+												if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
+												var mergedRange = resultCell.MergedRange();
+												var mergedRows = 1;
+												var mergedCols = 1;
+												if (mergedRange != null)
 												{
-													processedCellsHS.Add(cell.Address.ToString() ?? "");
+													foreach (var cell in mergedRange.Cells())
+													{
+														processedCellsHS.Add(cell.Address.ToString() ?? "");
+													}
+													mergedRows = mergedRange.RowCount();
+													mergedCols = mergedRange.ColumnCount();
 												}
-												mergedRows = mergedRange.RowCount();
-												mergedCols = mergedRange.ColumnCount();
-											}
-											else
-											{
-												processedCellsHS.Add(resultCell.Address.ToString() ?? "");
-											}
+												else
+												{
+													processedCellsHS.Add(resultCell.Address.ToString() ?? "");
+												}
 
-											var valueString = resultCell.Value.ToString();
-											if (long.TryParse(valueString, out long longValue))
-											{
-												sum += longValue;
+												var valueString = resultCell.Value.ToString();
+												if (long.TryParse(valueString, out long longValue))
+												{
+													sum += longValue;
+												}
 											}
 										}
 									}
 								}
-
-								foreach (var tagValue in input.Values)
+							}
+							foreach (var tagValue in input.Values)
+							{
+								if (tagValue is null) continue;
+								if (tagValue is not null && tagValue is string)
 								{
-									if (tagValue is null) continue;
-									if (tagValue is not null && tagValue is string)
-									{
-										if (input.Tags.Count == 1)
-											resultTagList.Values.Add(sum);
-										else
-											resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString()));
-									}
+									if (input.Tags.Count == 1)
+										resultTagList.Values.Add(sum);
 									else
-									{
-										resultTagList.Values.Add(tagValue!);
-									}
+										resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString()));
+								}
+								else
+								{
+									resultTagList.Values.Add(tagValue!);
 								}
 							}
 						}
