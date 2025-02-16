@@ -9,7 +9,7 @@ using WebVella.DocumentTemplates.Engines.Excel.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
-public class ExcelEngineTests : TestBase
+public partial class ExcelEngineTests : TestBase
 {
 	private static readonly object locker = new();
 	public ExcelEngineTests() : base() { }
@@ -1161,6 +1161,7 @@ public class ExcelEngineTests : TestBase
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
+
 	#endregion
 
 	#region << Excel Function >>
@@ -1384,6 +1385,7 @@ public class ExcelEngineTests : TestBase
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
+
 	#endregion
 
 	#region << error >>
@@ -1416,6 +1418,8 @@ public class ExcelEngineTests : TestBase
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
+
+
 	#endregion
 
 	#region << Group By >>

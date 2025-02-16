@@ -5,9 +5,9 @@ using WebVella.DocumentTemplates.Engines.Excel.Models;
 using WebVella.DocumentTemplates.Engines.Excel.Utility;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Functions;
-public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcessor
+public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcessor
 {
-	public string Name { get; } = "sum";
+	public string Name { get; } = "min";
 	public int Priority { get; } = 10000;
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
@@ -45,7 +45,7 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
-			long sum = 0;
+			long? min = null;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
@@ -89,22 +89,28 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 								var valueString = resultCell.Value.ToString();
 								if (long.TryParse(valueString, out long longValue))
 								{
-									sum += longValue;
+									if (min is null || min > longValue)
+										min = longValue;
 								}
 							}
 						}
 					}
 				}
 			}
+			if (min is null)
+			{
+				HasError = true;
+				ErrorMessage = "no suitable values found in range";
+				return input;
+			};
 			foreach (var tagValue in input.Values)
 			{
-				if (tagValue is null) continue;
 				if (tagValue is not null && tagValue is string)
 				{
 					if (input.Tags.Count == 1)
-						resultTagList.Values.Add(sum);
+						resultTagList.Values.Add(min);
 					else
-						resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString()));
+						resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, min.ToString()));
 				}
 				else
 				{

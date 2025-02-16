@@ -5,9 +5,9 @@ using WebVella.DocumentTemplates.Engines.Excel.Models;
 using WebVella.DocumentTemplates.Engines.Excel.Utility;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Functions;
-public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcessor
+public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcessor
 {
-	public string Name { get; } = "sum";
+	public string Name { get; } = "average";
 	public int Priority { get; } = 10000;
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
@@ -38,14 +38,13 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 		};
 
 
-		if (String.IsNullOrWhiteSpace(tag.FunctionName))
-			throw new Exception($"Unsupported function name: {tag.Name} in tag");
 
 		if (tag.ParamGroups.Count > 0
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
 			long sum = 0;
+			long count = 0;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
@@ -90,21 +89,24 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 								if (long.TryParse(valueString, out long longValue))
 								{
 									sum += longValue;
+									count++;
 								}
 							}
 						}
 					}
 				}
 			}
+
+			decimal average = (decimal)sum / count;
 			foreach (var tagValue in input.Values)
 			{
 				if (tagValue is null) continue;
 				if (tagValue is not null && tagValue is string)
 				{
 					if (input.Tags.Count == 1)
-						resultTagList.Values.Add(sum);
+						resultTagList.Values.Add(average);
 					else
-						resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString()));
+						resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, average.ToString()));
 				}
 				else
 				{

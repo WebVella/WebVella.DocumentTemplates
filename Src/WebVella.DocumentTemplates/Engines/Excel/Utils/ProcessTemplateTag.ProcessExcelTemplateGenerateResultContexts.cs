@@ -306,10 +306,7 @@ public static partial class WvExcelFileEngineUtility
 						);
 						if (functionProcessor.HasError)
 						{
-							resultRange.Value = XLError.IncompatibleValue;
-							IXLCell resultCell = resultRow.Worksheet!.Cell(currentRow, currentCol);
-							var comment = resultCell.CreateComment();
-							comment.AddText(functionProcessor.ErrorMessage);
+							if(functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
 						}
 						else
 						{
@@ -350,6 +347,8 @@ public static partial class WvExcelFileEngineUtility
 														resultItem: resultItem,
 														worksheet: resultRow.Worksheet!
 													);
+
+							if(functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
 						}
 						for (var i = 0; i < tagProcessResult.Values.Count; i++)
 						{
