@@ -3,8 +3,6 @@
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
 {
-	private static List<string> _supportedFunctions = new List<string> { "sum" };
-	private static List<string> _supportedExcelFunctions = new List<string> { "sum" };
 	public static WvTemplateTag? ExtractTagFromDefinition(string? tagDefinition)
 	{
 		if (String.IsNullOrWhiteSpace(tagDefinition)
@@ -78,14 +76,14 @@ public partial class WvTemplateUtility
 
 		if (result.Type == WvTemplateTagType.Function)
 		{
-			if (!String.IsNullOrWhiteSpace(result.Name) && _supportedFunctions.Contains(result.Name))
+			if (!String.IsNullOrWhiteSpace(result.Name))
 			{
 				result.FunctionName = result.Name;
 			}
 		}
 		if (result.Type == WvTemplateTagType.ExcelFunction)
 		{
-			if (!String.IsNullOrWhiteSpace(result.Name) && _supportedExcelFunctions.Contains(result.Name))
+			if (!String.IsNullOrWhiteSpace(result.Name))
 			{
 				result.FunctionName = result.Name;
 			}

@@ -648,10 +648,8 @@ public class DataTemplateTagTest : TestBase
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
 		Assert.Single(result[0].ParamGroups);
-		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
-		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
-		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
-
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
 
 	[Fact]
@@ -669,10 +667,8 @@ public class DataTemplateTagTest : TestBase
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
 		Assert.Single(result[0].ParamGroups);
-		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
-		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
-		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
-
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
 
 
@@ -691,10 +687,8 @@ public class DataTemplateTagTest : TestBase
 		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
 		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
 		Assert.Single(result[0].ParamGroups);
-		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
-		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
-		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
-
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
 
 	[Fact]
@@ -712,10 +706,8 @@ public class DataTemplateTagTest : TestBase
 		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
 		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
 		Assert.Single(result[0].ParamGroups);
-		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
-		Assert.Equal("A1", result[0].ParamGroups[0].Parameters[0].ValueString);
-		Assert.Equal("B1", result[0].ParamGroups[0].Parameters[1].ValueString);
-
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
 	#endregion
 

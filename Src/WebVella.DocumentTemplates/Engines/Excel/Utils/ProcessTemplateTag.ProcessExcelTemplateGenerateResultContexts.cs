@@ -3,7 +3,9 @@ using ClosedXML.Excel.Drawings;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
+using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.Excel.Services;
 using WebVella.DocumentTemplates.Extensions;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
@@ -284,16 +286,37 @@ public static partial class WvExcelFileEngineUtility
 				var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(tempCell.Value.ToString(), dataSource, culture);
 				if (tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.ExcelFunction))
 				{
-					//Excel Functions Can have only one result				
-					var excelFunction = generateExcelFunction(
-						input: tagProcessResult,
-						dataSource: dataSource,
-						result: result,
-						resultItem: resultItem,
-						worksheet: resultRow.Worksheet!
-					);
 					IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
-					resultRange.FormulaA1 = excelFunction;
+					//Excel Functions Can have only one result				
+					if (tagProcessResult.Tags.Count == 1
+						&& tagProcessResult.Tags[0].Type == WvTemplateTagType.ExcelFunction)
+					{
+						var tag = tagProcessResult.Tags[0];
+						var functionProcessor = WvExcelFileTemplateService.GetExcelFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+						if (functionProcessor is null)
+						{
+							throw new Exception($"Unsupported function name: {tag.Name} in tag");
+						}
+						functionProcessor.Process(
+							tag: tagProcessResult.Tags[0],
+							dataSource: dataSource,
+							result: result,
+							resultItem: resultItem,
+							worksheet: resultRow.Worksheet!
+						);
+						if (functionProcessor.HasError)
+						{
+							resultRange.Value = XLError.IncompatibleValue;
+							IXLCell resultCell = resultRow.Worksheet!.Cell(currentRow, currentCol);
+							var comment = resultCell.CreateComment();
+							comment.AddText(functionProcessor.ErrorMessage);
+						}
+						else
+						{
+							resultRange.FormulaA1 = functionProcessor.FormulaA1;
+						}
+
+					}
 					addRangeToGrid(
 									firstRow: currentRow,
 									firstColumn: currentCol,
@@ -311,15 +334,22 @@ public static partial class WvExcelFileEngineUtility
 					if (tagProcessResult.Tags.Count > 0)
 					{
 						//Postprocess results if function
-						if (tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.Function))
+						foreach (var tag in tagProcessResult.Tags)
 						{
-							tagProcessResult = postProcessTemplateTagListForFunction(
-								input: tagProcessResult,
-								dataSource: dataSource,
-								result: result,
-								resultItem: resultItem,
-								worksheet: resultRow.Worksheet!
-							);
+							if (tag.Type != WvTemplateTagType.Function) continue;
+							var functionProcessor = WvExcelFileTemplateService.GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+							if (functionProcessor is null)
+							{
+								throw new Exception($"Unsupported function name: {tag.Name} in tag");
+							}
+							tagProcessResult = functionProcessor.Process(
+														tag: tag,
+														input: tagProcessResult,
+														dataSource: dataSource,
+														result: result,
+														resultItem: resultItem,
+														worksheet: resultRow.Worksheet!
+													);
 						}
 						for (var i = 0; i < tagProcessResult.Values.Count; i++)
 						{
