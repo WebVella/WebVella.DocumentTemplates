@@ -2,9 +2,9 @@
 using System.Globalization;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-	public static WvTemplateTagResult GenerateTemplateTagResult(string? template, List<WvTemplateTag> tags, DataTable dataSource, int? rowIndex, CultureInfo culture)
+	public WvTemplateTagResult GenerateTemplateTagResult(string? template, List<WvTemplateTag> tags, DataTable dataSource, int? rowIndex, CultureInfo culture)
 	{
 		var result = new WvTemplateTagResult();
 		if (String.IsNullOrEmpty(template)) return result;

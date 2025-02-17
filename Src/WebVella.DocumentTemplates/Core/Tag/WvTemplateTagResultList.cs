@@ -19,7 +19,7 @@ public class WvTemplateTagResultList
 				if(tag.IndexList.Count > 0) continue;
 				if(tag.Type == WvTemplateTagType.Function) continue;
 				if(tag.Type == WvTemplateTagType.ExcelFunction) continue;
-				if(tag.ParamGroups.Any(g => g.Parameters.Any(x=> x.Type.FullName == typeof(WvTemplateTagSeparatorParameter).FullName)))
+				if(tag.ParamGroups.Any(g => g.Parameters.Any(x=> x.Type.FullName == typeof(WvTemplateTagSeparatorParameterProcessor).FullName)))
 					continue;
 
 				return false;

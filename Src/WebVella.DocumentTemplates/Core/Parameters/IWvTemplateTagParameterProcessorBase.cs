@@ -1,8 +1,8 @@
 ﻿namespace WebVella.DocumentTemplates.Core;
-public interface IWvTemplateTagParameterBase
+public interface IWvTemplateTagParameterProcessorBase
 {
 	Type Type { get; }
 	string Name { get; set; }
 	string? ValueString { get; set; }
-	WvTemplateTagType TagType { get; }
+	int Priority { get; set; }
 }

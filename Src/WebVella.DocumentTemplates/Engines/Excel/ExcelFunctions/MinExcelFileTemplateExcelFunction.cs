@@ -13,11 +13,13 @@ public class MinExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 
-	public void Process(
+	public object? Process(
+			object? value,
 			WvTemplateTag tag,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,
+			IXLRange resultRange,
 			IXLWorksheet worksheet
 		)
 	{
@@ -57,5 +59,7 @@ public class MinExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 			if (rangeList.Count > 0)
 				FormulaA1 = $"=MIN({String.Join(",", rangeList)})";
 		}
+
+		return value;
 	}
 }

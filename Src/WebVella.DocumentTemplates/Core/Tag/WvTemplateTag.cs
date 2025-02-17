@@ -22,8 +22,8 @@ public class WvTemplateTag
 			{
 				foreach (var param in paramGroup.Parameters)
 				{
-					if (param.Type.InheritsClass(typeof(WvTemplateTagDataFlowParameter))
-						&& ((WvTemplateTagDataFlowParameter)param).Value == WvTemplateTagDataFlow.Horizontal)
+					if (param.Type.InheritsClass(typeof(WvTemplateTagDataFlowParameterProcessor))
+						&& ((WvTemplateTagDataFlowParameterProcessor)param).Value == WvTemplateTagDataFlow.Horizontal)
 					{
 						return WvTemplateTagDataFlow.Horizontal;
 					}
@@ -41,9 +41,9 @@ public class WvTemplateTag
 			{
 				foreach (var param in paramGroup.Parameters)
 				{
-					if (param.Type.InheritsClass(typeof(WvTemplateTagSeparatorParameter)))
+					if (param.Type.InheritsClass(typeof(WvTemplateTagSeparatorParameterProcessor)))
 					{
-						return ((WvTemplateTagSeparatorParameter)param).ValueString;
+						return ((WvTemplateTagSeparatorParameterProcessor)param).ValueString;
 					}
 				}
 			}

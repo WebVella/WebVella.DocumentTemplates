@@ -10,12 +10,14 @@ public interface IWvExcelFileTemplateExcelFunctionProcessor
 	public string? FormulaA1 { get; set; }
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
-	public void Process(
+	public object? Process(
+		object? value,
 		WvTemplateTag tag,
 		DataTable dataSource,
 		WvExcelFileTemplateProcessResult result,
 		WvExcelFileTemplateProcessResultItem resultItem,
-		IXLWorksheet worksheet		
+		IXLRange processedCellRange,
+		IXLWorksheet processedWorksheet
 	);
 
 }

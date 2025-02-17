@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Diagnostics;
+using System.Text.Json;
 using WebVella.DocumentTemplates.Engines.Html;
 using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
@@ -95,6 +97,7 @@ public class HtmlEngineTests : TestBase
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Debug.WriteLine(JsonSerializer.Serialize(result.ResultItems[0]));
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));

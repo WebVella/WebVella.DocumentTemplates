@@ -13,11 +13,13 @@ public class SumExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 
-	public void Process(
+	public object? Process(
+			object? value,
 			WvTemplateTag tag,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,
+			IXLRange resultRange,
 			IXLWorksheet worksheet
 		)
 	{
@@ -26,7 +28,7 @@ public class SumExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 		if (result is null) throw new ArgumentException(nameof(result));
 		if (resultItem is null) throw new ArgumentException(nameof(resultItem));
 		if (worksheet is null) throw new ArgumentException(nameof(worksheet));
-
+		
 		if (tag.Type != WvTemplateTagType.ExcelFunction) throw new ArgumentException("Template tag is not ExcelFunction type", nameof(tag));
 
 
@@ -57,5 +59,7 @@ public class SumExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 			if (rangeList.Count > 0)
 				FormulaA1 = $"=SUM({String.Join(",", rangeList)})";
 		}
+
+		return value;
 	}
 }

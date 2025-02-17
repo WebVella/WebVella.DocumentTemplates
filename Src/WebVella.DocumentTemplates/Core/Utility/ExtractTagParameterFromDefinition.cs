@@ -1,9 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using WebVella.DocumentTemplates.Core.Services;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-public static IWvTemplateTagParameterBase? ExtractTagParameterFromDefinition(string parameterDefinition, WvTemplateTagType tagType)
+	public IWvTemplateTagParameterProcessorBase? ExtractTagParameterFromDefinition(string parameterDefinition, WvTemplateTagType tagType)
 	{
 		if (String.IsNullOrWhiteSpace(parameterDefinition)) return null;
 		string? paramName = null;
@@ -33,23 +34,13 @@ public static IWvTemplateTagParameterBase? ExtractTagParameterFromDefinition(str
 			paramValue = paramValue.Substring(0, paramValue.Length - 1);
 		}
 
-		if (tagType == WvTemplateTagType.Data)
+		if (!String.IsNullOrWhiteSpace(paramName))
 		{
-			switch(paramName){ 
-				case "f":
-					return new WvTemplateTagDataFlowParameter(paramValue);
-				case "s":
-					return new WvTemplateTagSeparatorParameter(paramValue);
-				default: 
-					return new WvTemplateTagUnknownParameter(paramName, paramValue);;
-			}
+			var paramProcessorType = new WvCoreMetaService().GetRegisteredTagParameterProcessorByName(paramName);
+			if (paramProcessorType is null) return new WvTemplateTagUnknownParameterProcessor(paramName, paramValue);
+
+			return Activator.CreateInstance(paramProcessorType, paramValue) as IWvTemplateTagParameterProcessorBase;
 		}
-		else if (tagType == WvTemplateTagType.Function)
-		{
-		}
-		else if (tagType == WvTemplateTagType.ExcelFunction)
-		{
-		}
-		return new WvTemplateTagUnknownParameter(paramName, paramValue);
+		return new WvTemplateTagUnknownParameterProcessor(paramName, paramValue);
 	}
 }

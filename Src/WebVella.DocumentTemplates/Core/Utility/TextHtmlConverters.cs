@@ -2,9 +2,9 @@
 using Markdig;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-	public static string ConvertPlainTextToHtml(string text)
+	public string ConvertPlainTextToHtml(string text)
 	{
 		if (String.IsNullOrWhiteSpace(text)) return text;
 
@@ -12,7 +12,7 @@ public static partial class WvTemplateUtility
 		return Markdown.ToHtml(text, pipeline).TrimStart(Environment.NewLine.ToCharArray()).TrimEnd(Environment.NewLine.ToCharArray());
 	}
 
-	public static string ConvertHtmlToPlainText(string html)
+	public string ConvertHtmlToPlainText(string html)
 	{
 		if (String.IsNullOrWhiteSpace(html)) return html;
 
@@ -35,7 +35,7 @@ public static partial class WvTemplateUtility
 		}
 	}
 
-	private static void ConvertTo(HtmlNode node, TextWriter outText)
+	private void ConvertTo(HtmlNode node, TextWriter outText)
 	{
 		string html;
 		switch (node.NodeType)
@@ -94,7 +94,7 @@ public static partial class WvTemplateUtility
 		}
 	}
 
-	private static void ConvertContentTo(HtmlNode node, TextWriter outText)
+	private void ConvertContentTo(HtmlNode node, TextWriter outText)
 	{
 		foreach (HtmlNode subnode in node.ChildNodes)
 		{

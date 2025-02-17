@@ -47,7 +47,7 @@ public class WvHtmlTemplate : WvTemplateBase
 			{
 				var nameLowered = node.Name.ToLowerInvariant();
 
-				var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(node.InnerHtml, grouptedDs, culture);
+				var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(node.InnerHtml, grouptedDs, culture);
 				foreach (var value in tagProcessResult.Values)
 				{
 					if (node.NodeType == HtmlNodeType.Text)

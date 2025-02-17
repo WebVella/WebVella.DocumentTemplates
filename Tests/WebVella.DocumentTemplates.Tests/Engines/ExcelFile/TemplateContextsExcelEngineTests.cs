@@ -1,0 +1,594 @@
+﻿using ClosedXML.Excel;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
+using WebVella.DocumentTemplates.Core;
+using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.Excel;
+using WebVella.DocumentTemplates.Engines.Excel.Utility;
+using WebVella.DocumentTemplates.Tests.Models;
+
+namespace WebVella.DocumentTemplates.Tests.Engines;
+public partial class TemplateContextsExcelEngineTests : TestBase
+{
+	private static readonly object locker = new();
+	public TemplateContextsExcelEngineTests() : base() { }
+
+	#region << Template Context >>
+	//Arguments
+	[Fact]
+	public void TemplateContext_Arguments()
+	{
+		lock (locker)
+		{
+			//Given
+			WvExcelFileTemplateProcessResult? result = null;
+			//When
+			var action = () => WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			var ex = Record.Exception(action);
+			Assert.NotNull(ex);
+			Assert.IsType<ArgumentException>(ex);
+			var argEx = (ArgumentException)ex;
+			Assert.Equal("result", argEx.ParamName);
+			Assert.StartsWith("No result provided!", argEx.Message);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Arguments_Success()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContext1.xlsx";
+			WvExcelFileTemplateProcessResult? result = new()
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			//When
+			var action = () => WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			var ex = Record.Exception(action);
+			Assert.Null(ex);
+		}
+	}
+
+	//Flow
+	[Fact]
+	public void TemplateContext_Flow_ShouldBeVerticalByDefault()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Single(result.TemplateContexts);
+			var context = result.TemplateContexts[0];
+			Assert.NotEqual(Guid.Empty, context.Id);
+			Assert.Equal(1, context.Worksheet!.Position);
+			Assert.NotNull(context.Range);
+			Assert.Equal(WvExcelFileTemplateContextType.CellRange, context.Type);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, context.ForcedFlow);
+			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Flow_ShouldBeVerticalIfNotAllHorizontal()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{test1}}{{test(F=H)}}";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Single(result.TemplateContexts);
+			var context = result.TemplateContexts[0];
+			Assert.NotEqual(Guid.Empty, context.Id);
+			Assert.Equal(1, context.Worksheet!.Position);
+			Assert.NotNull(context.Range);
+			Assert.Equal(WvExcelFileTemplateContextType.CellRange, context.Type);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, context.ForcedFlow);
+			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
+		}
+	}
+	[Fact]
+	public void TemplateContext_Flow_ShouldBeHorizontalIfExplicit()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{test(F=H)}}";
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Single(result.TemplateContexts);
+			var context = result.TemplateContexts[0];
+			Assert.NotEqual(Guid.Empty, context.Id);
+			Assert.Equal(1, context.Worksheet!.Position);
+			Assert.NotNull(context.Range);
+			Assert.Equal(WvExcelFileTemplateContextType.CellRange, context.Type);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, context.ForcedFlow);
+			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
+		}
+	}
+	[Fact]
+	public void TemplateContext_Flow_ShouldBeHorizontalIfAllHorizontal()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{test(F=H)}} some text {{test1(F=H)}}";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Single(result.TemplateContexts);
+			var context = result.TemplateContexts[0];
+			Assert.NotEqual(Guid.Empty, context.Id);
+			Assert.Equal(1, context.Worksheet!.Position);
+			Assert.NotNull(context.Range);
+			Assert.Equal(WvExcelFileTemplateContextType.CellRange, context.Type);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, context.ForcedFlow);
+			Assert.Equal("A1:A1", context.Range.RangeAddress.ToString());
+		}
+	}
+
+	//Cell Context
+	[Fact]
+	public void TemplateContext_Context_LeftForVertical()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "test";
+			ws.Cell(1, 2).Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var contextA1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(contextA1);
+			Assert.NotNull(contextB1);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_LeftForVerticalTopIsFallBackForTheFirstColumn()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "test";
+			ws.Cell(2, 1).Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var contextA1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			Assert.NotNull(contextA1);
+			Assert.NotNull(contextB1);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_LeftForVerticalParentIsMerge()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			var range = ws.Range(1, 1, 1, 3);
+			range.Merge();
+			range.Value = "test";
+			ws.Cell(1, 4).Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var contextA1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 4).FirstOrDefault();
+			Assert.NotNull(contextA1);
+			Assert.NotNull(contextB1);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_MergeLeftForVerticalParent()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "test";
+			var range = ws.Range(1, 2, 1, 4);
+			range.Merge();
+			range.Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var contextA1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(contextA1);
+			Assert.NotNull(contextB1);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_TopForHorizontalParentIsMerge()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			var range = ws.Range(1, 1, 1, 3);
+			range.Merge();
+			range.Value = "test";
+			ws.Cell(2, 1).Value = "test";
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var contextA1 = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var contextB1 = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			Assert.NotNull(contextA1);
+			Assert.NotNull(contextB1);
+		}
+	}
+
+	//Picture Context
+	[Fact]
+	public void TemplateContext_PictureContext_IsPresent()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "test";
+			ws.Cell(1, 2).Value = "test";
+			var imageFilename = "wv-logo.jpg";
+			var picture = ws.AddPicture(LoadFileAsStream(imageFilename), imageFilename);
+			picture.MoveTo(ws.Cell(3, 2));
+
+			WvExcelFileTemplateProcessResult result = new()
+			{
+				Template = wb
+			};
+			//When
+			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			//Then
+			Assert.NotNull(result);
+			var pictureContextList = result.TemplateContexts.Where(x => x.Type == WvExcelFileTemplateContextType.Picture).ToList();
+			Assert.NotNull(pictureContextList);
+			Assert.Single(pictureContextList);
+			var context = pictureContextList[0];
+			Assert.NotNull(context.Picture);
+		}
+	}
+	#endregion
+
+	#region << Template Context Dependencies >>
+	[Fact]
+	public void TemplateContext_Context_CheckDependencies()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{position}}";
+			ws.Cell(1, 2).Value = "{{=SUM(A1:A1)}}";
+
+			var template = new WvExcelFileTemplate
+			{
+				Template = wb
+			};
+			//When
+			var result = template.Process(TypedData, DefaultCulture);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Single(b1Context.ContextDependencies);
+			Assert.Equal(a1Context.Id, b1Context.ContextDependencies.First());
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_CheckDependencies2()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{position}}";
+			ws.Cell(1, 2).Value = "{{=SUM(B100:C200)}}";
+
+			var template = new WvExcelFileTemplate
+			{
+				Template = wb
+			};
+			//When
+			var result = template.Process(TypedData, DefaultCulture);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Empty(b1Context.ContextDependencies);
+		}
+	}
+
+	[Fact]
+	public void TemplateContext_Context_CheckDependencies3()
+	{
+		lock (locker)
+		{
+			//Given
+			var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add();
+			ws.Cell(1, 1).Value = "{{position}}";
+			ws.Cell(1, 2).Value = "{{=SUM(A1:C5)}}";
+
+			var template = new WvExcelFileTemplate
+			{
+				Template = wb
+			};
+			//When
+			var result = template.Process(TypedData, DefaultCulture);
+			//Then
+			Assert.NotNull(result);
+			Assert.Equal(2, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.Single(b1Context.ContextDependencies);
+			Assert.Equal(a1Context.Id, b1Context.ContextDependencies.First());
+		}
+	}
+
+	#endregion
+
+	#region << Template Context Expansion>>
+	[Fact]
+	public void DataFlow_Test1()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContextFlow1.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.Single(result.Template.Worksheets);
+			var ws = result.Template.Worksheets.First();
+			Assert.Equal(10, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			var a2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			var b2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 2).FirstOrDefault();
+			var a3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 1).FirstOrDefault();
+			var b3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 2).FirstOrDefault();
+			var a4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 1).FirstOrDefault();
+			var b4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 2).FirstOrDefault();
+			var a5Context = result.TemplateContexts.GetByAddress(ws.Position, 5, 1).FirstOrDefault();
+			var b5Context = result.TemplateContexts.GetByAddress(ws.Position, 5, 2).FirstOrDefault();
+
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.NotNull(a2Context);
+			Assert.NotNull(b2Context);
+			Assert.NotNull(a3Context);
+			Assert.NotNull(b3Context);
+			Assert.NotNull(a4Context);
+			Assert.NotNull(b4Context);
+			Assert.NotNull(a5Context);
+			Assert.NotNull(b5Context);
+
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a5Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b5Context.Flow);
+		}
+	}
+	[Fact]
+	public void DataFlow_Test2()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContextFlow2.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.Single(result.Template.Worksheets);
+			var ws = result.Template.Worksheets.First();
+			Assert.Equal(8, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			var a2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			var b2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 2).FirstOrDefault();
+			var a3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 1).FirstOrDefault();
+			var b3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 2).FirstOrDefault();
+			var a4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 1).FirstOrDefault();
+			var b4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 2).FirstOrDefault();
+
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.NotNull(a2Context);
+			Assert.NotNull(b2Context);
+			Assert.NotNull(a3Context);
+			Assert.NotNull(b3Context);
+			Assert.NotNull(a4Context);
+			Assert.NotNull(b4Context);
+
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
+		}
+	}
+	[Fact]
+	public void DataFlow_Test3()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContextFlow3.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.Single(result.Template.Worksheets);
+			var ws = result.Template.Worksheets.First();
+			Assert.Equal(8, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			var a2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			var b2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 2).FirstOrDefault();
+			var a3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 1).FirstOrDefault();
+			var b3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 2).FirstOrDefault();
+			var a4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 1).FirstOrDefault();
+			var b4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 2).FirstOrDefault();
+
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.NotNull(a2Context);
+			Assert.NotNull(b2Context);
+			Assert.NotNull(a3Context);
+			Assert.NotNull(b3Context);
+			Assert.NotNull(a4Context);
+			Assert.NotNull(b4Context);
+
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b2Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b2Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b3Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b3Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.Flow);
+		}
+	}
+	#endregion
+}

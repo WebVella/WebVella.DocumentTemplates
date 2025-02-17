@@ -37,7 +37,7 @@ public class WvTextTemplate : WvTemplateBase
 			var endWithNewLine = Template.EndsWith(Environment.NewLine);
 			if (lines.Count() == 1)
 			{
-				var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(lines.First(), grouptedDs, culture);
+				var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(lines.First(), grouptedDs, culture);
 				if (tagProcessResult.Values.Count == 1)
 				{
 					sb.Append(tagProcessResult.Values[0]?.ToString());
@@ -57,7 +57,7 @@ public class WvTextTemplate : WvTemplateBase
 			{
 				foreach (string line in lines)
 				{
-					var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(line, grouptedDs, culture);
+					var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(line, grouptedDs, culture);
 					foreach (var value in tagProcessResult.Values)
 					{
 						sb.AppendLine(value?.ToString());

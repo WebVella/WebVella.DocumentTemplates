@@ -12,12 +12,14 @@ public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProc
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 
-	public WvTemplateTagResultList Process(
+	public object? Process(
+			object? value,
 			WvTemplateTag tag,
 			WvTemplateTagResultList input,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,
+			IXLRange resultRange,
 			IXLWorksheet worksheet
 		)
 	{

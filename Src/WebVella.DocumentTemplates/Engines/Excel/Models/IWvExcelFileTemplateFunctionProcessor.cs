@@ -9,13 +9,15 @@ public interface IWvExcelFileTemplateFunctionProcessor
 	public int Priority { get; }
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
-	public WvTemplateTagResultList Process(
+	public object? Process(
+		object? value,
 		WvTemplateTag tag,
 		WvTemplateTagResultList input,
 		DataTable dataSource,
 		WvExcelFileTemplateProcessResult result,
 		WvExcelFileTemplateProcessResultItem resultItem,
-		IXLWorksheet worksheet		
+		IXLRange processedCellRange,
+		IXLWorksheet processedWorksheet		
 	);
 
 }

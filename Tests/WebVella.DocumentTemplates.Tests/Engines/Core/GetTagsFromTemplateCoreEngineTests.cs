@@ -1,22 +1,92 @@
-﻿using System.Data;
+﻿using ClosedXML.Excel;
+using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.Excel;
+using WebVella.DocumentTemplates.Engines.Excel.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
-namespace WebVella.DocumentTemplates.Tests.Utility;
-public class DataTemplateTagTest : TestBase
+namespace WebVella.DocumentTemplates.Tests.Engines;
+public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 {
-	public DataTemplateTagTest() : base() { }
+	private static readonly object locker = new();
+	public GetTagsFromTemplateCoreEngineTests() : base() { }
 
-	#region << Parsing >>
+	[Fact]
+	public void GetApplicableRangeForFunctionTag_Test1()
+	{
+		lock (locker)
+		{
+			//Given
+			var tags = new WvTemplateUtility().GetTagsFromTemplate("{{=SUM(A1)}}");
+			Assert.NotNull(tags);
+			Assert.Single(tags);
+			//When
+			var ranges = tags[0].GetApplicableRangeForFunctionTag();
+			//Then
+			Assert.NotNull(ranges);
+			Assert.Single(ranges);
+			var range = ranges[0];
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(1, range.FirstColumn);
+			Assert.Equal(1, range.LastRow);
+			Assert.Equal(1, range.LastColumn);
+		}
+	}
+
+	[Fact]
+	public void GetApplicableRangeForFunctionTag_Test2()
+	{
+		lock (locker)
+		{
+			//Given
+			var tags = new WvTemplateUtility().GetTagsFromTemplate("{{=SUM(A1:A1)}}");
+			Assert.NotNull(tags);
+			Assert.Single(tags);
+			//When
+			var ranges = tags[0].GetApplicableRangeForFunctionTag();
+			//Then
+			Assert.NotNull(ranges);
+			Assert.Single(ranges);
+			var range = ranges[0];
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(1, range.FirstColumn);
+			Assert.Equal(1, range.LastRow);
+			Assert.Equal(1, range.LastColumn);
+		}
+	}
+
+	[Fact]
+	public void GetApplicableRangeForFunctionTag_Test3()
+	{
+		lock (locker)
+		{
+			//Given
+			var tags = new WvTemplateUtility().GetTagsFromTemplate("{{=SUM(B1:C3)}}");
+			Assert.NotNull(tags);
+			Assert.Single(tags);
+			//When
+			var ranges = tags[0].GetApplicableRangeForFunctionTag();
+			//Then
+			Assert.NotNull(ranges);
+			Assert.Single(ranges);
+			var range = ranges[0];
+			Assert.Equal(1, range.FirstRow);
+			Assert.Equal(2, range.FirstColumn);
+			Assert.Equal(3, range.LastRow);
+			Assert.Equal(3, range.LastColumn);
+		}
+	}
+
 	[Fact]
 	public void NullTemplateShouldReturnNoTags()
 	{
 		//Given
 		string? template = null;
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Empty(result);
@@ -28,7 +98,7 @@ public class DataTemplateTagTest : TestBase
 		//Given
 		string template = string.Empty;
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Empty(result);
@@ -41,7 +111,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "{{" + columnName + "}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -61,7 +131,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "ColumnName";
 		string template = "{{" + columnName + "}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -81,7 +151,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "columnName";
 		string template = " {{" + columnName + "}} ";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -101,7 +171,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "{{ " + columnName + " }}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -121,7 +191,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "{{  " + columnName + "     }}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -141,7 +211,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "this is {{" + columnName + "}} a test";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -161,7 +231,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "this is {{" + columnName + "(\"test\")}} a test";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -186,7 +256,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue = "test";
 		string template = "{{" + columnName + "(" + paramName + "=\"" + paramValue + "\")}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -213,7 +283,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue = "test";
 		string template = "{{" + columnName + " ( " + paramName + " = \"" + paramValue + "\" )}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -239,7 +309,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue = "test";
 		string template = "{{" + columnName + "(" + paramName + "=\"" + paramValue + "\")}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -264,7 +334,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName2 = "column_name2";
 		string template = "{{" + columnName + "}}{{" + columnName2 + "}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
@@ -307,7 +377,7 @@ public class DataTemplateTagTest : TestBase
 		string template = "{{" + columnName + "(" + columnNameParam1Name + "=\"" + columnNameParam1Value + "\", " + columnNameParam2Name + "=\"" + columnNameParam2Value + "\")}}" +
 		"{{" + columnName2 + "(" + columnName2Param1Name + "=\"" + columnName2Param1Value + "\", " + columnName2Param2Name + "=\"" + columnName2Param2Value + "\")}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
@@ -357,7 +427,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName2 = "column_name2";
 		string template = "test is with {{" + columnName + "}} and longer text {{" + columnName2 + "}} everywhere";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
@@ -384,7 +454,7 @@ public class DataTemplateTagTest : TestBase
 		var columnName = "column_name";
 		string template = "{{" + columnName + "()(\"test\")(test=1)}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -421,7 +491,7 @@ public class DataTemplateTagTest : TestBase
 		"(" + columnNameParam2Name + "=\"" + columnNameParam2Value + "\")" +
 		"}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -451,7 +521,7 @@ public class DataTemplateTagTest : TestBase
 		int columnIndex = 5;
 		string template = "{{" + columnName + "[" + columnIndex + "]}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -472,7 +542,7 @@ public class DataTemplateTagTest : TestBase
 		int columnIndex = 5;
 		string template = "{{" + columnName + "[][" + columnIndex + "]}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -495,7 +565,7 @@ public class DataTemplateTagTest : TestBase
 		int columnIndex2 = 2;
 		string template = "{{" + columnName + "[" + columnIndex + "][" + columnIndex2 + "]}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -520,7 +590,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue2 = "test2";
 		string template = "{{" + columnName + "(" + paramName + "='" + paramValue + "')" + "(" + paramName2 + "='" + paramValue2 + "')}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -549,7 +619,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue2 = "test2";
 		string template = "{{" + columnName + "(" + paramName + "='" + paramValue + "'," + paramName2 + "='" + paramValue2 + "')}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -579,7 +649,7 @@ public class DataTemplateTagTest : TestBase
 		var paramValue2 = "test2";
 		string template = "{{" + columnName + "(" + paramName + "=\"" + paramValue + "\"," + paramName2 + "=\"" + paramValue2 + "\")}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -611,7 +681,7 @@ public class DataTemplateTagTest : TestBase
 		//var text = "{{sku(F=H,S=',',B=\", \")}}";
 		string template = "{{" + columnName + "(" + paramName + "=" + paramValue + "," + paramName2 + "='" + paramValue2 + "'," + paramName3 + "=\"" + paramValue3 + "\")}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -640,7 +710,7 @@ public class DataTemplateTagTest : TestBase
 		var function = "SUM";
 		string template = "{{=" + function + "(A1:B1)}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -651,26 +721,6 @@ public class DataTemplateTagTest : TestBase
 		Assert.Single(result[0].ParamGroups[0].Parameters);
 		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
-
-	[Fact]
-	public void ExactTemplateWithFunctionNotSupported()
-	{
-		//Given
-		var function = "SUM123";
-		string template = "{{=" + function + "(A1:B1)}}";
-		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
-		//Then
-		Assert.NotNull(result);
-		Assert.Single(result);
-		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
-		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
-		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
-		Assert.Single(result[0].ParamGroups);
-		Assert.Single(result[0].ParamGroups[0].Parameters);
-		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
-	}
-
 
 	[Fact]
 	public void ExactTemplateWithExcelFunctionSupported()
@@ -679,7 +729,7 @@ public class DataTemplateTagTest : TestBase
 		var function = "SUM";
 		string template = "{{==" + function + "(A1:B1)}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
@@ -692,169 +742,75 @@ public class DataTemplateTagTest : TestBase
 	}
 
 	[Fact]
-	public void ExactTemplateWithExcelFunctionNotSupported()
+	public void ExactTemplateShouldReturnOneExcelFunctionTag()
 	{
 		//Given
-		var function = "SUM123";
-		string template = "{{==" + function + "(A1:B1)}}";
+		var functionName = "functionName";
+		string template = "{{==" + functionName + "()}}";
 		//When
-		List<WvTemplateTag> result = WvTemplateUtility.GetTagsFromTemplate(template);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
-		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
 		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
-		Assert.True(String.IsNullOrWhiteSpace(result[0].FunctionName));
+		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
-		Assert.Single(result[0].ParamGroups[0].Parameters);
-		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
 	}
-	#endregion
 
-	#region << Processing >>
 	[Fact]
-	public void TemplateProcessShouldReturnNoResultsIfEmpty()
+	public void ExactTemplateShouldReturnOneExcelFunctionTagWithMissingParams()
 	{
 		//Given
-		string template = "";
-		DataTable ds = SampleData;
+		var functionName = "functionName";
+		string template = "{{==" + functionName + "}}";
 		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
-		Assert.Single(result.Values);
-		Assert.True(String.IsNullOrWhiteSpace((string?)result.Values[0]));
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
 	}
 
 	[Fact]
-	public void TemplateProcessShouldReturnNoResultsIfNoTag()
+	public void ExactTemplateShouldReturnOneFunctionTag()
 	{
 		//Given
-		string template = "sometext test";
-		DataTable ds = SampleData;
+		var functionName = "functionName";
+		string template = "{{=" + functionName + "()}}";
 		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
-		Assert.Single(result.Values);
-		Assert.Equal(template, result.Values[0]);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
 	}
 
 	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCannotBeProcessed()
+	public void ExactTemplateShouldReturnOneFunctionTagWithMissingParams()
 	{
 		//Given
-		string template = "{{}}";
-		DataTable ds = SampleData;
+		var functionName = "functionName";
+		string template = "{{=" + functionName + "}}";
 		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
 		//Then
 		Assert.NotNull(result);
-		Assert.Single(result.Values);
-		Assert.Equal(template, result.Values[0]);
-	}
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
 
-	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessed()
-	{
-		//Given
-		string template = "{{name}}";
-		DataTable ds = SampleData;
-		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
-		//Then
-		Assert.NotNull(result);
-		Assert.Equal(5, result.Values.Count);
-		Assert.Equal(ds.Rows[0]["name"]?.ToString(), result.Values[0]);
-		Assert.Equal(ds.Rows[1]["name"]?.ToString(), result.Values[1]);
-		Assert.Equal(ds.Rows[2]["name"]?.ToString(), result.Values[2]);
-		Assert.Equal(ds.Rows[3]["name"]?.ToString(), result.Values[3]);
-		Assert.Equal(ds.Rows[4]["name"]?.ToString(), result.Values[4]);
 	}
-
-	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMulti()
-	{
-		//Given
-		string template = "{{position}}.{{name}}";
-		DataTable ds = SampleData;
-		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
-		//Then
-		Assert.NotNull(result);
-		Assert.Equal(5, result.Values.Count);
-		Assert.Equal(ds.Rows[0]["position"] + "." + ds.Rows[0]["name"], result.Values[0]);
-		Assert.Equal(ds.Rows[1]["position"] + "." + ds.Rows[1]["name"], result.Values[1]);
-		Assert.Equal(ds.Rows[2]["position"] + "." + ds.Rows[2]["name"], result.Values[2]);
-		Assert.Equal(ds.Rows[3]["position"] + "." + ds.Rows[3]["name"], result.Values[3]);
-		Assert.Equal(ds.Rows[4]["position"] + "." + ds.Rows[4]["name"], result.Values[4]);
-	}
-
-	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndex()
-	{
-		//Given
-		string template = "{{position}}.{{name[0]}}";
-		DataTable ds = SampleData;
-		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
-		//Then
-		Assert.NotNull(result);
-		Assert.Equal(5, result.Values.Count);
-		Assert.Equal(ds.Rows[0]["position"] + "." + ds.Rows[0]["name"], result.Values[0]);
-		Assert.Equal(ds.Rows[1]["position"] + "." + ds.Rows[0]["name"], result.Values[1]);
-		Assert.Equal(ds.Rows[2]["position"] + "." + ds.Rows[0]["name"], result.Values[2]);
-		Assert.Equal(ds.Rows[3]["position"] + "." + ds.Rows[0]["name"], result.Values[3]);
-		Assert.Equal(ds.Rows[4]["position"] + "." + ds.Rows[0]["name"], result.Values[4]);
-	}
-
-	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle()
-	{
-		//Given
-		string template = "{{name[0]}}";
-		DataTable ds = SampleData;
-		//When
-		WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, DefaultCulture);
-		//Then
-		Assert.NotNull(result);
-		Assert.Single(result.Values);
-		Assert.Equal((string)ds.Rows[0]["name"], result.Values[0]);
-	}
-
-	[Fact]
-	public void ProcessValueShouldBeCorrect()
-	{
-		//Given
-		var columnTypeNames = new List<string>{
-			"short","int","long","number","date","datetime",
-			"shorttext","text","guid"
-		};
-		var culture = new CultureInfo("en-US");
-		var currentCulture = Thread.CurrentThread.CurrentCulture;
-		var currentUICulture = Thread.CurrentThread.CurrentUICulture;
-		try
-		{
-			Thread.CurrentThread.CurrentCulture = culture;
-			Thread.CurrentThread.CurrentCulture = culture;
-			foreach (var columnName in columnTypeNames)
-			{
-				string template = "{{" + columnName + "[0]}}";
-				DataTable ds = TypedData;
-				//When
-				WvTemplateTagResultList result = WvTemplateUtility.ProcessTemplateTag(template, ds, culture);
-				//Then
-				Assert.NotNull(result);
-				Assert.Single(result.Values);
-				Assert.Equal(result.Values[0], ds.Rows[0][columnName]);
-			}
-		}
-		finally
-		{
-			Thread.CurrentThread.CurrentCulture = currentCulture;
-			Thread.CurrentThread.CurrentUICulture = currentUICulture;
-		}
-	}
-
-	#endregion
 }

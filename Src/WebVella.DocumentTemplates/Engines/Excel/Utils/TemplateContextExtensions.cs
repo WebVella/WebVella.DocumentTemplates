@@ -1,4 +1,5 @@
-﻿using WebVella.DocumentTemplates.Core.Utility;
+﻿using WebVella.DocumentTemplates.Core;
+using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.Excel.Models;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
@@ -78,7 +79,7 @@ public static class TemplateContextExtensions
 		if (rangeValues.Count == 0) return;
 		foreach (var value in rangeValues)
 		{
-			var tags = WvTemplateUtility.GetTagsFromTemplate(value.ToString());
+			var tags = new WvTemplateUtility().GetTagsFromTemplate(value.ToString());
 			foreach (var tag in tags)
 			{
 				if (tag.Type != Core.WvTemplateTagType.ExcelFunction
@@ -90,7 +91,7 @@ public static class TemplateContextExtensions
 				{
 					var intersects = contextList
 						.GetIntersections(context.Worksheet!.Position, address)
-						.Where(x=> x.Id != context.Id).ToList();
+						.Where(x => x.Id != context.Id).ToList();
 					foreach (var interContext in intersects)
 					{
 						if (context.ContextDependencies.Contains(interContext.Id)) continue;
@@ -100,6 +101,12 @@ public static class TemplateContextExtensions
 				}
 			}
 		}
+	}
+
+	public static WvTemplateTagDataFlow? GetDataFlow(this WvExcelFileTemplateContext? context, WvTemplateTagDataFlow? currentFlow)
+	{	
+		if(context is null) return currentFlow;
+		return GetDataFlow(context.ParentContext,currentFlow);
 	}
 
 	private static bool CheckIntersection(WvExcelRange range1, WvExcelRange range2)

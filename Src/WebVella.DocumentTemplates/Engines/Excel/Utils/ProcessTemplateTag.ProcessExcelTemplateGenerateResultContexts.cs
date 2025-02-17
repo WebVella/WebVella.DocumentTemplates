@@ -157,7 +157,7 @@ public static partial class WvExcelFileEngineUtility
 		{
 			var resultWs = resultItem.Result.AddWorksheet();
 			resultWs.Name = templateWs.Name;
-			var templateResult = WvTemplateUtility.ProcessTemplateTag(templateWs.Name, firstRowDt, culture);
+			var templateResult = new WvTemplateUtility().ProcessTemplateTag(templateWs.Name, firstRowDt, culture);
 			if (templateResult != null && templateResult.Values.Count > 0
 				&& templateResult.Values[0] is not null
 				&& templateResult.Values[0] is string
@@ -283,128 +283,72 @@ public static partial class WvExcelFileEngineUtility
 					processedTemplateCells.Add(tempCell.Address.ToString() ?? "");
 				}
 
-				var tagProcessResult = WvTemplateUtility.ProcessTemplateTag(tempCell.Value.ToString(), dataSource, culture);
-				if (tagProcessResult.Tags.Any(x => x.Type == Core.WvTemplateTagType.ExcelFunction))
+				var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(tempCell.Value.ToString(), dataSource, culture);
+				//Function returns only one Value but unlike data it needs to be expanded by the parent context
+				var isFlowHorizontal = IsFlowHorizontal(tagProcessResult);
+				if (tagProcessResult.Tags.Count > 0)
 				{
-					IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
-					//Excel Functions Can have only one result				
-					if (tagProcessResult.Tags.Count == 1
-						&& tagProcessResult.Tags[0].Type == WvTemplateTagType.ExcelFunction)
+					for (var i = 0; i < tagProcessResult.Values.Count; i++)
 					{
-						var tag = tagProcessResult.Tags[0];
-						var functionProcessor = WvExcelFileTemplateService.GetExcelFunctionProcessorByName(tag.FunctionName ?? String.Empty);
-						if (functionProcessor is null)
-						{
-							throw new Exception($"Unsupported function name: {tag.Name} in tag");
-						}
-						functionProcessor.Process(
-							tag: tagProcessResult.Tags[0],
+						//Vertical
+						var endRow = currentRow + (mergedRows - 1);
+						var endCol = currentCol + (mergedCols - 1);
+						IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, endRow, endCol);
+						ProcessAndSetValue(
+							value: tagProcessResult.Values[i],
+							input: tagProcessResult,
 							dataSource: dataSource,
 							result: result,
 							resultItem: resultItem,
-							worksheet: resultRow.Worksheet!
+							processedCellRange: resultRange,
+							processedWorksheet: resultRow.Worksheet!
 						);
-						if (functionProcessor.HasError)
-						{
-							if(functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
-						}
-						else
-						{
-							resultRange.FormulaA1 = functionProcessor.FormulaA1;
-						}
 
-					}
-					addRangeToGrid(
-									firstRow: currentRow,
-									firstColumn: currentCol,
-									lastRow: currentRow,
-									lastColumn: currentCol,
-									contextId: templateContext.Id,
-									resultRow: resultRow,
-									resultFirstRow: resultRow.ResultFirstRow);
-					CopyCellProperties(tempCell, resultRange);
-					currentCol = currentCol + (mergedCols - 1);
-				}
-				else
-				{
-					var isFlowHorizontal = IsFlowHorizontal(tagProcessResult);
-					if (tagProcessResult.Tags.Count > 0)
-					{
-						//Postprocess results if function
-						foreach (var tag in tagProcessResult.Tags)
-						{
-							if (tag.Type != WvTemplateTagType.Function) continue;
-							var functionProcessor = WvExcelFileTemplateService.GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
-							if (functionProcessor is null)
-							{
-								throw new Exception($"Unsupported function name: {tag.Name} in tag");
-							}
-							tagProcessResult = functionProcessor.Process(
-														tag: tag,
-														input: tagProcessResult,
-														dataSource: dataSource,
-														result: result,
-														resultItem: resultItem,
-														worksheet: resultRow.Worksheet!
-													);
-
-							if(functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
-						}
-						for (var i = 0; i < tagProcessResult.Values.Count; i++)
-						{
-							//Vertical
-							var endRow = currentRow + (mergedRows - 1);
-							var endCol = currentCol + (mergedCols - 1);
-							IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, endRow, endCol);
-
-							resultRange.Value = XLCellValue.FromObject(tagProcessResult.Values[i]);
-
-							if (mergedRows > 1 || mergedCols > 1)
-								resultRange.Merge();
-							CopyCellProperties(tempCell, resultRange);
-							addRangeToGrid(
-								firstRow: currentRow,
-								firstColumn: currentCol,
-								lastRow: endRow,
-								lastColumn: endCol,
-								contextId: templateContext.Id,
-								resultRow: resultRow,
-								resultFirstRow: resultRow.ResultFirstRow);
-
-							if (isFlowHorizontal)
-							{
-								currentRow = (i != tagProcessResult.Values.Count - 1 ? currentRow : endRow);
-								currentCol = endCol + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
-							}
-							else
-							{
-								currentRow = endRow + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
-								currentCol = (i != tagProcessResult.Values.Count - 1 ? currentCol : endCol);
-							}
-						}
-
-					}
-					else
-					{
-						IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
-						resultRange.Value = tempCell.Value;
+						if (mergedRows > 1 || mergedCols > 1)
+							resultRange.Merge();
+						CopyCellProperties(tempCell, resultRange);
 						addRangeToGrid(
 							firstRow: currentRow,
 							firstColumn: currentCol,
-							lastRow: currentRow,
-							lastColumn: currentCol,
+							lastRow: endRow,
+							lastColumn: endCol,
 							contextId: templateContext.Id,
 							resultRow: resultRow,
 							resultFirstRow: resultRow.ResultFirstRow);
-						CopyCellProperties(tempCell, resultRange);
+
 						if (isFlowHorizontal)
 						{
-							currentCol = currentCol + (mergedCols - 1);
+							currentRow = (i != tagProcessResult.Values.Count - 1 ? currentRow : endRow);
+							currentCol = endCol + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
 						}
 						else
 						{
-							currentRow = currentRow + (mergedRows - 1);
+							currentRow = endRow + (i != tagProcessResult.Values.Count - 1 ? 1 : 0);
+							currentCol = (i != tagProcessResult.Values.Count - 1 ? currentCol : endCol);
 						}
+					}
+
+				}
+				else
+				{
+					IXLRange resultRange = resultRow.Worksheet!.Range(currentRow, currentCol, currentRow, currentCol);
+					resultRange.Value = tempCell.Value;
+					addRangeToGrid(
+						firstRow: currentRow,
+						firstColumn: currentCol,
+						lastRow: currentRow,
+						lastColumn: currentCol,
+						contextId: templateContext.Id,
+						resultRow: resultRow,
+						resultFirstRow: resultRow.ResultFirstRow);
+					CopyCellProperties(tempCell, resultRange);
+					if (isFlowHorizontal)
+					{
+						currentCol = currentCol + (mergedCols - 1);
+					}
+					else
+					{
+						currentRow = currentRow + (mergedRows - 1);
 					}
 				}
 			}
@@ -608,12 +552,70 @@ public static partial class WvExcelFileEngineUtility
 			}
 		}
 	}
-
 	private static void AddPictureToWorksheet(IXLWorksheet worksheet, IXLPicture picture, int row, int column)
 	{
 		var newPicture = picture.CopyTo(worksheet);
 		var anchorCell = worksheet.Cell(row, column);
 		newPicture.MoveTo(anchorCell, picture.Left, picture.Top);
+	}
+
+	private static void ProcessAndSetValue(
+		object? value,
+		WvTemplateTagResultList input,
+		DataTable dataSource,
+		WvExcelFileTemplateProcessResult result,
+		WvExcelFileTemplateProcessResultItem resultItem,
+		IXLRange processedCellRange,
+		IXLWorksheet processedWorksheet
+	)
+	{
+		if(value == null || value is not string || String.IsNullOrWhiteSpace(value as string)) 
+			processedCellRange.Value = XLCellValue.FromObject(value);
+
+		foreach (WvTemplateTag tag in input.Tags)
+		{
+			if(value is not string) break;
+			if (tag.Type == WvTemplateTagType.Function)
+			{
+				var functionProcessor = new WvExcelFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+				if (functionProcessor is null)
+				{
+					throw new Exception($"Unsupported function name: {tag.Name} in tag");
+				}
+				value = functionProcessor.Process(
+					value:value,
+					tag: tag,
+					input: input,
+					dataSource: dataSource,
+					result: result,
+					resultItem: resultItem,
+					processedCellRange: processedCellRange,
+					processedWorksheet: processedWorksheet
+				);
+				if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
+				processedCellRange.Value = XLCellValue.FromObject(value);
+			}
+			else if (tag.Type == WvTemplateTagType.ExcelFunction)
+			{
+				var functionProcessor = new WvExcelFileMetaService().GetExcelFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+				if (functionProcessor is null)
+				{
+					throw new Exception($"Unsupported excel function name: {tag.Name} in tag");
+				}
+				value = functionProcessor.Process(
+					value:value,
+					tag: tag,
+					dataSource: dataSource,
+					result: result,
+					resultItem: resultItem,
+					processedCellRange: processedCellRange,
+					processedWorksheet: processedWorksheet
+				);
+				if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
+				processedCellRange.FormulaA1 = functionProcessor.FormulaA1;
+			}
+		}
+		processedCellRange.Value = XLCellValue.FromObject(value);
 	}
 
 	#endregion

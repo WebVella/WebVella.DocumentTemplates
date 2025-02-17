@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-	public static int? ExtractTagIndexFromGroup(string indexGroup)
+	public int? ExtractTagIndexFromGroup(string indexGroup)
 	{
 		if (String.IsNullOrWhiteSpace(indexGroup)
 		|| !indexGroup.StartsWith("[")

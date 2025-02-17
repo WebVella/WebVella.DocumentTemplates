@@ -82,9 +82,9 @@ public static partial class WvExcelFileEngineUtility
 			}
 			foreach (var parameter in paramGroup.Parameters)
 			{
-				if (parameter.Type.FullName == typeof(WvTemplateTagDataFlowParameter).FullName)
+				if (parameter.Type.FullName == typeof(WvTemplateTagDataFlowParameterProcessor).FullName)
 				{
-					var paramObj = (WvTemplateTagDataFlowParameter)parameter;
+					var paramObj = (WvTemplateTagDataFlowParameterProcessor)parameter;
 					if (paramObj.Value == WvTemplateTagDataFlow.Vertical)
 					{
 						allTagsHorizontal = false;

@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-	public static List<IWvTemplateTagParameterBase> ExtractTagParametersFromGroup(string parameterGroup, WvTemplateTagType tagType)
+	public List<IWvTemplateTagParameterProcessorBase> ExtractTagParametersFromGroup(string parameterGroup, WvTemplateTagType tagType)
 	{
-		var result = new List<IWvTemplateTagParameterBase>();
+		var result = new List<IWvTemplateTagParameterProcessorBase>();
 		if (String.IsNullOrWhiteSpace(parameterGroup)
 		|| !parameterGroup.StartsWith("(")
 		|| !parameterGroup.EndsWith(")")) return result;

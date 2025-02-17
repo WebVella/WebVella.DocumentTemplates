@@ -1,15 +1,15 @@
 ﻿using WebVella.DocumentTemplates.Extensions;
 
 namespace WebVella.DocumentTemplates.Core;
-public class WvTemplateTagDataFlowParameter : IWvTemplateTagParameterBase
+public class WvTemplateTagDataFlowParameterProcessor : IWvTemplateTagParameterProcessorBase
 {
 	public Type Type { get => this.GetType(); }
 	public string Name { get; set; } = "f";
 	public string? ValueString { get; set; } = null;
-	public WvTemplateTagType TagType { get => WvTemplateTagType.Data; }
 	public WvTemplateTagDataFlow Value { get; set; }
-	public WvTemplateTagDataFlowParameter() { }
-	public WvTemplateTagDataFlowParameter(string? valueString)
+	public int Priority { get; set; } = 1000;
+	public WvTemplateTagDataFlowParameterProcessor() { }
+	public WvTemplateTagDataFlowParameterProcessor(string? valueString)
 	{
 		ValueString = valueString;
 		Value = StringToValue(valueString);

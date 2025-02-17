@@ -59,11 +59,28 @@ public static partial class WvExcelFileEngineUtility
 						processedAddresses.Add(cellAddress);
 					}
 
-					var cellFlow = WvTemplateTagDataFlow.Vertical;
-					var cellTags = WvTemplateUtility.GetTagsFromTemplate(cell.Value.ToString());
+					WvTemplateTagDataFlow? forcedCellDataFlow = null;
+					if(rowPosition == 1 && colPosition == 1){ 
+						forcedCellDataFlow = WvTemplateTagDataFlow.Vertical;
+					}
+					var cellTags = new WvTemplateUtility().GetTagsFromTemplate(cell.Value.ToString());
 					if (cellTags.Count > 0 && !cellTags.Any(x => x.Flow == WvTemplateTagDataFlow.Vertical))
 					{
-						cellFlow = WvTemplateTagDataFlow.Horizontal;
+						forcedCellDataFlow = WvTemplateTagDataFlow.Horizontal;
+					}
+					WvExcelFileTemplateContext? leftContext = null;
+					WvExcelFileTemplateContext? topContext = null;
+					if (rowPosition > 1)
+					{
+						topContext = result.TemplateContexts
+							.GetByAddress(ws.Position, rowPosition - 1, colPosition, WvExcelFileTemplateContextType.CellRange)
+							.FirstOrDefault();
+					}
+					if (colPosition > 1)
+					{
+						leftContext = result.TemplateContexts
+							.GetByAddress(ws.Position, rowPosition, colPosition - 1, WvExcelFileTemplateContextType.CellRange)
+							.FirstOrDefault();
 					}
 
 					//Create context
@@ -74,8 +91,10 @@ public static partial class WvExcelFileEngineUtility
 						Row = templateRow,
 						Range = mergedRange is not null ? mergedRange : cell.AsRange(),
 						Type = WvExcelFileTemplateContextType.CellRange,
-						Flow = cellFlow,
+						ForcedFlow = forcedCellDataFlow,
 						Picture = null,
+						LeftContext = leftContext,
+						TopContext = topContext,
 						ContextDependencies = new()
 					};
 					templateRow.Contexts.Add(context.Id);
@@ -102,8 +121,10 @@ public static partial class WvExcelFileEngineUtility
 					Row = null,
 					Range = null,
 					Picture = picture,
-					Flow = WvTemplateTagDataFlow.Vertical,
+					ForcedFlow = WvTemplateTagDataFlow.Vertical,
 					Type = WvExcelFileTemplateContextType.Picture,
+					LeftContext = null,
+					TopContext = null,
 					ContextDependencies = new()
 				};
 				result.TemplateContexts.Add(context);

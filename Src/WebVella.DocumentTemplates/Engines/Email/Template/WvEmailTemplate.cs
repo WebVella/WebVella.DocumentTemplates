@@ -48,7 +48,7 @@ public class WvEmailTemplate : WvTemplateBase
 			ProcessEmailHtmlContent(Template, resultItem, grouptedDs, culture);
 			if (String.IsNullOrWhiteSpace(Template.TextContent) && !String.IsNullOrWhiteSpace(Template.HtmlContent))
 			{
-				resultItem.Result.TextContent = WvTemplateUtility.ConvertHtmlToPlainText(Template.HtmlContent);
+				resultItem.Result.TextContent = new WvTemplateUtility().ConvertHtmlToPlainText(Template.HtmlContent);
 			}
 			else
 			{
@@ -56,7 +56,7 @@ public class WvEmailTemplate : WvTemplateBase
 			}
 			if (String.IsNullOrWhiteSpace(Template.HtmlContent) && !String.IsNullOrWhiteSpace(Template.TextContent))
 			{
-				resultItem.Result.HtmlContent = WvTemplateUtility.ConvertPlainTextToHtml(Template.TextContent);
+				resultItem.Result.HtmlContent = new WvTemplateUtility().ConvertPlainTextToHtml(Template.TextContent);
 			}
 
 			int attachmentIndex = 0;

@@ -2,15 +2,13 @@
 using WebVella.DocumentTemplates.Extensions;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Services;
-public class WvExcelFileTemplateService
+public class WvExcelFileMetaService
 {
 	private static List<IWvExcelFileTemplateExcelFunctionProcessor>? _excelFunctionsList = null;
 	private static List<IWvExcelFileTemplateFunctionProcessor>? _functionsList = null;
 
-	public static void GetRegisteredExcelFileProcessors()
+	static WvExcelFileMetaService()
 	{
-		if (_excelFunctionsList is not null && _functionsList is not null) return;
-
 		_excelFunctionsList = new();
 		_functionsList = new();
 
@@ -50,33 +48,29 @@ public class WvExcelFileTemplateService
 		}
 	}
 
-	public static List<IWvExcelFileTemplateFunctionProcessor> GetRegisteredFunctionProcessors()
+	public List<IWvExcelFileTemplateFunctionProcessor> GetRegisteredFunctionProcessors()
 	{
-		GetRegisteredExcelFileProcessors();
 		return _functionsList!;
 	}
 
-	public static IWvExcelFileTemplateFunctionProcessor? GetFunctionProcessorByName(string name)
+	public IWvExcelFileTemplateFunctionProcessor? GetFunctionProcessorByName(string name)
 	{
 		if (String.IsNullOrWhiteSpace(name)) return null;
-		GetRegisteredExcelFileProcessors();
 		var matches = _functionsList!.Where(a => a.Name.ToLowerInvariant() == name.Trim().ToLowerInvariant());
-		if (matches.Any()) return matches.OrderBy(x => x.Priority).First();
+		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First();
 		return null;
 	}
 
-	public static List<IWvExcelFileTemplateExcelFunctionProcessor> GetRegisteredExcelFunctionProcessors()
+	public List<IWvExcelFileTemplateExcelFunctionProcessor> GetRegisteredExcelFunctionProcessors()
 	{
-		GetRegisteredExcelFileProcessors();
 		return _excelFunctionsList!;
 	}
 
-	public static IWvExcelFileTemplateExcelFunctionProcessor? GetExcelFunctionProcessorByName(string name)
+	public IWvExcelFileTemplateExcelFunctionProcessor? GetExcelFunctionProcessorByName(string name)
 	{
 		if (String.IsNullOrWhiteSpace(name)) return null;
-		GetRegisteredExcelFileProcessors();
 		var matches = _excelFunctionsList!.Where(a => a.Name.ToLowerInvariant() == name.Trim().ToLowerInvariant());
-		if (matches.Any()) return matches.OrderBy(x => x.Priority).First();
+		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First();
 		return null;
 	}
 

@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
-public static partial class WvTemplateUtility
+public partial class WvTemplateUtility
 {
-	public static (string?, object?) ProcessTagInTemplate(string? templateResultString, object? templateResultObject,
+	public (string?, object?) ProcessTagInTemplate(string? templateResultString, object? templateResultObject,
 		WvTemplateTag tag, DataTable dataSource, int? contextRowIndex, CultureInfo culture)
 	{
 		var currentCulture = Thread.CurrentThread.CurrentCulture;

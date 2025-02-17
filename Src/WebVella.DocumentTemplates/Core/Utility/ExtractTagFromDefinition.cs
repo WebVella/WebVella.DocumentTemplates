@@ -3,7 +3,7 @@
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
 {
-	public static WvTemplateTag? ExtractTagFromDefinition(string? tagDefinition)
+	public WvTemplateTag? ExtractTagFromDefinition(string? tagDefinition)
 	{
 		if (String.IsNullOrWhiteSpace(tagDefinition)
 		|| !tagDefinition.StartsWith("{{")
