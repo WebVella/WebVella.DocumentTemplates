@@ -16,7 +16,7 @@ public partial class WvTemplateUtility
 		if (String.IsNullOrWhiteSpace(processedParameterGroup)) return result;
 
 		//string pattern = @"\w+(?:\s*=\s*('[^']*'|\"".*?\""|[^,]*))?";
-		string pattern = @"[\w:]+(?:\s*=\s*('[^']*'|\"".*?\""|[^,]*))?";
+		string pattern = @"[\w:$]+(?:\s*=\s*('[^']*'|\"".*?\""|[^,]*))?";
 		Regex regex = new Regex(pattern);
 		MatchCollection matches = regex.Matches(processedParameterGroup);
 		foreach (Match match in matches)

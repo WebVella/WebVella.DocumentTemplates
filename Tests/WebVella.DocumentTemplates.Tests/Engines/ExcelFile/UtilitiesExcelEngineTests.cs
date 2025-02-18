@@ -127,5 +127,131 @@ public partial class UtilitiesExcelEngineTests : TestBase
 		}
 	}
 
+	[Fact]
+	public void GetRangeFromString_Lock1()
+	{
+		lock (locker)
+		{
+			//Given
+			var address = "$A1";
+
+			//When
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
+			//Then
+			Assert.NotNull(result);
+
+			Assert.Equal(1,result!.FirstColumn);
+			Assert.True(result!.FirstColumnLocked);
+			Assert.Equal(1,result!.FirstRow);
+			Assert.False(result!.FirstRowLocked);
+
+			Assert.Equal(1,result!.LastColumn);
+			Assert.True(result!.LastColumnLocked);
+			Assert.Equal(1,result!.LastRow);
+			Assert.False(result!.LastRowLocked);
+
+		}
+	}
+
+	[Fact]
+	public void GetRangeFromString_Lock2()
+	{
+		lock (locker)
+		{
+			//Given
+			var address = "A$1";
+
+			//When
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
+			//Then
+			Assert.NotNull(result);
+
+			Assert.Equal(1,result!.FirstColumn);
+			Assert.False(result!.FirstColumnLocked);
+			Assert.Equal(1,result!.FirstRow);
+			Assert.True(result!.FirstRowLocked);
+
+			Assert.Equal(1,result!.LastColumn);
+			Assert.False(result!.LastColumnLocked);
+			Assert.Equal(1,result!.LastRow);
+			Assert.True(result!.LastRowLocked);
+		}
+	}
+	[Fact]
+	public void GetRangeFromString_Lock3()
+	{
+		lock (locker)
+		{
+			//Given
+			var address = "$A$1";
+
+			//When
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
+			//Then
+			Assert.NotNull(result);
+
+			Assert.Equal(1,result!.FirstColumn);
+			Assert.True(result!.FirstColumnLocked);
+			Assert.Equal(1,result!.FirstRow);
+			Assert.True(result!.FirstRowLocked);
+
+			Assert.Equal(1,result!.LastColumn);
+			Assert.True(result!.LastColumnLocked);
+			Assert.Equal(1,result!.LastRow);
+			Assert.True(result!.LastRowLocked);
+		}
+	}
+
+	[Fact]
+	public void GetRangeFromString_Lock4()
+	{
+		lock (locker)
+		{
+			//Given
+			var address = "$A$1:B1";
+
+			//When
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
+			//Then
+			Assert.NotNull(result);
+
+			Assert.Equal(1,result!.FirstColumn);
+			Assert.True(result!.FirstColumnLocked);
+			Assert.Equal(1,result!.FirstRow);
+			Assert.True(result!.FirstRowLocked);
+
+			Assert.Equal(2,result!.LastColumn);
+			Assert.False(result!.LastColumnLocked);
+			Assert.Equal(1,result!.LastRow);
+			Assert.False(result!.LastRowLocked);
+
+		}
+	}
+
+	[Fact]
+	public void GetRangeFromString_Lock5()
+	{
+		lock (locker)
+		{
+			//Given
+			var address = "$A$1:$B$1";
+
+			//When
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
+			//Then
+			Assert.NotNull(result);
+
+			Assert.Equal(1,result!.FirstColumn);
+			Assert.True(result!.FirstColumnLocked);
+			Assert.Equal(1,result!.FirstRow);
+			Assert.True(result!.FirstRowLocked);
+
+			Assert.Equal(2,result!.LastColumn);
+			Assert.True(result!.LastColumnLocked);
+			Assert.Equal(1,result!.LastRow);
+			Assert.True(result!.LastRowLocked);
+		}
+	}
+
 	#endregion
 }

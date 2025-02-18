@@ -813,4 +813,66 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Empty(result[0].ParamGroups);
 
 	}
+
+	[Fact]
+	public void ExactTemplateShouldReturnOneFunctionTagWithStaticRanges()
+	{
+		//Given
+		var functionName = "sum";
+		string template = "{{=" + functionName + "($A$1:B1)}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("$A$1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
+
+	}
+
+	[Fact]
+	public void ExactTemplateShouldReturnOneFunctionTagWithStaticRanges2()
+	{
+		//Given
+		var functionName = "sum";
+		string template = "{{=" + functionName + "($A$1:$B$1)}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.Equal("$A$1:$B$1", result[0].ParamGroups[0].Parameters[0].ValueString);
+	}
+
+	[Fact]
+	public void ExactTemplateShouldReturnOneFunctionTagWithStaticRanges3()
+	{
+		//Given
+		var functionName = "sum";
+		string template = "{{=" + functionName + "($A$1:$B$1,$A3:C$3)}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(2,result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal("$A$1:$B$1", result[0].ParamGroups[0].Parameters[0].ValueString);
+		Assert.Equal("$A3:C$3", result[0].ParamGroups[0].Parameters[1].ValueString);
+	}
 }

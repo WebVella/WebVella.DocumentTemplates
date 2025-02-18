@@ -26,14 +26,16 @@ public class WvExcelRangeHelpers
 		if (address.Contains(":"))
 		{
 			var split = address.Split(':', StringSplitOptions.RemoveEmptyEntries);
-			(result.FirstRow, result.FirstColumn) = ExtractRowColumnFromAddress(split[0]);
-			(result.LastRow, result.LastColumn) = ExtractRowColumnFromAddress(split[1]);
+			(result.FirstRow, result.FirstRowLocked, result.FirstColumn, result.FirstColumnLocked) = ExtractRowColumnFromAddress(split[0]);
+			(result.LastRow, result.LastRowLocked, result.LastColumn, result.LastColumnLocked) = ExtractRowColumnFromAddress(split[1]);
 		}
 		else
 		{
-			(result.FirstRow, result.FirstColumn) = ExtractRowColumnFromAddress(address);
+			(result.FirstRow, result.FirstRowLocked, result.FirstColumn, result.FirstColumnLocked) = ExtractRowColumnFromAddress(address);
 			result.LastRow = result.FirstRow;
+			result.LastRowLocked = result.FirstRowLocked;
 			result.LastColumn = result.FirstColumn;
+			result.LastColumnLocked = result.FirstColumnLocked;
 		}
 
 		if (result.FirstRow == 0
@@ -46,7 +48,9 @@ public class WvExcelRangeHelpers
 			result = result with
 			{
 				FirstRow = result.LastRow,
+				FirstRowLocked = result.LastRowLocked,
 				LastRow = result.FirstRow,
+				LastRowLocked = result.FirstRowLocked
 			};
 		}
 
@@ -55,36 +59,57 @@ public class WvExcelRangeHelpers
 			result = result with
 			{
 				FirstColumn = result.LastColumn,
+				FirstColumnLocked = result.LastColumnLocked,
 				LastColumn = result.FirstColumn,
+				LastColumnLocked = result.FirstColumnLocked
 			};
 		}
 
 		return result;
 	}
 
-	private (int, int) ExtractRowColumnFromAddress(string cellAddress)
+	private (int, bool, int, bool) ExtractRowColumnFromAddress(string cellAddress)
 	{
 		int row = 0;
+		bool rowLocked = false;
 		int column = 0;
-		if (String.IsNullOrWhiteSpace(cellAddress)) return (row, column);
+		bool columnLocked = false;
+		if (String.IsNullOrWhiteSpace(cellAddress)) return (row, rowLocked, column, columnLocked);
 		cellAddress = cellAddress.Trim();
-		if (!XLHelper.IsValidA1Address(cellAddress)) return (row, column);
-		if (!cellAddress.Any(i => char.IsDigit(i))) return (row, column);
+		if (!XLHelper.IsValidA1Address(cellAddress)) return (row, rowLocked, column, columnLocked);
+		if (!cellAddress.Any(i => char.IsDigit(i))) return (row, rowLocked, column, columnLocked);
 		int indexOfFirstDigit = Enumerable.Range(0, cellAddress.Length).FirstOrDefault(i => char.IsDigit(cellAddress[i]));
 
 		var columnString = cellAddress.Substring(0, indexOfFirstDigit);
 		var rowString = cellAddress.Substring(indexOfFirstDigit);
+		if (columnString.EndsWith("$"))
+		{
+			columnString = columnString.Substring(0, columnString.Length - 1);
+			rowString = "$" + rowString;
+		}
+
+		if (rowString.StartsWith("$"))
+		{
+			rowLocked = true;
+			rowString = rowString.Substring(1);
+		}
+		if (columnString.StartsWith("$"))
+		{
+			columnLocked = true;
+			columnString = columnString.Substring(1);
+		}
 
 		if (XLHelper.IsValidRow(rowString))
 		{
 			if (int.TryParse(rowString, out int outInt)) row = outInt;
 		}
+
 		if (XLHelper.IsValidColumn(columnString))
 		{
 			column = XLHelper.GetColumnNumberFromLetter(columnString);
 		}
 
-		return (row, column);
+		return (row, rowLocked, column, columnLocked);
 	}
 
 	public Color ApplyTint(Color color, double tint)
@@ -204,7 +229,15 @@ public class WvExcelRangeHelpers
 						type: WvExcelFileTemplateContextType.CellRange
 					);
 					var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
-					foreach (var resultCtx in resultContexts)
+					if (resultContexts.Count() == 0) continue;
+
+					WvExcelFileTemplateProcessResultItemContext firstResultContext = resultContexts.First();
+					WvExcelFileTemplateProcessResultItemContext lastResultContext = resultContexts.Last();
+					var processedContexts = new List<WvExcelFileTemplateProcessResultItemContext> { firstResultContext };
+					if(firstResultContext.TemplateContextId !=  lastResultContext.TemplateContextId)
+						processedContexts.Add(lastResultContext);
+
+					foreach (var resultCtx in processedContexts)
 					{
 						if (resultCtx.Range?.RangeAddress is null) continue;
 
@@ -220,6 +253,7 @@ public class WvExcelRangeHelpers
 							var relativeRangeFirstColumn = resultCtx.Range.RangeAddress.FirstAddress.ColumnNumber;
 							var relativeRangeLastRow = relativeRangeFirstRow;
 							var relativeRangeLastColumn = relativeRangeFirstColumn;
+
 							var restCtxCell = worksheet.Cell(relativeRangeFirstRow, relativeRangeFirstColumn);
 							var mergedRange = restCtxCell.MergedRange();
 							if (mergedRange is not null)
@@ -228,18 +262,45 @@ public class WvExcelRangeHelpers
 								relativeRangeLastColumn = mergedRange.ColumnCount() - 1;
 							}
 
-							if (templateContext.Flow == WvTemplateTagDataFlow.Vertical)
+							if (resultCtx.TemplateContextId == firstResultContext.TemplateContextId)
 							{
-								relativeRangeFirstRow += (expandPosition - 1);
-								relativeRangeLastRow += (expandPosition - 1);
+								if (templateContext.Flow == WvTemplateTagDataFlow.Vertical)
+								{
+									if (!range.FirstRowLocked)
+									{
+										relativeRangeFirstRow += (expandPosition - 1);
+										relativeRangeLastRow += (expandPosition - 1);
+									}
+								}
+								else
+								{
+									if (!range.FirstColumnLocked)
+									{
+										relativeRangeFirstColumn += (expandPosition - 1);
+										relativeRangeLastColumn += (expandPosition - 1);
+									}
+								}
 							}
 							else
 							{
-								relativeRangeFirstColumn += (expandPosition - 1);
-								relativeRangeLastColumn += (expandPosition - 1);
+								if (templateContext.Flow == WvTemplateTagDataFlow.Vertical)
+								{
+									if (!range.LastRowLocked)
+									{
+										relativeRangeFirstRow += (expandPosition - 1);
+										relativeRangeLastRow += (expandPosition - 1);
+									}
+								}
+								else
+								{
+									if (!range.LastColumnLocked)
+									{
+										relativeRangeFirstColumn += (expandPosition - 1);
+										relativeRangeLastColumn += (expandPosition - 1);
+									}
+								}
 							}
 							rangeList.Add(worksheet.Range(relativeRangeFirstRow, relativeRangeFirstColumn, relativeRangeLastRow, relativeRangeLastColumn).RangeAddress.ToString() ?? String.Empty);
-
 						}
 					}
 				}

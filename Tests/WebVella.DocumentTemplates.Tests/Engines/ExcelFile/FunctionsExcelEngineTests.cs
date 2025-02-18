@@ -443,9 +443,100 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("total", worksheet.Cell(1, 3).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(2, 3).Value.ToString());
 			Assert.Equal("4", worksheet.Cell(3, 3).Value.ToString());
-			Assert.Equal("6", worksheet.Cell(4, 4).Value.ToString());
-			Assert.Equal("8", worksheet.Cell(5, 5).Value.ToString());
-			Assert.Equal("10", worksheet.Cell(6, 6).Value.ToString());
+			Assert.Equal("6", worksheet.Cell(4, 3).Value.ToString());
+			Assert.Equal("8", worksheet.Cell(5, 3).Value.ToString());
+			Assert.Equal("10", worksheet.Cell(6, 3).Value.ToString());
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void Function_SUM_Totals()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateFunction-SUM-2.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+
+			//Then
+			GeneralResultChecks(result);
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal("position", worksheet.Cell(1, 1).Value);
+			Assert.Equal(1, worksheet.Cell(2, 1).Value);
+			Assert.Equal(2, worksheet.Cell(3, 1).Value);
+			Assert.Equal(3, worksheet.Cell(4, 1).Value);
+			Assert.Equal(4, worksheet.Cell(5, 1).Value);
+			Assert.Equal(5, worksheet.Cell(6, 1).Value);
+			Assert.Equal("position", worksheet.Cell(1, 2).Value);
+			Assert.Equal(1, worksheet.Cell(2, 2).Value);
+			Assert.Equal(2, worksheet.Cell(3, 2).Value);
+			Assert.Equal(3, worksheet.Cell(4, 2).Value);
+			Assert.Equal(4, worksheet.Cell(5, 2).Value);
+			Assert.Equal(5, worksheet.Cell(6, 2).Value);
+
+			Assert.Equal(15, worksheet.Cell(7, 1).Value);
+			Assert.Equal(15, worksheet.Cell(7, 2).Value);
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void Function_SUM_Static()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateFunction-SUM-3.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+
+			//Then
+			GeneralResultChecks(result);
+			Assert.Single(result!.Template!.Worksheets);
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal("position", worksheet.Cell(1, 1).Value);
+			Assert.Equal(1, worksheet.Cell(2, 1).Value);
+			Assert.Equal(2, worksheet.Cell(3, 1).Value);
+			Assert.Equal(3, worksheet.Cell(4, 1).Value);
+			Assert.Equal(4, worksheet.Cell(5, 1).Value);
+			Assert.Equal(5, worksheet.Cell(6, 1).Value);
+			Assert.Equal("position", worksheet.Cell(1, 2).Value.ToString());
+			Assert.Equal(1, worksheet.Cell(2, 2).Value);
+			Assert.Equal(2, worksheet.Cell(3, 2).Value);
+			Assert.Equal(3, worksheet.Cell(4, 2).Value);
+			Assert.Equal(4, worksheet.Cell(5, 2).Value);
+			Assert.Equal(5, worksheet.Cell(6, 2).Value);
+			Assert.Equal("total", worksheet.Cell(1, 3).Value);
+			Assert.Equal(2, worksheet.Cell(2, 3).Value);
+			Assert.Equal(3, worksheet.Cell(3, 3).Value);
+			Assert.Equal(4, worksheet.Cell(4, 3).Value);
+			Assert.Equal(5, worksheet.Cell(5, 3).Value);
+			Assert.Equal(6, worksheet.Cell(6, 3).Value);
 
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}

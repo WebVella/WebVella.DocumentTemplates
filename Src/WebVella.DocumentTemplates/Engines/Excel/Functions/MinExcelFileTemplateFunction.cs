@@ -16,6 +16,7 @@ public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
+			int expandPositionMax,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,

@@ -17,6 +17,7 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
+			int expandPositionMax,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,
@@ -35,71 +36,120 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 		if (String.IsNullOrWhiteSpace(tag.FunctionName))
 			throw new Exception($"Unsupported function name: {tag.Name} in tag");
 
-		object? resultValue = null;
-		if (tag.ParamGroups.Count > 0
-			&& tag.ParamGroups[0].Parameters.Count > 0
-			&& !String.IsNullOrWhiteSpace(tag.FullString))
-		{
-			long sum = 0;
-			foreach (var parameter in tag.ParamGroups[0].Parameters)
-			{
-				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-				var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString ?? String.Empty);
-				if (range is not null)
-				{
-					var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
-						worksheetPosition: worksheet.Position,
-						range: range,
-						type: WvExcelFileTemplateContextType.CellRange
-					);
-					var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
-					var processedCellsHS = new HashSet<string>();
-					foreach (var resContext in resultContexts)
-					{
-						var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
-						var lastAddress = resContext.Range!.RangeAddress.LastAddress;
-						for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
-						{
-							for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
-							{
-								var resultCell = worksheet.Cell(rowNum, colNum);
-								if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
-								var mergedRange = resultCell.MergedRange();
-								var mergedRows = 1;
-								var mergedCols = 1;
-								if (mergedRange != null)
-								{
-									foreach (var cell in mergedRange.Cells())
-									{
-										processedCellsHS.Add(cell.Address.ToString() ?? "");
-									}
-									mergedRows = mergedRange.RowCount();
-									mergedCols = mergedRange.ColumnCount();
-								}
-								else
-								{
-									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
-								}
+		var rangeList = new WvExcelRangeHelpers().GetRangeAddressesForTag(
+			tag: tag,
+			templateContext: templateContext,
+			expandPosition: expandPosition,
+			expandPositionMax: expandPositionMax,
+			result: result,
+			resultItem: resultItem,
+			worksheet: worksheet
+		);
 
-								var valueString = resultCell.Value.ToString();
-								if (long.TryParse(valueString, out long longValue))
-								{
-									sum += longValue;
-								}
-							}
+		object? resultValue = null;
+		long sum = 0;
+		var processedCellsHS = new HashSet<string>();
+		foreach (var rangeAddress in rangeList)
+		{
+			var cellRange = worksheet.Range(rangeAddress);
+			var firstAddress = cellRange.RangeAddress.FirstAddress;
+			var lastAddress = cellRange.RangeAddress.LastAddress;
+			for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
+			{
+				for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
+				{
+					var resultCell = worksheet.Cell(rowNum, colNum);
+					if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
+					var mergedRange = resultCell.MergedRange();
+					var mergedRows = 1;
+					var mergedCols = 1;
+					if (mergedRange != null)
+					{
+						foreach (var cell in mergedRange.Cells())
+						{
+							processedCellsHS.Add(cell.Address.ToString() ?? "");
 						}
+						mergedRows = mergedRange.RowCount();
+						mergedCols = mergedRange.ColumnCount();
+					}
+					else
+					{
+						processedCellsHS.Add(resultCell.Address.ToString() ?? "");
+					}
+
+					var valueString = resultCell.Value.ToString();
+					if (long.TryParse(valueString, out long longValue))
+					{
+						sum += longValue;
 					}
 				}
 			}
-
-			if (!String.IsNullOrWhiteSpace(tagValue))
-			{
-				if (tagValue == tag.FullString)
-					resultValue = sum;
-				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString());
-			}
 		}
+		if (!String.IsNullOrWhiteSpace(tagValue))
+		{
+			if (tagValue == tag.FullString)
+				resultValue = sum;
+			else
+				resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString());
+		}
+		//if (tag.ParamGroups.Count > 0
+		//	&& tag.ParamGroups[0].Parameters.Count > 0
+		//	&& !String.IsNullOrWhiteSpace(tag.FullString))
+		//{
+		//	long sum = 0;
+		//	foreach (var parameter in tag.ParamGroups[0].Parameters)
+		//	{
+		//		if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
+		//		var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString ?? String.Empty);
+		//		if (range is not null)
+		//		{
+		//			var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
+		//				worksheetPosition: worksheet.Position,
+		//				range: range,
+		//				type: WvExcelFileTemplateContextType.CellRange
+		//			);
+		//			var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
+		//			var processedCellsHS = new HashSet<string>();
+		//			foreach (var resContext in resultContexts)
+		//			{
+		//				var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
+		//				var lastAddress = resContext.Range!.RangeAddress.LastAddress;
+		//				for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
+		//				{
+		//					for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
+		//					{
+		//						var resultCell = worksheet.Cell(rowNum, colNum);
+		//						if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
+		//						var mergedRange = resultCell.MergedRange();
+		//						var mergedRows = 1;
+		//						var mergedCols = 1;
+		//						if (mergedRange != null)
+		//						{
+		//							foreach (var cell in mergedRange.Cells())
+		//							{
+		//								processedCellsHS.Add(cell.Address.ToString() ?? "");
+		//							}
+		//							mergedRows = mergedRange.RowCount();
+		//							mergedCols = mergedRange.ColumnCount();
+		//						}
+		//						else
+		//						{
+		//							processedCellsHS.Add(resultCell.Address.ToString() ?? "");
+		//						}
+
+		//						var valueString = resultCell.Value.ToString();
+		//						if (long.TryParse(valueString, out long longValue))
+		//						{
+		//							sum += longValue;
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
+		//	}
+
+
+		//}
 
 		return resultValue;
 	}
