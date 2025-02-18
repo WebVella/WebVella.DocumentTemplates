@@ -7,13 +7,13 @@ using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Extensions;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
-public static partial class WvExcelFileEngineUtility
+public partial class WvExcelFileEngineUtility
 {
 	/// <summary>
 	/// Generates dependencies between the contexts based on formula fields ranges
 	/// </summary>
 	/// <param name="result"></param>
-	public static void ProcessExcelTemplateCalculateDependencies(WvExcelFileTemplateProcessResult result)
+	public void ProcessExcelTemplateCalculateDependencies(WvExcelFileTemplateProcessResult result)
 	{
 		foreach (var context in result.TemplateContexts)
 		{

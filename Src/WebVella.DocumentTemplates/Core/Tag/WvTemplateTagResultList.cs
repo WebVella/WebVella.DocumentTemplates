@@ -29,4 +29,5 @@ public class WvTemplateTagResultList
 		}
 	}
 	public List<object> Values { get; set; } = new();
+	public int ExpandCount { get; set; } = 1;
 }

@@ -26,7 +26,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "name!A1:C4";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal("name", result.Worksheet);
@@ -46,7 +46,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "name!C5";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal("name", result.Worksheet);
@@ -66,7 +66,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "A1:C4";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.True(String.IsNullOrWhiteSpace(result.Worksheet));
@@ -86,7 +86,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "C5";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.NotNull(result);
 			Assert.True(String.IsNullOrWhiteSpace(result.Worksheet));
@@ -106,7 +106,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "invalid";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.Null(result);
 		}
@@ -121,7 +121,7 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			var address = "invalid123";
 
 			//When
-			var result = WvExcelRangeHelpers.GetRangeFromString(address);
+			var result = new WvExcelRangeHelpers().GetRangeFromString(address);
 			//Then
 			Assert.Null(result);
 		}

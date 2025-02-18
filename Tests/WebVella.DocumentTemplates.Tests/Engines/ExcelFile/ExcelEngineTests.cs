@@ -55,6 +55,7 @@ public partial class ExcelEngineTests : TestBase
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 			//Then
 			GeneralResultChecks(result);
 			Assert.Single(result!.Template!.Worksheets);

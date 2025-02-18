@@ -19,7 +19,7 @@ public static partial class WvTemplateTagExtensions
 				foreach (var parameter in tag.ParamGroups[0].Parameters)
 				{
 					if(String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-					var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString);
+					var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString);
 					if (range is null) return result;
 					result.Add(range);
 				}
@@ -32,7 +32,7 @@ public static partial class WvTemplateTagExtensions
 				foreach (var parameter in tag.ParamGroups[0].Parameters)
 				{
 					if(String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-					var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString);
+					var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString);
 					if (range is null) return result;
 					result.Add(range);
 				}

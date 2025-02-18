@@ -10,9 +10,8 @@ public interface IWvExcelFileTemplateFunctionProcessor
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 	public object? Process(
-		object? value,
+		string? tagValue,
 		WvTemplateTag tag,
-		WvTemplateTagResultList input,
 		DataTable dataSource,
 		WvExcelFileTemplateProcessResult result,
 		WvExcelFileTemplateProcessResultItem resultItem,

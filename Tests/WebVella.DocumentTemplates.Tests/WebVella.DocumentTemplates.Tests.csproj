@@ -80,6 +80,9 @@
     <None Update="Files\TemplateContext3.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\TemplateContextFlow5.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\TemplateContextFlow4.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

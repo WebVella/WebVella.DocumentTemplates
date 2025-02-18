@@ -1,13 +1,13 @@
 ﻿using System.Data;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
 {
+
 	public WvTemplateTagResultList ProcessTemplateTag(
-		string? template, 
-		DataTable dataSource, 
+		string? template,
+		DataTable dataSource,
 		CultureInfo culture)
 	{
 		var result = new WvTemplateTagResultList();
@@ -36,11 +36,40 @@ public partial class WvTemplateUtility
 			{
 				result.Values.Add(resultValue.Value);
 			}
-			else{ 
+			else
+			{
 				result.Values.Add(String.Empty);
 			}
 		}
 		return result;
+	}
+
+	public object? GetTemplateValue(
+		string? template,
+		int dataRowIndex,
+		DataTable dataSource,
+		CultureInfo culture)
+	{
+		if (String.IsNullOrWhiteSpace(template)) return null;
+		var tags = GetTagsFromTemplate(template);
+		//if there are no tags - return one with the template
+		if (tags.Count == 0) return template;
+
+		string? valueString = template;
+		object? value = null;
+
+		if(tags.Count == 1 && tags[0].FullString == template){ 
+			(valueString, value) = ProcessTagInTemplate(valueString, value, tags[0], dataSource, dataRowIndex, culture);
+			return value;
+		}
+
+		foreach (var tag in tags)
+		{
+			(valueString, value) = ProcessTagInTemplate(valueString, value, tag, dataSource, dataRowIndex, culture);
+		}
+		if (value is string) return valueString;
+
+		return value;
 	}
 
 }

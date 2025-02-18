@@ -24,7 +24,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Given
 			WvExcelFileTemplateProcessResult? result = null;
 			//When
-			var action = () => WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			var action = () => new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			var ex = Record.Exception(action);
 			Assert.NotNull(ex);
@@ -47,7 +47,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = LoadWorkbook(templateFile)
 			};
 			//When
-			var action = () => WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			var action = () => new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			var ex = Record.Exception(action);
 			Assert.Null(ex);
@@ -70,7 +70,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Single(result.TemplateContexts);
@@ -99,7 +99,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Single(result.TemplateContexts);
@@ -126,7 +126,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Single(result.TemplateContexts);
@@ -154,7 +154,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Single(result.TemplateContexts);
@@ -185,7 +185,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal(2, result.TemplateContexts.Count);
@@ -212,7 +212,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal(2, result.TemplateContexts.Count);
@@ -241,7 +241,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal(2, result.TemplateContexts.Count);
@@ -270,7 +270,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal(2, result.TemplateContexts.Count);
@@ -299,7 +299,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			Assert.Equal(2, result.TemplateContexts.Count);
@@ -330,7 +330,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 				Template = wb
 			};
 			//When
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			//Then
 			Assert.NotNull(result);
 			var pictureContextList = result.TemplateContexts.Where(x => x.Type == WvExcelFileTemplateContextType.Picture).ToList();
@@ -485,6 +485,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a5Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b5Context.Flow);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
 	[Fact]
@@ -535,6 +536,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b3Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
 	[Fact]
@@ -588,6 +590,165 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.ForcedFlow);
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.Flow);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+	[Fact]
+	public void DataFlow_Test4()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContextFlow4.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			//Then
+			GeneralResultChecks(result);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.Single(result.Template.Worksheets);
+			var ws = result.Template.Worksheets.First();
+			Assert.Equal(16, result.TemplateContexts.Count);
+			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
+			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
+			var c1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 3).FirstOrDefault();
+			var d1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 4).FirstOrDefault();
+			var a2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 1).FirstOrDefault();
+			var b2Context = result.TemplateContexts.GetByAddress(ws.Position, 2, 2).FirstOrDefault();
+			var a3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 1).FirstOrDefault();
+			var b3Context = result.TemplateContexts.GetByAddress(ws.Position, 3, 2).FirstOrDefault();
+			var a4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 1).FirstOrDefault();
+			var b4Context = result.TemplateContexts.GetByAddress(ws.Position, 4, 2).FirstOrDefault();
+
+			Assert.NotNull(a1Context);
+			Assert.NotNull(b1Context);
+			Assert.NotNull(c1Context);
+			Assert.NotNull(d1Context);
+			Assert.NotNull(a2Context);
+			Assert.NotNull(b2Context);
+			Assert.NotNull(a3Context);
+			Assert.NotNull(b3Context);
+			Assert.NotNull(a4Context);
+			Assert.NotNull(b4Context);
+
+			//A1
+			Assert.Null(a1Context.ForcedContext);
+			Assert.Null(a1Context.ParentContext);
+
+			Assert.NotNull(a1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a1Context.Flow);
+
+			//B1
+			Assert.Null(b1Context.ForcedContext);
+			Assert.NotNull(b1Context.ParentContext);
+			Assert.Equal(a1Context.Id, b1Context.ParentContext.Id);
+
+			Assert.NotNull(b1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b1Context.Flow);
+
+			//C1
+			Assert.Null(c1Context.ForcedContext);
+			Assert.Null(c1Context.ParentContext);
+			Assert.True(c1Context.IsNullContextForced);
+
+			Assert.Null(c1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, c1Context.Flow);
+
+			//D1
+			Assert.Null(d1Context.ForcedContext);
+			Assert.Null(d1Context.ParentContext);
+
+			Assert.NotNull(d1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, d1Context.ForcedFlow);
+			Assert.Equal(WvTemplateTagDataFlow.Horizontal, d1Context.Flow);
+
+			//A2
+			Assert.Null(a2Context.ForcedContext);
+			Assert.NotNull(a2Context.ParentContext);
+			Assert.Equal(a1Context.Id, a2Context.ParentContext.Id);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a2Context.Flow);
+
+			//B2
+			Assert.Null(b2Context.ForcedFlow);
+			Assert.NotNull(b2Context.ForcedContext);
+			Assert.Equal(b1Context.Id, b2Context.ForcedContext.Id);
+			Assert.Equal(b1Context.Flow, b2Context.Flow);
+
+			//A3
+			Assert.Null(a3Context.ForcedContext);
+			Assert.NotNull(a3Context.ParentContext);
+			Assert.Equal(a2Context.Id, a3Context.ParentContext.Id);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a3Context.Flow);
+
+			//B3
+			Assert.Null(b3Context.ForcedFlow);
+			Assert.Null(b3Context.ForcedContext);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, b3Context.Flow);
+			Assert.NotNull(b3Context.ParentContext);
+			Assert.Equal(a3Context.Id, b3Context.ParentContext.Id);
+
+			//A4
+			Assert.Null(a4Context.ForcedContext);
+			Assert.NotNull(a4Context.ParentContext);
+			Assert.Equal(a3Context.Id, a4Context.ParentContext.Id);
+			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
+
+			//B2
+			Assert.Null(b4Context.ForcedFlow);
+			Assert.NotNull(b4Context.ForcedContext);
+			Assert.Equal(b1Context.Id, b4Context.ForcedContext.Id);
+			Assert.Equal(b1Context.Flow, b4Context.Flow);
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void DataFlow_Test5()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "TemplateContextFlow5.xlsx";
+			var template = new WvExcelFileTemplate
+			{
+				Template = LoadWorkbook(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			GeneralResultChecks(result);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.Single(result.Template.Worksheets);
+			Assert.Equal(2, result.TemplateContexts.Count);
+
+			Assert.NotNull(result!.ResultItems);
+			Assert.Single(result!.ResultItems);
+			Assert.NotNull(result!.ResultItems[0]!.Result);
+			Assert.NotNull(result!.ResultItems[0]!.Result!.Worksheets);
+			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.Equal(2, result!.ResultItems[0]!.ResultContexts.Count);
+			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[0].Range!, 1, 1, 1, 1);
+			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[1].Range!, 2, 1, 6, 1);
+
+			Assert.Equal("position", ws.Cell(1, 1).Value.ToString());
+			Assert.Equal(1, ws.Cell(2, 1).Value);
+			Assert.Equal(2, ws.Cell(3, 1).Value);
+			Assert.Equal(3, ws.Cell(4, 1).Value);
+			Assert.Equal(4, ws.Cell(5, 1).Value);
+			Assert.Equal(5, ws.Cell(6, 1).Value);
+
+			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
 	#endregion

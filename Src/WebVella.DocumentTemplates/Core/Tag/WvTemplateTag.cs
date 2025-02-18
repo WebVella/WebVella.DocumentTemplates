@@ -10,27 +10,37 @@ public class WvTemplateTag
 	//as in the sheet name there cannot be used [] and in all cases that there is a list of data matched
 	//in the methods the first one is always 0 by default
 	public List<int> IndexList { get; set; } = new List<int>();
-	public WvTemplateTagDataFlow Flow
+	public WvTemplateTagDataFlow? Flow
 	{
 		get
 		{
-			if(!String.IsNullOrEmpty(FlowSeparator)){ 
-				return WvTemplateTagDataFlow.Horizontal;
-			}
-
+			WvTemplateTagDataFlow? flow = null;
 			foreach (var paramGroup in ParamGroups)
 			{
+				if (flow is not null) break;
 				foreach (var param in paramGroup.Parameters)
 				{
-					if (param.Type.InheritsClass(typeof(WvTemplateTagDataFlowParameterProcessor))
-						&& ((WvTemplateTagDataFlowParameterProcessor)param).Value == WvTemplateTagDataFlow.Horizontal)
+					if (param.Type.InheritsClass(typeof(WvTemplateTagDataFlowParameterProcessor)))
 					{
-						return WvTemplateTagDataFlow.Horizontal;
+						if (((WvTemplateTagDataFlowParameterProcessor)param).Value == WvTemplateTagDataFlow.Horizontal)
+						{
+							flow = WvTemplateTagDataFlow.Horizontal;
+							break;
+						}
+						else if (((WvTemplateTagDataFlowParameterProcessor)param).Value == WvTemplateTagDataFlow.Vertical)
+						{
+							flow = WvTemplateTagDataFlow.Vertical;
+							break;
+						}
 					}
 				}
 			}
 
-			return WvTemplateTagDataFlow.Vertical;
+			if (!String.IsNullOrEmpty(FlowSeparator))
+			{
+				flow = WvTemplateTagDataFlow.Horizontal;
+			}
+			return flow;
 		}
 	}
 	public string? FlowSeparator

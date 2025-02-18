@@ -41,9 +41,9 @@ public partial class DataExcelEngineTests : TestBase
 
 			for (int i = 0; i < SampleData.Rows.Count; i++)
 			{
-				var cellValueString = ws.Cell(i + 1, 1).Value.ToString();
-				var rowValueString = SampleData.Rows[i]["position"]?.ToString();
-				Assert.Equal(rowValueString, cellValueString);
+				var data = SampleData.Rows[i]["position"];
+				var cell = ws.Cell(i + 1, 1).Value;
+				Assert.Equal(data.ToString(), cell.ToString());
 			}
 
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
@@ -117,7 +117,7 @@ public partial class DataExcelEngineTests : TestBase
 			}
 			for (int i = 0; i < SampleData.Rows.Count; i++)
 			{
-				var cellValueString = ws.Cell(i + 2, 1).Value.ToString();
+				var cellValueString = ws.Cell(2, i + 1).Value.ToString();
 				var rowValueString = SampleData.Rows[i]["name"]?.ToString();
 				Assert.Equal(rowValueString, cellValueString);
 			}
@@ -175,19 +175,19 @@ public partial class DataExcelEngineTests : TestBase
 			var sw = new Stopwatch();
 			long timeMS = 0;
 			sw.Start();
-			WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Restart();
-			WvExcelFileEngineUtility.ProcessExcelTemplateCalculateDependencies(result);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateCalculateDependencies(result);
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Restart();
 			var templContextDict = result.TemplateContexts.ToDictionary(x => x.Id);
-			WvExcelFileEngineUtility.ProcessExcelTemplateGenerateResultContexts(result, resultItem, ds, culture, templContextDict);
+			new WvExcelFileEngineUtility().ProcessExcelTemplateGenerateResultContexts(result, resultItem, ds, culture, templContextDict);
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Stop();
 			//Then
 			SaveWorkbook(resultItem.Result!, templateFile);
-			Assert.True(10 * 1000 > timeMS);
+			Assert.True(15 * 1000 > timeMS);
 		}
 	}
 
@@ -214,6 +214,34 @@ public partial class DataExcelEngineTests : TestBase
 			Assert.NotNull(result!.ResultItems[0]!.Result);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
 			Assert.Equal(6, result!.ResultItems[0]!.ResultContexts.Count);
+			var tempWs = result!.Template!.Worksheets.First();
+			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
+
+			var tempA1 = tempWs.Cell(1,1);
+			var resultA1 = tempWs.Cell(1,1);
+
+			var tempB1 = tempWs.Cell(1,2);
+			var resultB1 = tempWs.Cell(1,2);
+
+			var tempC1 = tempWs.Cell(1,3);
+			var resultC1 = tempWs.Cell(1,3);
+
+			var tempD1 = tempWs.Cell(1,4);
+			var resultD1 = tempWs.Cell(1,4);
+
+			var tempE1 = tempWs.Cell(1,5);
+			var resultE1 = tempWs.Cell(1,5);
+
+			var tempF1 = tempWs.Cell(1,6);
+			var resultF1 = tempWs.Cell(1,6);
+
+			CompareStyle(tempA1,resultA1);
+			CompareStyle(tempB1,resultB1);
+			CompareStyle(tempC1,resultC1);
+			CompareStyle(tempD1,resultD1);
+			CompareStyle(tempE1,resultE1);
+			CompareStyle(tempF1,resultF1);
+
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}

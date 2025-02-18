@@ -14,9 +14,8 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 	public string? ErrorMessage { get; set; }
 
 	public object? Process(
-			object? value,
+			string? tagValue,
 			WvTemplateTag tag,
-			WvTemplateTagResultList input,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,
@@ -31,17 +30,8 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 		if (worksheet is null) throw new ArgumentException(nameof(worksheet));
 		if (tag.Type != WvTemplateTagType.Function)
 			throw new ArgumentException("Template tag is not Function type", nameof(tag));
-		if (!input.Tags.Any(x => x.Type == WvTemplateTagType.Function)) return input;
-		if (input.Values.Count == 0) return input;
 
-		var resultTagList = new WvTemplateTagResultList()
-		{
-			Tags = input.Tags.ToList(),
-			Values = new(),
-		};
-
-
-
+		object? resultValue = null;
 		if (tag.ParamGroups.Count > 0
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
@@ -50,7 +40,7 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-				var range = WvExcelRangeHelpers.GetRangeFromString(parameter.ValueString ?? String.Empty);
+				var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString ?? String.Empty);
 				if (range is not null)
 				{
 					var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
@@ -96,23 +86,15 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 				}
 			}
 
-			foreach (var tagValue in input.Values)
+			if (tagValue is not null && tagValue is string)
 			{
-				if (tagValue is null) continue;
-				if (tagValue is not null && tagValue is string)
-				{
-					if (input.Tags.Count == 1)
-						resultTagList.Values.Add(sb.ToString());
-					else
-						resultTagList.Values.Add(((string)tagValue).Replace(tag.FullString ?? String.Empty, sb.ToString()));
-				}
+				if (tagValue == tag.FullString)
+					resultValue = sb.ToString();
 				else
-				{
-					resultTagList.Values.Add(tagValue!);
-				}
+					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sb.ToString());
 			}
 		}
 
-		return resultTagList;
+		return resultValue;
 	}
 }

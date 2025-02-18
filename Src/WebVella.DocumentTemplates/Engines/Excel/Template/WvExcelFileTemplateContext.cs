@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
+using System.Drawing;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Engines.Excel.Utility;
 namespace WebVella.DocumentTemplates.Engines.Excel;
@@ -14,10 +15,11 @@ public class WvExcelFileTemplateContext
 	{
 		get
 		{
-			if(ForcedFlow.HasValue) return ForcedFlow.Value;
-			if(ParentContext is not null){ 
-				WvTemplateTagDataFlow? parentFlow = ParentContext.GetDataFlow(null); 			
-				if(parentFlow.HasValue) return parentFlow.Value;
+			if (ForcedFlow.HasValue) return ForcedFlow.Value;
+			if (ParentContext is not null)
+			{
+				WvTemplateTagDataFlow? parentFlow = ParentContext.Flow;
+				if (parentFlow.HasValue) return parentFlow.Value;
 			}
 			return WvTemplateTagDataFlow.Vertical;
 		}
@@ -25,7 +27,6 @@ public class WvExcelFileTemplateContext
 	public WvExcelFileTemplateContextType Type { get; set; } = WvExcelFileTemplateContextType.CellRange;
 	public IXLRange? Range { get; set; }
 	public IXLPicture? Picture { get; set; }
-
 	//The ItemRanges are index in the order of the datasource rows
 	public List<IXLRange> ItemRanges { get; set; } = new();
 	public bool IsNullContextForced { get; set; } = false;

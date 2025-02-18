@@ -103,12 +103,6 @@ public static class TemplateContextExtensions
 		}
 	}
 
-	public static WvTemplateTagDataFlow? GetDataFlow(this WvExcelFileTemplateContext? context, WvTemplateTagDataFlow? currentFlow)
-	{	
-		if(context is null) return currentFlow;
-		return GetDataFlow(context.ParentContext,currentFlow);
-	}
-
 	private static bool CheckIntersection(WvExcelRange range1, WvExcelRange range2)
 	{
 		// Check if the ranges intersect

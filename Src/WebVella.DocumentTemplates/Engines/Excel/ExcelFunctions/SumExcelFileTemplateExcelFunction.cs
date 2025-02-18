@@ -40,7 +40,7 @@ public class SumExcelFileTemplateExcelFunction : IWvExcelFileTemplateExcelFuncti
 			foreach (var param in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(param.ValueString)) continue;
-				var range = WvExcelRangeHelpers.GetRangeFromString(param.ValueString ?? String.Empty);
+				var range = new WvExcelRangeHelpers().GetRangeFromString(param.ValueString ?? String.Empty);
 				if (range is not null)
 				{
 					var rangeTemplateContexts = result.TemplateContexts.GetIntersections(

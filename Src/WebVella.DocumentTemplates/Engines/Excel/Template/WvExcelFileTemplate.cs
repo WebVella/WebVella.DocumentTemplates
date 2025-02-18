@@ -30,8 +30,8 @@ public class WvExcelFileTemplate : WvTemplateBase
 			});
 			return result;
 		};
-		WvExcelFileEngineUtility.ProcessExcelTemplateInitTemplateContexts(result);
-		WvExcelFileEngineUtility.ProcessExcelTemplateCalculateDependencies(result);
+		new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
+		new WvExcelFileEngineUtility().ProcessExcelTemplateCalculateDependencies(result);
 		var templateContextDict = result.TemplateContexts.ToDictionary(x => x.Id);
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
@@ -41,7 +41,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 				Result = new XLWorkbook()
 			};
 			var templateContextsDict = result.TemplateContexts.ToDictionary(x => x.Id);
-			WvExcelFileEngineUtility.ProcessExcelTemplateGenerateResultContexts(
+			new WvExcelFileEngineUtility().ProcessExcelTemplateGenerateResultContexts(
 				result: result,
 				resultItem: resultItem,
 				dataSource: grouptedDs,
