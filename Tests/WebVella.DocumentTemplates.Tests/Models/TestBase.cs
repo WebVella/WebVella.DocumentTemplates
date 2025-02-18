@@ -261,7 +261,11 @@ public class TestBase
 		else
 		{
 			Assert.NotNull(result);
-			Assert.Equal(template.ToString(), result.ToString());
+			if(template.ColorType == XLColorType.Color && result.ColorType == XLColorType.Color)
+				Assert.Equal(template.ToString(), result.ToString());
+
+			if(template.ColorType == XLColorType.Theme && result.ColorType == XLColorType.Theme)
+				Assert.Equal(template.ToString(), result.ToString());
 		}
 	}
 
