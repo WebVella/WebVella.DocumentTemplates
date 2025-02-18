@@ -101,6 +101,12 @@
     <None Update="Files\TemplateExcelFunction-ABS-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\TemplateExcelFunction-SUM-2.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\TemplateExcelFunction-SUM-1.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\TemplateExcelFunction-MIN-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

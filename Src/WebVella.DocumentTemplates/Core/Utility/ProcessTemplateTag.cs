@@ -46,7 +46,7 @@ public partial class WvTemplateUtility
 
 	public object? GetTemplateValue(
 		string? template,
-		int dataRowIndex,
+		int dataRowPosition,
 		DataTable dataSource,
 		CultureInfo culture)
 	{
@@ -57,15 +57,16 @@ public partial class WvTemplateUtility
 
 		string? valueString = template;
 		object? value = null;
-
-		if(tags.Count == 1 && tags[0].FullString == template){ 
-			(valueString, value) = ProcessTagInTemplate(valueString, value, tags[0], dataSource, dataRowIndex, culture);
+		if(dataRowPosition < 1) dataRowPosition = 1;
+		if (tags.Count == 1 && tags[0].FullString == template)
+		{
+			(valueString, value) = ProcessTagInTemplate(valueString, value, tags[0], dataSource, dataRowPosition - 1, culture);
 			return value;
 		}
 
 		foreach (var tag in tags)
 		{
-			(valueString, value) = ProcessTagInTemplate(valueString, value, tag, dataSource, dataRowIndex, culture);
+			(valueString, value) = ProcessTagInTemplate(valueString, value, tag, dataSource, dataRowPosition - 1, culture);
 		}
 		if (value is string) return valueString;
 

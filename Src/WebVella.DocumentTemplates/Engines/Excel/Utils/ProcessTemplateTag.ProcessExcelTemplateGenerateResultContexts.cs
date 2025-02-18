@@ -287,13 +287,13 @@ public partial class WvExcelFileEngineUtility
 				}
 
 
-				var tagProcessResult1 = new WvExcelFileEngineUtility().ProcessTemplateTag(
+				var tagProcessResult = new WvExcelFileEngineUtility().ProcessTemplateTag(
 					template: tempCell.Value.ToString(),
 					dataSource: dataSource,
 					templateContext: templateContext,
 					resultItem: resultItem);
 
-				for (int expandIndex = 0; expandIndex < tagProcessResult1.ExpandCount; expandIndex++)
+				for (int expandPosition = 1; expandPosition <= tagProcessResult.ExpandCount; expandPosition++)
 				{
 					endRow = currentRow + (mergedRows - 1);
 					endCol = currentCol + (mergedCols - 1);
@@ -315,7 +315,7 @@ public partial class WvExcelFileEngineUtility
 							{
 								var value = new WvTemplateUtility().GetTemplateValue(
 									template: tempCell.Value.ToString(),
-									dataRowIndex: expandIndex,
+									dataRowPosition: expandPosition,
 									dataSource: dataSource,
 									culture: culture
 								);
@@ -333,6 +333,8 @@ public partial class WvExcelFileEngineUtility
 								var value = functionProcessor.Process(
 													tagValue: tempCell.Value.ToString(),
 													tag: tag,
+													expandPosition: expandPosition,
+													templateContext: templateContext,
 													dataSource: dataSource,
 													result: result,
 													resultItem: resultItem,
@@ -354,10 +356,11 @@ public partial class WvExcelFileEngineUtility
 								var value = functionProcessor.Process(
 													value: tempCell.Value.ToString(),
 													tag: tag,
-													dataSource: dataSource,
+													expandPosition: expandPosition,
+													expandPositionMax:tagProcessResult.ExpandCount,
+													templateContext: templateContext,
 													result: result,
 													resultItem: resultItem,
-													processedCellRange: resultRange,
 													processedWorksheet: resultRow.Worksheet
 												);
 								if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
@@ -373,7 +376,7 @@ public partial class WvExcelFileEngineUtility
 								{
 									value = new WvTemplateUtility().GetTemplateValue(
 										template: value!.ToString(),
-										dataRowIndex: expandIndex,
+										dataRowPosition: expandPosition,
 										dataSource: dataSource,
 										culture: culture);
 								}
@@ -388,6 +391,8 @@ public partial class WvExcelFileEngineUtility
 									value = functionProcessor.Process(
 														tagValue: value.ToString(),
 														tag: tag,
+														expandPosition: expandPosition,
+														templateContext: templateContext,
 														dataSource: dataSource,
 														result: result,
 														resultItem: resultItem,
@@ -425,6 +430,7 @@ public partial class WvExcelFileEngineUtility
 				{
 					TemplateContextId = templateContext.Id,
 					Range = resultRow.Worksheet!.Range(resultStartRow, resultStartCol, endRow, endCol),
+					ExpandCount = tagProcessResult.ExpandCount
 				};
 				resultItem.ResultContexts.Add(resultItemContext);
 				addRangeToGrid(

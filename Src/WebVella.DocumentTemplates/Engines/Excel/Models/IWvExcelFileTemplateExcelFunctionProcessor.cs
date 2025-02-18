@@ -13,10 +13,11 @@ public interface IWvExcelFileTemplateExcelFunctionProcessor
 	public object? Process(
 		object? value,
 		WvTemplateTag tag,
-		DataTable dataSource,
+		WvExcelFileTemplateContext templateContext,
+		int expandPosition,
+		int expandPositionMax,
 		WvExcelFileTemplateProcessResult result,
 		WvExcelFileTemplateProcessResultItem resultItem,
-		IXLRange processedCellRange,
 		IXLWorksheet processedWorksheet
 	);
 

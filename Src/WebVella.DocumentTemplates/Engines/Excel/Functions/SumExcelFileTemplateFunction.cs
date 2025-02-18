@@ -15,6 +15,8 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 	public object? Process(
 			string? tagValue,
 			WvTemplateTag tag,
+			WvExcelFileTemplateContext templateContext,
+			int expandPosition,
 			DataTable dataSource,
 			WvExcelFileTemplateProcessResult result,
 			WvExcelFileTemplateProcessResultItem resultItem,

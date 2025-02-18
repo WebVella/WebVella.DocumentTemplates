@@ -33,26 +33,23 @@ public partial class WvExcelFileEngineUtility
 			else if (tag.Type == WvTemplateTagType.Function
 			|| tag.Type == WvTemplateTagType.ExcelFunction)
 			{
-				if (result.Tags.Count == 0)
+				//Expand with the parent if:
+				//Parent is LeftContext
+				//Parent is Forced
+				if (
+					(templateContext.LeftContext is not null
+						&& templateContext.ParentContext is not null
+						&& templateContext.LeftContext.Id == templateContext.ParentContext.Id)
+					|| (templateContext.ForcedContext is not null
+						&& templateContext.ParentContext is not null
+						&& templateContext.ForcedContext.Id == templateContext.ParentContext.Id)
+						)
 				{
-					//Expand with the parent if:
-					//Parent is LeftContext
-					//Parent is Forced
-					if (
-						(templateContext.LeftContext is not null
-							&& templateContext.ParentContext is not null
-							&& templateContext.LeftContext.Id == templateContext.ParentContext.Id)
-						|| (templateContext.ForcedContext is not null
-							&& templateContext.ParentContext is not null
-							&& templateContext.ForcedContext.Id == templateContext.ParentContext.Id)
-							)
-					{
-						var parentResult = resultItem.ResultContexts.Single(x => x.TemplateContextId == templateContext.ParentContext.Id);
-						if (result.ExpandCount < parentResult.ExpandCount)
-							result.ExpandCount = parentResult.ExpandCount;
-					}
-					//Do not expand in other cases
+					var parentResult = resultItem.ResultContexts.Single(x => x.TemplateContextId == templateContext.ParentContext.Id);
+					if (result.ExpandCount < parentResult.ExpandCount)
+						result.ExpandCount = parentResult.ExpandCount;
 				}
+				//Do not expand in other cases
 			}
 		}
 

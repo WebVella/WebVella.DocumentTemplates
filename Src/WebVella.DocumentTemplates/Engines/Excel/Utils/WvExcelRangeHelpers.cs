@@ -2,6 +2,7 @@
 using System.Data;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Engines.Excel.Models;
 
 namespace WebVella.DocumentTemplates.Engines.Excel.Utility;
@@ -178,4 +179,73 @@ public class WvExcelRangeHelpers
 		return Color.FromArgb(red, green, blue);
 	}
 
+	public List<string> GetRangeAddressesForTag(
+		WvTemplateTag tag,
+		WvExcelFileTemplateContext templateContext,
+		int expandPosition,
+		int expandPositionMax,
+		WvExcelFileTemplateProcessResult result,
+		WvExcelFileTemplateProcessResultItem resultItem,
+		IXLWorksheet worksheet
+		)
+	{
+		var rangeList = new List<string>();
+		foreach (var paramGroup in tag.ParamGroups)
+		{
+			foreach (var param in paramGroup.Parameters)
+			{
+				if (String.IsNullOrWhiteSpace(param.ValueString)) continue;
+				var range = new WvExcelRangeHelpers().GetRangeFromString(param.ValueString ?? String.Empty);
+				if (range is not null)
+				{
+					var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
+						worksheetPosition: worksheet.Position,
+						range: range,
+						type: WvExcelFileTemplateContextType.CellRange
+					);
+					var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
+					foreach (var resultCtx in resultContexts)
+					{
+						if (resultCtx.Range?.RangeAddress is null) continue;
+
+						if (expandPositionMax <= 1)
+						{
+							//the function row will not  expends
+							rangeList.Add(resultCtx.Range.RangeAddress.ToString() ?? String.Empty);
+						}
+						else
+						{
+							//the function row expends
+							var relativeRangeFirstRow = resultCtx.Range.RangeAddress.FirstAddress.RowNumber;
+							var relativeRangeFirstColumn = resultCtx.Range.RangeAddress.FirstAddress.ColumnNumber;
+							var relativeRangeLastRow = relativeRangeFirstRow;
+							var relativeRangeLastColumn = relativeRangeFirstColumn;
+							var restCtxCell = worksheet.Cell(relativeRangeFirstRow, relativeRangeFirstColumn);
+							var mergedRange = restCtxCell.MergedRange();
+							if (mergedRange is not null)
+							{
+								relativeRangeLastRow += mergedRange.RowCount() - 1;
+								relativeRangeLastColumn = mergedRange.ColumnCount() - 1;
+							}
+
+							if (templateContext.Flow == WvTemplateTagDataFlow.Vertical)
+							{
+								relativeRangeFirstRow += (expandPosition - 1);
+								relativeRangeLastRow += (expandPosition - 1);
+							}
+							else
+							{
+								relativeRangeFirstColumn += (expandPosition - 1);
+								relativeRangeLastColumn += (expandPosition - 1);
+							}
+							rangeList.Add(worksheet.Range(relativeRangeFirstRow, relativeRangeFirstColumn, relativeRangeLastRow, relativeRangeLastColumn).RangeAddress.ToString() ?? String.Empty);
+
+						}
+					}
+				}
+			}
+		}
+
+		return rangeList;
+	}
 }
