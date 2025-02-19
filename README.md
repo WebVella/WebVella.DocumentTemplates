@@ -5,8 +5,6 @@
 [![Nuget download](https://img.shields.io/nuget/dt/WebVella.DocumentTemplates?style=for-the-badge)](https://www.nuget.org/packages/WebVella.DocumentTemplates)
 [![WebVella Document Templates License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://document-templates.webvella.com/en/license/)
 
----
-
 ## What is WebVella Document Templates?
 An open-source .net library that can generates Email, Excel, Text and HTML, by using a DataTable and a Template Document.
 
