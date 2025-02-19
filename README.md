@@ -9,7 +9,7 @@
 An open-source .net library that can generates Email, Excel, Text and HTML, by using a DataTable and a Template Document.
 
 ## How to get it
-You can either clone this repository or get the (Nuget package)[https://www.nuget.org/packages/WebVella.DocumentTemplates]
+You can either clone this repository or get the [Nuget package](https://www.nuget.org/packages/WebVella.DocumentTemplates)
 
 ## Please help by giving a star
 GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second!⭐
