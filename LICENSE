@@ -1,0 +1,63 @@
+# WebVella Document Templates License
+
+## License Selection Guide
+
+The licensing options include the Community MIT license (free) and Commercial License (not free).
+
+### License Equality
+We are committed to provide all users with the full power of our platform, regardless of the license they select. Whether you choose our Community MIT license or opt for the Commercial license, you'll enjoy the same extensive set of features:
+- Complete access to all WebVella Document Templates functionalities.
+- Support for commercial applications and use cases.
+- Flexibility to create, sell and deploy your own closed-source add-on providers, applications or complete solutions.
+
+### Transitive Dependency Usе
+If you're using WebVella Document Templates in general or the libraries that are part of it as a transitive dependency, same license conditions apply as it is general use.
+
+### Non-profit Usе
+If you represent a charitable organization or are using WebVella Document Templates for educational purposes or training courses, you can also access it for free under the Community MIT license.
+
+### Small Businesses
+For companies with annual gross revenue below $1 million USD, WebVella Document Templates is available for free under the Community MIT license.
+
+### Larger Businesses
+Companies with annual gross revenue exceeding $1 million USD must purchase a paid Commercial license.
+
+### Beyond Compliance
+Purchasing a license is not just about following our guidelines; it's also an opportunity to support the ongoing development of WebVella Document Templates. Your contribution enables us to enhance the library and provide exceptional support to all users.
+
+## WebVella Document Templates Community MIT License
+WebVella Document Templates hereby grants you a non-exclusive license to the WebVella Document Templates Software Library for .NET ('the Software').
+Please check if you are eligible to use this license.
+### License Permissions
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+### Copyright
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+### Limitation Of Liability
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Commercial License
+Do No Harm
+By downloading or using the Software, the Licensee agrees not to utilize the software in a manner which is disparaging to WebVella ltd or WebVella Document Templates, and not to rent, lease or otherwise transfer rights to the Software.
+
+### License Permissions
+Grants the royalty-free use of the Software to create, change and deploy closed-source software for unlimited end users withing the licensed organization('The Organization') in multiple locations. This license covers unlimited applications or projects. The Software may be deployed upon any number of machines for the end-use of The Organization. This license also intrinsically covers for development, staging and production servers for each project. This license is granted only to the legal entity that purchased it.
+
+### License Fees
+A. If you wish to use the Software, the purchase of a license is required. This license is perpetual, granting you continued use of the Software in accordance with the terms and conditions of this Agreement. The cost of the license is as indicated on the pricing page.
+
+B. Upon purchasing a license, you are also enrolled in a yearly, recurring subscription for software updates. This subscription is valid for a period of one year from the date of purchase, and it will automatically renew each year unless cancelled. We recommend maintaining your subscription as long as you are performing active software development to ensure you have access to the latest updates and improvements to the Software.
+
+C. However, it should be noted that the perpetual license allows use of only the latest library revision available at the time of or within the active subscription period, in accordance with the terms and conditions of this Agreement.
+
+D. If you wish to use the Software in a non-production environment, such as for testing and evaluation purposes, you may download and access the source and/or binaries at no charge. This access is subject to all license limitations and restrictions set forth in this Agreement.
+
+### Ownership
+WebVella Ltd. shall at all times retain ownership of the WebVella Document Templates Software and all subsequent copies.
+
+### Copyright
+Title, ownership rights, and intellectual property rights in and to the Software shall remain with WebVella ltd. The Software is protected by the international copyright laws. Title, ownership rights, and intellectual property rights in and to the content accessed through the Software is the property of the applicable content owner and may be protected by applicable copyright or other law. This License gives you no rights to such content.
+
+### Limitation Of Liability
+THIS SOFTWARE IS PROVIDED 'AS IS', WITHOUT A WARRANTY OF ANY KIND. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY EXCLUDED. WEBVELLA AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL WEBVELLA OR ITS LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE SOFTWARE, EVEN IF WEBVELLA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
