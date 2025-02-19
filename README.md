@@ -1,8 +1,8 @@
 [![Project Homepage](https://img.shields.io/badge/Homepage-blue?style=for-the-badge)](https://document-templates.webvella.com)
 [![Dotnet](https://img.shields.io/badge/platform-.NET-blue?style=for-the-badge)](https://www.nuget.org/packages/WebVella.DocumentTemplates)
 [![GitHub Repo stars](https://img.shields.io/github/stars/WebVella/WebVella.DocumentTemplates?style=for-the-badge)](https://github.com/WebVella/WebVella.DocumentTemplates/stargazers)
-[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/WebVella.DocumentTemplates)
-[![Nuget download](https://img.shields.io/nuget/dt/WebVella.DocumentTemplates?style=for-the-badge)]https://www.nuget.org/packages/WebVella.DocumentTemplates)
+[![Nuget version](https://img.shields.io/nuget/v/WebVella.DocumentTemplates?style=for-the-badge)](https://www.nuget.org/packages/WebVella.DocumentTemplates)
+[![Nuget download](https://img.shields.io/nuget/dt/WebVella.DocumentTemplates?style=for-the-badge)](https://www.nuget.org/packages/WebVella.DocumentTemplates)
 [![WebVella Document Templates License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://document-templates.webvella.com/en/license/)
 
 ---
