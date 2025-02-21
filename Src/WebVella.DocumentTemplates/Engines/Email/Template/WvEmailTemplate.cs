@@ -5,9 +5,10 @@ using System.Text;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.Email.Models;
-using WebVella.DocumentTemplates.Engines.Excel;
+using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Engines.Html;
 using WebVella.DocumentTemplates.Engines.Text;
+using WebVella.DocumentTemplates.Engines.TextFile;
 using WebVella.DocumentTemplates.Extensions;
 namespace WebVella.DocumentTemplates.Engines.Email;
 public class WvEmailTemplate : WvTemplateBase
@@ -38,59 +39,68 @@ public class WvEmailTemplate : WvTemplateBase
 		{
 			var resultItem = new WvEmailTemplateProcessResultItem
 			{
-				Result = new WvEmail()
+				Result = new WvEmail(),
+				NumberOfDataTableRows = grouptedDs.Rows.Count
 			};
-			ProcessEmailSender(Template, resultItem, grouptedDs, culture);
-			ProcessEmailRecipients(Template, resultItem, grouptedDs, culture);
-			ProcessEmailCcRecipients(Template, resultItem, grouptedDs, culture);
-			ProcessEmailBccRecipients(Template, resultItem, grouptedDs, culture);
-			ProcessEmailSubject(Template, resultItem, grouptedDs, culture);
-			ProcessEmailHtmlContent(Template, resultItem, grouptedDs, culture);
-			if (String.IsNullOrWhiteSpace(Template.TextContent) && !String.IsNullOrWhiteSpace(Template.HtmlContent))
+			var context = new WvEmailTemplateProcessContext();
+			try
 			{
-				resultItem.Result.TextContent = new WvTemplateUtility().ConvertHtmlToPlainText(Template.HtmlContent);
-			}
-			else
-			{
-				ProcessEmailTextContent(Template, resultItem, grouptedDs, culture);
-			}
-			if (String.IsNullOrWhiteSpace(Template.HtmlContent) && !String.IsNullOrWhiteSpace(Template.TextContent))
-			{
-				resultItem.Result.HtmlContent = new WvTemplateUtility().ConvertPlainTextToHtml(Template.TextContent);
-			}
-
-			int attachmentIndex = 0;
-			foreach (var item in Template.AttachmentItems)
-			{
-				var itemDataSources = grouptedDs.GroupBy(item.GroupDataByColumns);
-				int attachmentDsIndex = 0;
-				foreach (var itemDataSource in itemDataSources)
+				ProcessEmailSender(Template, resultItem, grouptedDs, culture);
+				ProcessEmailRecipients(Template, resultItem, grouptedDs, culture);
+				ProcessEmailCcRecipients(Template, resultItem, grouptedDs, culture);
+				ProcessEmailBccRecipients(Template, resultItem, grouptedDs, culture);
+				ProcessEmailSubject(Template, resultItem, grouptedDs, culture);
+				ProcessEmailHtmlContent(Template, resultItem, grouptedDs, culture);
+				if (String.IsNullOrWhiteSpace(Template.TextContent) && !String.IsNullOrWhiteSpace(Template.HtmlContent))
 				{
-					if (item.Type == WvEmailAttachmentType.TextFile)
+					resultItem.Result.TextContent = new WvTemplateUtility().ConvertHtmlToPlainText(Template.HtmlContent);
+				}
+				else
+				{
+					ProcessEmailTextContent(Template, resultItem, grouptedDs, culture);
+				}
+				if (String.IsNullOrWhiteSpace(Template.HtmlContent) && !String.IsNullOrWhiteSpace(Template.TextContent))
+				{
+					resultItem.Result.HtmlContent = new WvTemplateUtility().ConvertPlainTextToHtml(Template.TextContent);
+				}
+
+				int attachmentIndex = 0;
+				foreach (var item in Template.AttachmentItems)
+				{
+					var itemDataSources = grouptedDs.GroupBy(item.GroupDataByColumns);
+					int attachmentDsIndex = 0;
+					foreach (var itemDataSource in itemDataSources)
 					{
-						var attachment = ProcessEmailTextAttachment(
-							template: item.Content,
-							fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.txt",
-							dsIndex: attachmentDsIndex,
-							dataSource: itemDataSource,
-							culture: culture,
-							encoding: item.Encoding);
-						if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
-					}
-					else if (item.Type == WvEmailAttachmentType.ExcelFile)
-					{
-						var attachment = ProcessEmailExcelAttachment(
-							template: item.Content,
-							fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.xlsx",
-							dsIndex: attachmentDsIndex,
-							dataSource: itemDataSource,
-							culture: culture);
-						if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
+						if (item.Type == WvEmailAttachmentType.TextFile)
+						{
+							var attachment = ProcessEmailTextAttachment(
+								template: item.Content,
+								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.txt",
+								dsIndex: attachmentDsIndex,
+								dataSource: itemDataSource,
+								culture: culture,
+								encoding: item.Encoding);
+							if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
+						}
+						else if (item.Type == WvEmailAttachmentType.ExcelFile)
+						{
+							var attachment = ProcessEmailExcelAttachment(
+								template: item.Content,
+								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.xlsx",
+								dsIndex: attachmentDsIndex,
+								dataSource: itemDataSource,
+								culture: culture);
+							if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
+						}
 					}
 				}
 			}
-
+			catch (Exception ex) {
+				context.Errors.Add(ex.Message);
+			}
+			resultItem.Contexts.Add(context);
 			result.ResultItems.Add(resultItem);
+
 		}
 		return result;
 	}

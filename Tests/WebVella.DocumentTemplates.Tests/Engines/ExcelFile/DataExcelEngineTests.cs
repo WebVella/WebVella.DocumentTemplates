@@ -2,10 +2,8 @@
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
-using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Excel;
-using WebVella.DocumentTemplates.Engines.Excel.Utility;
+using WebVella.DocumentTemplates.Engines.ExcelFile;
+using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -198,7 +196,7 @@ public partial class DataExcelEngineTests : TestBase
 		lock (locker)
 		{
 			//Given
-			var templateFile = "TemplatePlacement3.xlsx";
+			var templateFile = "TemplatePlacement3MultiWs.xlsx";
 			var template = new WvExcelFileTemplate
 			{
 				Template = LoadWorkbook(templateFile)
@@ -213,34 +211,34 @@ public partial class DataExcelEngineTests : TestBase
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			Assert.Equal(6, result!.ResultItems[0]!.ResultContexts.Count);
+			Assert.Equal(6, result!.ResultItems[0]!.Contexts.Count);
 			var tempWs = result!.Template!.Worksheets.First();
 			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
 
-			var tempA1 = tempWs.Cell(1,1);
-			var resultA1 = tempWs.Cell(1,1);
+			var tempA1 = tempWs.Cell(1, 1);
+			var resultA1 = tempWs.Cell(1, 1);
 
-			var tempB1 = tempWs.Cell(1,2);
-			var resultB1 = tempWs.Cell(1,2);
+			var tempB1 = tempWs.Cell(1, 2);
+			var resultB1 = tempWs.Cell(1, 2);
 
-			var tempC1 = tempWs.Cell(1,3);
-			var resultC1 = tempWs.Cell(1,3);
+			var tempC1 = tempWs.Cell(1, 3);
+			var resultC1 = tempWs.Cell(1, 3);
 
-			var tempD1 = tempWs.Cell(1,4);
-			var resultD1 = tempWs.Cell(1,4);
+			var tempD1 = tempWs.Cell(1, 4);
+			var resultD1 = tempWs.Cell(1, 4);
 
-			var tempE1 = tempWs.Cell(1,5);
-			var resultE1 = tempWs.Cell(1,5);
+			var tempE1 = tempWs.Cell(1, 5);
+			var resultE1 = tempWs.Cell(1, 5);
 
-			var tempF1 = tempWs.Cell(1,6);
-			var resultF1 = tempWs.Cell(1,6);
+			var tempF1 = tempWs.Cell(1, 6);
+			var resultF1 = tempWs.Cell(1, 6);
 
-			CompareStyle(tempA1,resultA1);
-			CompareStyle(tempB1,resultB1);
-			CompareStyle(tempC1,resultC1);
-			CompareStyle(tempD1,resultD1);
-			CompareStyle(tempE1,resultE1);
-			CompareStyle(tempF1,resultF1);
+			CompareStyle(tempA1, resultA1);
+			CompareStyle(tempB1, resultB1);
+			CompareStyle(tempC1, resultC1);
+			CompareStyle(tempD1, resultD1);
+			CompareStyle(tempE1, resultE1);
+			CompareStyle(tempF1, resultF1);
 
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 		}

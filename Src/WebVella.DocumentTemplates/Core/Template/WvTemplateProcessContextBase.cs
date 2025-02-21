@@ -8,4 +8,7 @@ public abstract class WvTemplateProcessContextBase
 	public HashSet<Guid> Dependants { get; set; } = new();
 	//for optimization purpose - when all tags are a data type their values are set during placement
 	public bool IsDataSet { get; set; } = false;
+	public bool HasError => Errors is not null && Errors.Count > 0;
+	public List<string> Errors { get; set;} = new();
+
 }

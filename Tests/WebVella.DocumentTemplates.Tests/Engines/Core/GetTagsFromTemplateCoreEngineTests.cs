@@ -1,11 +1,6 @@
-﻿using ClosedXML.Excel;
-using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using WebVella.DocumentTemplates.Core;
+﻿using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Excel;
-using WebVella.DocumentTemplates.Engines.Excel.Utility;
+using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -871,7 +866,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
-		Assert.Equal(2,result[0].ParamGroups[0].Parameters.Count);
+		Assert.Equal(2, result[0].ParamGroups[0].Parameters.Count);
 		Assert.Equal("$A$1:$B$1", result[0].ParamGroups[0].Parameters[0].ValueString);
 		Assert.Equal("$A3:C$3", result[0].ParamGroups[0].Parameters[1].ValueString);
 	}

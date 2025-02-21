@@ -45,7 +45,7 @@ public class HtmlEngineTests : TestBase
 	#endregion
 	#region << Plain text >>
 	[Fact]
-	public void Text_NoTag()
+	public void HTML_NoTag()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -56,10 +56,10 @@ public class HtmlEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		Assert.Equal(template.Template, result.ResultItems[0].Result);
+		Assert.Equal($"<span>{template.Template}</span>", result.ResultItems[0].Result);
 	}
 	[Fact]
-	public void Text_NoTag2()
+	public void HTML_NoTag2()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -70,11 +70,11 @@ public class HtmlEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		Assert.Equal(template.Template, result.ResultItems[0].Result);
+		Assert.Equal($"<span>test</span><br><span>test2</span>", result.ResultItems[0].Result);
 	}
 
 	[Fact]
-	public void Text_NoTag3()
+	public void HTML_NoTag3()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -85,11 +85,71 @@ public class HtmlEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		Assert.Equal("test<br>item1", result.ResultItems[0].Result);
+		Assert.Equal("<span>test</span><br><span>item1</span>", result.ResultItems[0].Result);
 	}
 
 	[Fact]
-	public void Text_Tag8()
+	public void HTML_TagSpan()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = "<div><span>{{name}}</span></div>"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div><span>item1</span><span>item2</span></div>", result.ResultItems[0].Result);
+	}
+
+	[Fact]
+	public void HTML_Tag2()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = "<div>test <span>{{name}}</span></div>"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div>test <span>item1</span><span>item2</span></div>", result.ResultItems[0].Result);
+	}
+
+	[Fact]
+	public void HTML_Tag3()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = "<div>{{name[0]}} <span>{{name}}</span></div>"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div>item1 <span>item1</span><span>item2</span></div>", result.ResultItems[0].Result);
+	}
+
+	[Fact]
+	public void HTML_Tag4()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = "<div>{{name}} <span>{{name}}</span></div>"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<div>item1 <span>item1</span><span>item2</span></div><div>item2 <span>item1</span><span>item2</span></div>", result.ResultItems[0].Result);
+	}
+
+	[Fact]
+	public void HTML_Tag8()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -97,7 +157,6 @@ public class HtmlEngineTests : TestBase
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
-		Debug.WriteLine(JsonSerializer.Serialize(result.ResultItems[0]));
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
@@ -108,7 +167,7 @@ public class HtmlEngineTests : TestBase
 
 	#region << Plan div >>
 	[Fact]
-	public void Text_Div1()
+	public void HTML_Div1()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -123,25 +182,27 @@ public class HtmlEngineTests : TestBase
 	}
 
 	[Fact]
-	public void Text_Div2()
+	public void HTML_Div2()
 	{
 		var template = new WvHtmlTemplate()
 		{
-			Template = "<div>test</div><div><div>{{name}}</div></div>"
+			Template = "<div>test</div><div>{{name}}</div>"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		Assert.Equal("<div>test</div><div><div>item1</div></div><div><div>item2</div></div>", result.ResultItems[0].Result);
+		Assert.Equal("<div>test</div><div>item1</div><div>item2</div>", result.ResultItems[0].Result);
 	}
+
+
 	#endregion
 
 	#region << Plain Paragraph >>
 
 	[Fact]
-	public void Text_Paragraph1()
+	public void HTML_Paragraph1()
 	{
 		var template = new WvHtmlTemplate()
 		{
@@ -153,6 +214,35 @@ public class HtmlEngineTests : TestBase
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 		Assert.Equal("<p>test</p><p>item1</p><p>item2</p>", result.ResultItems[0].Result);
+	}
+	#endregion
+
+	#region << Site examples >>
+	[Fact]
+	public void HTML_SiteExample1()
+	{
+		DataTable dt = new DataTable();
+		dt.Columns.Add("email", typeof(string));
+		//Row 1
+		var row = dt.NewRow();
+		row["email"] = $"john@domain.com";
+		dt.Rows.Add(row);
+		//Row 2
+		var row2 = dt.NewRow();
+		row2["email"] = $"peter@domain.com";
+		dt.Rows.Add(row2);
+
+		WvHtmlTemplate template = new()
+		{
+			GroupDataByColumns = new List<string>(),
+			Template = "<ul><li>{{email}}</li></ul>"
+		};
+
+		WvHtmlTemplateProcessResult? result = template.Process(dt);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.Equal("<ul><li>john@domain.com</li><li>peter@domain.com</li></ul>", result.ResultItems[0].Result);
 	}
 	#endregion
 }

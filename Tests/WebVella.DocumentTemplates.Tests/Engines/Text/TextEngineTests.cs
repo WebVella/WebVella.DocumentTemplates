@@ -237,7 +237,7 @@ public class TextEngineTests : TestBase
 		var template = new WvTextTemplate()
 		{
 			Template = "{{sku}}{{name}}",
-			GroupDataByColumns = new List<string>{ "sku" }
+			GroupDataByColumns = new List<string> { "sku" }
 		};
 		var data = SampleData.CreateAsNew();
 		data.Rows[1]["sku"] = data.Rows[0]["sku"];
@@ -248,6 +248,76 @@ public class TextEngineTests : TestBase
 		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}{data.Rows[0]["sku"]}{data.Rows[1]["name"]}", result.ResultItems[0].Result);
+	}
+	#endregion
+
+	#region << Site Examples >>
+	[Fact]
+	public void Text_SiteExample1()
+	{
+		//Creating the DataTable
+		DataTable dt = new DataTable();
+		dt.Columns.Add("email", typeof(string));
+		//Row 1
+		var row = dt.NewRow();
+		row["email"] = $"john@domain.com";
+		dt.Rows.Add(row);
+		//Row 2
+		var row2 = dt.NewRow();
+		row2["email"] = $"peter@domain.com";
+		dt.Rows.Add(row2);
+
+		//Creating the template
+		WvTextTemplate template = new()
+		{
+			GroupDataByColumns = new List<string>(),
+			Template = "{{email(S=\",\")}}"
+		};
+
+		//Execution
+		WvTextTemplateProcessResult result = template.Process(dt);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("john@domain.com,peter@domain.com", result.ResultItems[0].Result);
+	}
+	[Fact]
+	public void Text_SiteExample2()
+	{
+		//Creating the DataTable
+		DataTable dt = new DataTable();
+		dt.Columns.Add("email", typeof(string));
+		//Row 1
+		var row = dt.NewRow();
+		row["email"] = $"john@domain.com";
+		dt.Rows.Add(row);
+		//Row 2
+		var row2 = dt.NewRow();
+		row2["email"] = $"john@domain.com";
+		dt.Rows.Add(row2);
+		//Row 3
+		var row3 = dt.NewRow();
+		row3["email"] = $"peter@domain.com";
+		dt.Rows.Add(row3);
+
+		//Creating the template
+		WvTextTemplate template = new()
+		{
+			GroupDataByColumns = new List<string>() { "email" },
+			Template = "{{email(S=\",\")}}"
+		};
+
+		//Execution
+		WvTextTemplateProcessResult result = template.Process(dt);
+		Assert.NotNull(result);
+		Assert.Equal(2, result.ResultItems.Count);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[1].Result));
+
+		Assert.Equal("john@domain.com,john@domain.com", result.ResultItems[0].Result);
+		Assert.Equal("peter@domain.com", result.ResultItems[1].Result);
 	}
 	#endregion
 }

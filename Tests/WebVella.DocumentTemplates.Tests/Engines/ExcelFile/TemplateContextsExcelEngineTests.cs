@@ -1,11 +1,8 @@
 ﻿using ClosedXML.Excel;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
 using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Excel;
-using WebVella.DocumentTemplates.Engines.Excel.Utility;
+using WebVella.DocumentTemplates.Engines.ExcelFile;
+using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -737,9 +734,9 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.NotNull(result!.ResultItems[0]!.Result!.Worksheets);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
 			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
-			Assert.Equal(2, result!.ResultItems[0]!.ResultContexts.Count);
-			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[0].Range!, 1, 1, 1, 1);
-			CheckRangeDimensions(result!.ResultItems[0]!.ResultContexts[1].Range!, 2, 1, 6, 1);
+			Assert.Equal(2, result!.ResultItems[0]!.Contexts.Count);
+			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[0].Range!, 1, 1, 1, 1);
+			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[1].Range!, 2, 1, 6, 1);
 
 			Assert.Equal("position", ws.Cell(1, 1).Value.ToString());
 			Assert.Equal(1, ws.Cell(2, 1).Value);

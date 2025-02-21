@@ -1,11 +1,4 @@
-﻿using ClosedXML.Excel;
-using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Excel;
-using WebVella.DocumentTemplates.Engines.Excel.Utility;
+﻿using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -140,14 +133,14 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			//Then
 			Assert.NotNull(result);
 
-			Assert.Equal(1,result!.FirstColumn);
+			Assert.Equal(1, result!.FirstColumn);
 			Assert.True(result!.FirstColumnLocked);
-			Assert.Equal(1,result!.FirstRow);
+			Assert.Equal(1, result!.FirstRow);
 			Assert.False(result!.FirstRowLocked);
 
-			Assert.Equal(1,result!.LastColumn);
+			Assert.Equal(1, result!.LastColumn);
 			Assert.True(result!.LastColumnLocked);
-			Assert.Equal(1,result!.LastRow);
+			Assert.Equal(1, result!.LastRow);
 			Assert.False(result!.LastRowLocked);
 
 		}
@@ -166,14 +159,14 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			//Then
 			Assert.NotNull(result);
 
-			Assert.Equal(1,result!.FirstColumn);
+			Assert.Equal(1, result!.FirstColumn);
 			Assert.False(result!.FirstColumnLocked);
-			Assert.Equal(1,result!.FirstRow);
+			Assert.Equal(1, result!.FirstRow);
 			Assert.True(result!.FirstRowLocked);
 
-			Assert.Equal(1,result!.LastColumn);
+			Assert.Equal(1, result!.LastColumn);
 			Assert.False(result!.LastColumnLocked);
-			Assert.Equal(1,result!.LastRow);
+			Assert.Equal(1, result!.LastRow);
 			Assert.True(result!.LastRowLocked);
 		}
 	}
@@ -190,14 +183,14 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			//Then
 			Assert.NotNull(result);
 
-			Assert.Equal(1,result!.FirstColumn);
+			Assert.Equal(1, result!.FirstColumn);
 			Assert.True(result!.FirstColumnLocked);
-			Assert.Equal(1,result!.FirstRow);
+			Assert.Equal(1, result!.FirstRow);
 			Assert.True(result!.FirstRowLocked);
 
-			Assert.Equal(1,result!.LastColumn);
+			Assert.Equal(1, result!.LastColumn);
 			Assert.True(result!.LastColumnLocked);
-			Assert.Equal(1,result!.LastRow);
+			Assert.Equal(1, result!.LastRow);
 			Assert.True(result!.LastRowLocked);
 		}
 	}
@@ -215,14 +208,14 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			//Then
 			Assert.NotNull(result);
 
-			Assert.Equal(1,result!.FirstColumn);
+			Assert.Equal(1, result!.FirstColumn);
 			Assert.True(result!.FirstColumnLocked);
-			Assert.Equal(1,result!.FirstRow);
+			Assert.Equal(1, result!.FirstRow);
 			Assert.True(result!.FirstRowLocked);
 
-			Assert.Equal(2,result!.LastColumn);
+			Assert.Equal(2, result!.LastColumn);
 			Assert.False(result!.LastColumnLocked);
-			Assert.Equal(1,result!.LastRow);
+			Assert.Equal(1, result!.LastRow);
 			Assert.False(result!.LastRowLocked);
 
 		}
@@ -241,14 +234,14 @@ public partial class UtilitiesExcelEngineTests : TestBase
 			//Then
 			Assert.NotNull(result);
 
-			Assert.Equal(1,result!.FirstColumn);
+			Assert.Equal(1, result!.FirstColumn);
 			Assert.True(result!.FirstColumnLocked);
-			Assert.Equal(1,result!.FirstRow);
+			Assert.Equal(1, result!.FirstRow);
 			Assert.True(result!.FirstRowLocked);
 
-			Assert.Equal(2,result!.LastColumn);
+			Assert.Equal(2, result!.LastColumn);
 			Assert.True(result!.LastColumnLocked);
-			Assert.Equal(1,result!.LastRow);
+			Assert.Equal(1, result!.LastRow);
 			Assert.True(result!.LastRowLocked);
 		}
 	}

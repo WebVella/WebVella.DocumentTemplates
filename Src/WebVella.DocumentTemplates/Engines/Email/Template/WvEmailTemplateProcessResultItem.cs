@@ -4,4 +4,6 @@ namespace WebVella.DocumentTemplates.Engines.Email;
 public class WvEmailTemplateProcessResultItem : WvTemplateProcessResultItemBase
 {
 	public new WvEmail? Result { get; set; } = null;
+
+	public List<WvEmailTemplateProcessContext> Contexts { get; set; } = new();
 }

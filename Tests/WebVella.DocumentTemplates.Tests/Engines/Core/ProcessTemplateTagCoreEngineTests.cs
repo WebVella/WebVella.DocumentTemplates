@@ -1,11 +1,7 @@
-﻿using ClosedXML.Excel;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Data;
 using System.Globalization;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Excel;
-using WebVella.DocumentTemplates.Engines.Excel.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;

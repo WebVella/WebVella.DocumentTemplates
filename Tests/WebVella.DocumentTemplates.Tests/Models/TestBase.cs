@@ -1,9 +1,8 @@
 ﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
 using System.Data;
 using System.Globalization;
 using System.Text;
-using WebVella.DocumentTemplates.Engines.Excel;
+using WebVella.DocumentTemplates.Engines.ExcelFile;
 
 namespace WebVella.DocumentTemplates.Tests.Models;
 public class TestBase
@@ -157,7 +156,7 @@ public class TestBase
 	{
 		foreach (var tempContext in templateContexts)
 		{
-			var resultContext = resultItem.ResultContexts.FirstOrDefault(x=> x.TemplateContextId == tempContext.Id);
+			var resultContext = resultItem.Contexts.FirstOrDefault(x => x.TemplateContextId == tempContext.Id);
 			Assert.NotNull(resultContext);
 			var firstTemplateCell = tempContext.Range?.Cell(1, 1);
 			var firstResultCell = resultContext.Range?.Cell(1, 1);
@@ -261,10 +260,10 @@ public class TestBase
 		else
 		{
 			Assert.NotNull(result);
-			if(template.ColorType == XLColorType.Color && result.ColorType == XLColorType.Color)
+			if (template.ColorType == XLColorType.Color && result.ColorType == XLColorType.Color)
 				Assert.Equal(template.ToString(), result.ToString());
 
-			if(template.ColorType == XLColorType.Theme && result.ColorType == XLColorType.Theme)
+			if (template.ColorType == XLColorType.Theme && result.ColorType == XLColorType.Theme)
 				Assert.Equal(template.ToString(), result.ToString());
 		}
 	}

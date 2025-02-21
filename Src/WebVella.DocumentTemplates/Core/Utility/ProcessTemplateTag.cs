@@ -41,6 +41,7 @@ public partial class WvTemplateUtility
 				result.Values.Add(String.Empty);
 			}
 		}
+		result.ExpandCount = result.Values.Count;
 		return result;
 	}
 

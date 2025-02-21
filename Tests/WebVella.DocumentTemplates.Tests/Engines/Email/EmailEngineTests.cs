@@ -476,7 +476,7 @@ public class EmailEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.NotNull(result.ResultItems[0].Result);
-		Assert.Equal(template.Template.HtmlContent, result.ResultItems[0].Result!.HtmlContent);
+		Assert.Equal($"<span>{template.Template.HtmlContent}</span>", result.ResultItems[0].Result!.HtmlContent);
 		Assert.Equal(template.Template.HtmlContent, result.ResultItems[0].Result!.TextContent);
 	}
 	[Fact]
@@ -499,7 +499,7 @@ public class EmailEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.NotNull(result.ResultItems[0].Result);
-		Assert.Equal("Hello<br>test", result.ResultItems[0].Result!.HtmlContent);
+		Assert.Equal("<span>Hello</span><br><span>test</span>", result.ResultItems[0].Result!.HtmlContent);
 		Assert.Equal($"Hello{Environment.NewLine}test", result.ResultItems[0].Result!.TextContent);
 	}
 	[Fact]

@@ -1,6 +1,8 @@
-﻿using HtmlAgilityPack;
+﻿using DocumentFormat.OpenXml.Drawing.Diagrams;
+using HtmlAgilityPack;
 using System.Data;
 using System.Globalization;
+using System.Text;
 using System.Web;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
@@ -42,33 +44,114 @@ public class WvHtmlTemplate : WvTemplateBase
 			doc.OptionEmptyCollection = true; //Prevent from returning null
 			HtmlDocument docResult = new HtmlDocument();
 			doc.LoadHtml(result.Template);
-
-			foreach (HtmlNode node in doc.DocumentNode.ChildNodes)
+			var resultItem = new WvHtmlTemplateProcessResultItem()
 			{
-				var nameLowered = node.Name.ToLowerInvariant();
-
-				var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(node.InnerHtml, grouptedDs, culture);
-				foreach (var value in tagProcessResult.Values)
+				NumberOfDataTableRows = grouptedDs.Rows.Count
+			};
+			foreach (HtmlNode templateNode in doc.DocumentNode.ChildNodes)
+			{
+				//if root node is text
+				if (templateNode.NodeType == HtmlNodeType.Text
+					|| templateNode.NodeType == HtmlNodeType.Comment)
 				{
-					if (node.NodeType == HtmlNodeType.Text)
+					var resultNode = docResult.CreateElement("span");
+					var context = new WvHtmlTemplateProcessContext();
+					context.HtmlNode = resultNode;
+					try
 					{
-						var textResult = docResult.CreateTextNode();
-						textResult.InnerHtml = value.ToString();
-						docResult.DocumentNode.AppendChild(textResult);
+						var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(templateNode.InnerHtml, grouptedDs, culture);
+						if (tagProcessResult.ExpandCount > 0)
+						{
+							var sb = new StringBuilder();
+							foreach (var valueObj in tagProcessResult.Values)
+							{
+								string? value = valueObj?.ToString();
+								if (!String.IsNullOrWhiteSpace(value))
+								{
+									sb.Append(value);
+								}
+							}
+							resultNode.InnerHtml = sb.ToString();
+							docResult.DocumentNode.AppendChild(resultNode);
+						}
 					}
-					else
-					{
-						var divResult = docResult.CreateElement(node.Name);
-						divResult.InnerHtml = value.ToString();
-						docResult.DocumentNode.AppendChild(divResult);
+					catch (Exception ex) {
+						context.Errors.Add(ex.Message);
 					}
+					resultItem.Contexts.Add(context);
+					continue;
+				}
+				else if (templateNode.NodeType == HtmlNodeType.Element)
+				{
+					processNode(templateNode, docResult.DocumentNode, docResult, grouptedDs, culture, resultItem.Contexts);
 				}
 			}
-			result.ResultItems.Add(new WvHtmlTemplateProcessResultItem
-			{
-				Result = docResult.DocumentNode.InnerHtml
-			});
+			resultItem.Result = docResult.DocumentNode.InnerHtml;
+			result.ResultItems.Add(resultItem);
 		}
 		return result;
+	}
+
+	private void processNode(HtmlNode templateNode, HtmlNode resultParentNode, HtmlDocument resultDoc,
+		DataTable grouptedDs, CultureInfo culture, List<WvHtmlTemplateProcessContext> contexts)
+	{
+		//Check if it is an empty node first
+		if (String.IsNullOrWhiteSpace(templateNode.InnerHtml))
+		{
+			var resultNode = resultDoc.CreateElement(templateNode.Name);
+			var context = new WvHtmlTemplateProcessContext();
+			context.HtmlNode = templateNode;
+			resultParentNode.AppendChild(resultNode);
+			contexts.Add(context);
+			return;
+		}
+		//Process if element with content
+		var expandCount = 1;
+		foreach (var childNode in templateNode.ChildNodes)
+		{
+			if (childNode.NodeType == HtmlNodeType.Text)
+			{
+				var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(childNode.InnerHtml, grouptedDs, culture);
+				if (expandCount < tagProcessResult.ExpandCount) expandCount = tagProcessResult.ExpandCount;
+			}
+		}
+		for (var i = 0; i < expandCount; i++)
+		{
+			var resultNode = resultDoc.CreateElement(templateNode.Name);
+			var context = new WvHtmlTemplateProcessContext
+			{
+				HtmlNode = resultNode,
+				Errors = new List<string>()
+			};
+			foreach (var childNode in templateNode.ChildNodes)
+			{
+				if (childNode.NodeType == HtmlNodeType.Text)
+				{
+					try
+					{
+						var tagProcessResult = new WvTemplateUtility().ProcessTemplateTag(childNode.InnerHtml, grouptedDs, culture);
+						string? value = String.Empty;
+						if (tagProcessResult.Values.Count > 0)
+						{
+							value = ((tagProcessResult.Values.Count >= i + 1) ? tagProcessResult.Values[i] : tagProcessResult.Values[0])?.ToString() ?? String.Empty;
+						}
+						var textResult = resultDoc.CreateTextNode();
+						textResult.InnerHtml = value as string;
+						resultNode.AppendChild(textResult);
+					}
+					catch (Exception ex)
+					{
+						context.Errors.Add(ex.Message);
+					}
+
+				}
+				else
+				{
+					processNode(childNode, resultNode, resultDoc, grouptedDs, culture, contexts);
+				}
+			}
+			resultParentNode.AppendChild(resultNode);
+			contexts.Add(context);
+		}
 	}
 }

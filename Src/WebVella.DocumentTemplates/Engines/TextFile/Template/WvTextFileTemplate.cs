@@ -2,8 +2,9 @@
 using System.Globalization;
 using System.Text;
 using WebVella.DocumentTemplates.Core;
+using WebVella.DocumentTemplates.Engines.Text;
 using WebVella.DocumentTemplates.Extensions;
-namespace WebVella.DocumentTemplates.Engines.Text;
+namespace WebVella.DocumentTemplates.Engines.TextFile;
 public class WvTextFileTemplate : WvTemplateBase
 {
 	public byte[]? Template { get; set; } = null;
@@ -31,23 +32,33 @@ public class WvTextFileTemplate : WvTemplateBase
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
 		{
-			var fileStringContent = encoding.GetString(result.Template ?? new byte[0]);
-
-			if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
-
-			var textTemplate = new WvTextTemplate
+			var resultItem = new WvTextFileTemplateProcessResultItem()
 			{
-				Template = fileStringContent.RemoveZeroBitSpaceCharacters()
+				NumberOfDataTableRows = grouptedDs.Rows.Count
 			};
-
-			WvTextTemplateProcessResult textTemplateResult = textTemplate.Process(grouptedDs, culture);
-
-			if (textTemplateResult.ResultItems.Count == 0) continue;
-
-			result.ResultItems.Add(new WvTextFileTemplateProcessResultItem
+			var context = new WvTextFileTemplateProcessContext();
+			try
 			{
-				Result = encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty)
-			});
+				var fileStringContent = encoding.GetString(result.Template ?? new byte[0]);
+
+				if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
+
+				var textTemplate = new WvTextTemplate
+				{
+					Template = fileStringContent.RemoveZeroBitSpaceCharacters()
+				};
+
+				WvTextTemplateProcessResult textTemplateResult = textTemplate.Process(grouptedDs, culture);
+
+				if (textTemplateResult.ResultItems.Count == 0) continue;
+				resultItem.Result = encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty);
+			}
+			catch (Exception ex)
+			{
+				context.Errors.Add(ex.Message);
+			}
+			resultItem.Contexts.Add(context);
+			result.ResultItems.Add(resultItem);
 		}
 		return result;
 	}

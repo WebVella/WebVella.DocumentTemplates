@@ -200,6 +200,9 @@
     <None Update="Files\TemplatePlacement2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\TemplatePlacement3MultiWs.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\TemplatePlacement3.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
