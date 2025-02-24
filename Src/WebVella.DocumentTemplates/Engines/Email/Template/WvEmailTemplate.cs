@@ -230,7 +230,7 @@ public class WvEmailTemplate : WvTemplateBase
 		return String.Join(";", resultList);
 	}
 
-	public WvEmailAttachment? ProcessEmailTextAttachment(byte[]? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture, Encoding? encoding)
+	public WvEmailAttachment? ProcessEmailTextAttachment(MemoryStream? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture, Encoding? encoding)
 	{
 		if (template is null) return null;
 		WvEmailAttachment? attachment = null;
@@ -253,23 +253,18 @@ public class WvEmailTemplate : WvTemplateBase
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.TextFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Content = attachmentTemplateResult.ResultItems[0].Result
+			Content = attachmentTemplateResult.ResultItems[0].Result 
 		};
 
 
 		return attachment;
 	}
 
-	public WvEmailAttachment? ProcessEmailExcelAttachment(byte[]? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture)
+	public WvEmailAttachment? ProcessEmailExcelAttachment(MemoryStream? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture)
 	{
 		if (template is null) return null;
 		WvEmailAttachment? attachment = null;
-		XLWorkbook? workbook = null;
-		using (MemoryStream memoryStream = new MemoryStream(template))
-		{
-			// Use the stream as needed
-			workbook = new XLWorkbook(memoryStream);
-		}
+		XLWorkbook? workbook = new XLWorkbook(template);
 		if (workbook is null) return null;
 
 		var attachmentTemplate = new WvExcelFileTemplate
@@ -285,20 +280,17 @@ public class WvEmailTemplate : WvTemplateBase
 		}
 		var ext = Path.GetExtension(fileName);
 		var name = Path.GetFileNameWithoutExtension(fileName);
-		byte[]? content = null;
-		using (var ms = new MemoryStream())
-		{
-			attachmentTemplateResult.ResultItems[0]!.Result!.SaveAs(ms);
-			content = ms?.ToArray();
-		}
-		if (content is null) return null;
+		MemoryStream? ms = null;
+		attachmentTemplateResult.ResultItems[0]!.Result!.SaveAs(ms);
+
+		if (ms is null) return null;
 
 		attachment = new WvEmailAttachment
 		{
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.ExcelFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Content = content
+			Content = ms
 		};
 
 

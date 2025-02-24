@@ -99,6 +99,12 @@ public class TestBase
 		if (!fi.Exists) throw new FileNotFoundException();
 		return File.ReadAllBytes(path);
 	}
+
+	public static MemoryStream LoadFileStream(string fileName)
+	{
+		return new MemoryStream(LoadFile(fileName));
+	}
+
 	public static void SaveFile(string content, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -290,7 +296,7 @@ public class TestBase
 		return templateWB;
 	}
 
-	public static byte[] LoadWorkbookAsBytes(string fileName)
+	public static MemoryStream? LoadWorkbookAsMemoryStream(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
 		var fi = new FileInfo(path);
@@ -298,14 +304,10 @@ public class TestBase
 		Assert.True(fi.Exists);
 		var templateWB = new XLWorkbook(path);
 		Assert.NotNull(templateWB);
-		byte[]? content = null;
-		using (var ms = new MemoryStream())
-		{
-			templateWB.SaveAs(ms);
-			content = ms?.ToArray();
-		}
-		Assert.NotNull(content);
-		return content;
+		MemoryStream? ms = null;
+		templateWB.SaveAs(ms);
+		Assert.NotNull(ms);
+		return ms;
 	}
 
 	public static void SaveWorkbook(XLWorkbook workbook, string fileName)
@@ -319,7 +321,7 @@ public class TestBase
 		workbook.SaveAs(path);
 	}
 
-	public static void SaveWorkbookFromBytes(byte[] content, string fileName)
+	public static void SaveWorkbookFromMemoryStream(MemoryStream content, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
 		if (debugFolder is null) throw new Exception("debugFolder not found");
@@ -329,7 +331,7 @@ public class TestBase
 		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
 		using (FileStream fs = new FileStream(path, FileMode.Create))
 		{
-			fs.Write(content, 0, content.Length);
+			content.WriteTo(fs);
 		}
 	}
 }

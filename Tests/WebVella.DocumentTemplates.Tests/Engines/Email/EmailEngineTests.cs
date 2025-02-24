@@ -643,7 +643,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Content = LoadWorkbookAsBytes(fileName),
+							Content = LoadWorkbookAsMemoryStream(fileName),
 							Type =  WvEmailAttachmentType.ExcelFile
 						}
 					}
@@ -662,12 +662,7 @@ public class EmailEngineTests : TestBase
 			Assert.Single(result.ResultItems[0].Result!.AttachmentItems);
 			Assert.NotNull(result.ResultItems[0].Result!.AttachmentItems[0]!.Content);
 
-			XLWorkbook? resultWorkbook = null;
-			using (MemoryStream memoryStream = new MemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!))
-			{
-				// Use the stream as needed
-				resultWorkbook = new XLWorkbook(memoryStream);
-			}
+			XLWorkbook? resultWorkbook = new XLWorkbook(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!);
 			var ws = resultWorkbook.Worksheets.First();
 			Assert.Equal(EmailData.Rows[0]["sender_email"], ws.Cell(2, 1).Value.ToString());
 			Assert.Equal(EmailData.Rows[1]["sender_email"], ws.Cell(3, 1).Value.ToString());
@@ -677,7 +672,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[1]["recipient_email"], ws.Cell(3, 2).Value.ToString());
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], ws.Cell(4, 2).Value.ToString());
 
-			SaveWorkbookFromBytes(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
+			SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
 		}
 	}
 
@@ -695,7 +690,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Content = LoadWorkbookAsBytes(fileName),
+							Content = LoadWorkbookAsMemoryStream(fileName),
 							Type =  WvEmailAttachmentType.ExcelFile,
 							GroupDataByColumns = new List<string>{"sender_email"}
 						}
@@ -715,18 +710,9 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(4, result.ResultItems[0].Result!.AttachmentItems.Count);
 			Assert.NotNull(result.ResultItems[0].Result!.AttachmentItems[0]!.Content);
 
-			XLWorkbook? firstWorkbook = null;
-			XLWorkbook? secondWorkbook = null;
-			using (MemoryStream memoryStream = new MemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!))
-			{
-				// Use the stream as needed
-				firstWorkbook = new XLWorkbook(memoryStream);
-			}
-			using (MemoryStream memoryStream = new MemoryStream(result.ResultItems[0].Result!.AttachmentItems[1]!.Content!))
-			{
-				// Use the stream as needed
-				secondWorkbook = new XLWorkbook(memoryStream);
-			}
+			XLWorkbook? firstWorkbook = new XLWorkbook(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!);
+			XLWorkbook? secondWorkbook = new XLWorkbook(result.ResultItems[0].Result!.AttachmentItems[1]!.Content!);
+
 			var firstWs = firstWorkbook.Worksheets.First();
 			Assert.Equal(EmailData.Rows[0]["sender_email"], firstWs.Cell(2, 1).Value.ToString());
 			Assert.Equal(EmailData.Rows[0]["sender_email"], firstWs.Cell(3, 1).Value.ToString());
@@ -743,7 +729,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], secondWs.Cell(2, 2).Value.ToString());
 			Assert.Equal(String.Empty, secondWs.Cell(3, 2).Value.ToString());
 
-			SaveWorkbookFromBytes(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
+			SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
 		}
 	}
 	#endregion

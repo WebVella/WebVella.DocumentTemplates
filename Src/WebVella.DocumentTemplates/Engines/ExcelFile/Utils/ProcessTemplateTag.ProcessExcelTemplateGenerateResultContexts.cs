@@ -354,7 +354,6 @@ public partial class WvExcelFileEngineUtility
 									throw new Exception($"Unsupported function name: {tag.Name} in tag");
 								}
 
-								//TODO: BOZ Need to work here to make it relative
 								var value = functionProcessor.Process(
 													value: tempCell.Value.ToString(),
 													tag: tag,
@@ -389,7 +388,6 @@ public partial class WvExcelFileEngineUtility
 									{
 										throw new Exception($"Unsupported function name: {tag.Name} in tag");
 									}
-									//TODO: BOZ Need to work here to make it relative
 									value = functionProcessor.Process(
 														tagValue: value.ToString(),
 														tag: tag,

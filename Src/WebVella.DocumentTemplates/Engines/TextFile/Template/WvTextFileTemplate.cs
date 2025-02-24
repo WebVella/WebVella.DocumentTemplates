@@ -7,7 +7,7 @@ using WebVella.DocumentTemplates.Extensions;
 namespace WebVella.DocumentTemplates.Engines.TextFile;
 public class WvTextFileTemplate : WvTemplateBase
 {
-	public byte[]? Template { get; set; } = null;
+	public MemoryStream? Template { get; set; }
 	public WvTextFileTemplateProcessResult Process(DataTable dataSource, CultureInfo? culture = null, Encoding? encoding = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
@@ -19,7 +19,6 @@ public class WvTextFileTemplate : WvTemplateBase
 			GroupByDataColumns = GroupDataByColumns,
 			ResultItems = new()
 		};
-
 		if (Template is null)
 		{
 			result.ResultItems.Add(new WvTextFileTemplateProcessResultItem
@@ -28,7 +27,6 @@ public class WvTextFileTemplate : WvTemplateBase
 			});
 			return result;
 		};
-
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
 		{
@@ -39,7 +37,7 @@ public class WvTextFileTemplate : WvTemplateBase
 			var context = new WvTextFileTemplateProcessContext();
 			try
 			{
-				var fileStringContent = encoding.GetString(result.Template ?? new byte[0]);
+				var fileStringContent = encoding.GetString(result.Template!.ToArray() ?? new byte[0]);
 
 				if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
 
@@ -51,7 +49,7 @@ public class WvTextFileTemplate : WvTemplateBase
 				WvTextTemplateProcessResult textTemplateResult = textTemplate.Process(grouptedDs, culture);
 
 				if (textTemplateResult.ResultItems.Count == 0) continue;
-				resultItem.Result = encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty);
+				resultItem.Result = new MemoryStream(encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty));
 			}
 			catch (Exception ex)
 			{

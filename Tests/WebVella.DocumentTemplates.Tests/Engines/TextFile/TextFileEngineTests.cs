@@ -19,7 +19,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -27,7 +27,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -42,7 +42,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -50,7 +50,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -65,7 +65,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -73,7 +73,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -88,7 +88,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -96,7 +96,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -111,7 +111,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -119,7 +119,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -134,7 +134,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile)
+				Template = LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -142,7 +142,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal(expectedResultText, resultString);
 		}
 	}
@@ -156,7 +156,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFile(templateFile),
+				Template = LoadFileStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
 			var data = SampleData.CreateAsNew();
@@ -167,7 +167,7 @@ public class TextFileEngineTests : TestBase
 			Assert.NotNull(result.ResultItems);
 			Assert.Equal(4, result.ResultItems.Count);
 			Assert.NotNull(result.ResultItems[0].Result);
-			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result ?? new byte[0]);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
 			Assert.Equal($"1{Environment.NewLine}2{Environment.NewLine}item1{Environment.NewLine}item2{Environment.NewLine}", resultString);
 		}
 	}
