@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using System.Data;
 using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.Email;
 using WebVella.DocumentTemplates.Engines.Email.Models;
@@ -668,13 +669,13 @@ public class EmailEngineTests : TestBase
 				resultWorkbook = new XLWorkbook(memoryStream);
 			}
 			var ws = resultWorkbook.Worksheets.First();
-			Assert.Equal(EmailData.Rows[0]["sender_email"],ws.Cell(2,1).Value.ToString());
-			Assert.Equal(EmailData.Rows[1]["sender_email"],ws.Cell(3,1).Value.ToString());
-			Assert.Equal(EmailData.Rows[2]["sender_email"],ws.Cell(4,1).Value.ToString());
+			Assert.Equal(EmailData.Rows[0]["sender_email"], ws.Cell(2, 1).Value.ToString());
+			Assert.Equal(EmailData.Rows[1]["sender_email"], ws.Cell(3, 1).Value.ToString());
+			Assert.Equal(EmailData.Rows[2]["sender_email"], ws.Cell(4, 1).Value.ToString());
 
-			Assert.Equal(EmailData.Rows[0]["recipient_email"],ws.Cell(2,2).Value.ToString());
-			Assert.Equal(EmailData.Rows[1]["recipient_email"],ws.Cell(3,2).Value.ToString());
-			Assert.Equal(EmailData.Rows[2]["recipient_email"],ws.Cell(4,2).Value.ToString());
+			Assert.Equal(EmailData.Rows[0]["recipient_email"], ws.Cell(2, 2).Value.ToString());
+			Assert.Equal(EmailData.Rows[1]["recipient_email"], ws.Cell(3, 2).Value.ToString());
+			Assert.Equal(EmailData.Rows[2]["recipient_email"], ws.Cell(4, 2).Value.ToString());
 
 			SaveWorkbookFromBytes(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
 		}
@@ -711,7 +712,7 @@ public class EmailEngineTests : TestBase
 			Assert.Single(result.ResultItems);
 			Assert.NotNull(result.ResultItems[0].Result);
 			Assert.NotNull(result.ResultItems[0].Result!.AttachmentItems);
-			Assert.Equal(4,result.ResultItems[0].Result!.AttachmentItems.Count);
+			Assert.Equal(4, result.ResultItems[0].Result!.AttachmentItems.Count);
 			Assert.NotNull(result.ResultItems[0].Result!.AttachmentItems[0]!.Content);
 
 			XLWorkbook? firstWorkbook = null;
@@ -727,23 +728,77 @@ public class EmailEngineTests : TestBase
 				secondWorkbook = new XLWorkbook(memoryStream);
 			}
 			var firstWs = firstWorkbook.Worksheets.First();
-			Assert.Equal(EmailData.Rows[0]["sender_email"],firstWs.Cell(2,1).Value.ToString());
-			Assert.Equal(EmailData.Rows[0]["sender_email"],firstWs.Cell(3,1).Value.ToString());
-			Assert.Equal(String.Empty,firstWs.Cell(4,1).Value.ToString());
+			Assert.Equal(EmailData.Rows[0]["sender_email"], firstWs.Cell(2, 1).Value.ToString());
+			Assert.Equal(EmailData.Rows[0]["sender_email"], firstWs.Cell(3, 1).Value.ToString());
+			Assert.Equal(String.Empty, firstWs.Cell(4, 1).Value.ToString());
 
-			Assert.Equal(EmailData.Rows[0]["recipient_email"],firstWs.Cell(2,2).Value.ToString());
-			Assert.Equal(EmailData.Rows[1]["recipient_email"],firstWs.Cell(3,2).Value.ToString());
-			Assert.Equal(String.Empty,firstWs.Cell(4,2).Value.ToString());
+			Assert.Equal(EmailData.Rows[0]["recipient_email"], firstWs.Cell(2, 2).Value.ToString());
+			Assert.Equal(EmailData.Rows[1]["recipient_email"], firstWs.Cell(3, 2).Value.ToString());
+			Assert.Equal(String.Empty, firstWs.Cell(4, 2).Value.ToString());
 
 			var secondWs = secondWorkbook.Worksheets.First();
-			Assert.Equal(EmailData.Rows[2]["sender_email"],secondWs.Cell(2,1).Value.ToString());
-			Assert.Equal(String.Empty,secondWs.Cell(3,1).Value.ToString());
+			Assert.Equal(EmailData.Rows[2]["sender_email"], secondWs.Cell(2, 1).Value.ToString());
+			Assert.Equal(String.Empty, secondWs.Cell(3, 1).Value.ToString());
 
-			Assert.Equal(EmailData.Rows[2]["recipient_email"],secondWs.Cell(2,2).Value.ToString());
-			Assert.Equal(String.Empty,secondWs.Cell(3,2).Value.ToString());
+			Assert.Equal(EmailData.Rows[2]["recipient_email"], secondWs.Cell(2, 2).Value.ToString());
+			Assert.Equal(String.Empty, secondWs.Cell(3, 2).Value.ToString());
 
 			SaveWorkbookFromBytes(result.ResultItems[0].Result!.AttachmentItems[0]!.Content!, fileName);
 		}
+	}
+	#endregion
+
+	#region << From Docs >>
+	[Fact]
+	public void EmailDocs_test1()
+	{
+		//Creating the DataTable
+		DataTable dt = new DataTable();
+		dt.Columns.Add("email", typeof(string));
+		dt.Columns.Add("name", typeof(string));
+		dt.Columns.Add("item", typeof(string));
+		//Row 1
+		var row = dt.NewRow();
+		row["email"] = $"john@domain.com";
+		row["name"] = $"John Smith";
+		row["item"] = $"Bike";
+		dt.Rows.Add(row);
+		//Row 2
+		var row2 = dt.NewRow();
+		row2["email"] = $"peter@domain.com";
+		row2["name"] = $"Peter Jackson";
+		row2["item"] = $"Car";
+		dt.Rows.Add(row2);
+
+		//Creating the template
+		WvEmailTemplate template = new()
+		{
+			GroupDataByColumns = new List<string>() { "email" },
+			Template = new WvEmail
+			{
+				Sender = "some@email.com",
+				Recipients = "{{email}}",
+				BccRecipients = null,
+				CcRecipients = null,
+				Subject = "About the {{item}}",
+				AttachmentItems = new(), //no attachments needed
+				HtmlContent = null, //will be autigenerated when null from the text
+				TextContent = "Dear {{name}},\r\nThis email is about the {{item}}"
+
+			}
+		};
+
+		//Execution
+		WvEmailTemplateProcessResult result = template.Process(dt);
+		Assert.Equal(2, result.ResultItems.Count);
+		Assert.NotNull(result.ResultItems[0].Result);
+		Assert.NotNull(result.ResultItems[1].Result);
+
+		Assert.Equal("john@domain.com",result.ResultItems[0].Result!.Recipients);
+		Assert.Equal("About the Bike",result.ResultItems[0].Result!.Subject);
+
+		Assert.Equal("peter@domain.com",result.ResultItems[1].Result!.Recipients);
+		Assert.Equal("About the Car",result.ResultItems[1].Result!.Subject);
 	}
 	#endregion
 }

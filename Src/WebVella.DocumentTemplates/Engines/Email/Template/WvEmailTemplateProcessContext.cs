@@ -2,5 +2,4 @@
 namespace WebVella.DocumentTemplates.Engines.Email;
 public class WvEmailTemplateProcessContext : WvTemplateProcessContextBase
 {
-
 }

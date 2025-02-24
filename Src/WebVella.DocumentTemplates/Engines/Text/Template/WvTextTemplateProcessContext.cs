@@ -2,5 +2,4 @@
 namespace WebVella.DocumentTemplates.Engines.Text;
 public class WvTextTemplateProcessContext : WvTemplateProcessContextBase
 {
-	
 }
