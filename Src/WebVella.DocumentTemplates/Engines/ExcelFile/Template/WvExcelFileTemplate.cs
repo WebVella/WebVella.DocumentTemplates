@@ -1,17 +1,13 @@
 ﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using System.Data;
 using System.Globalization;
-using System.Text;
 using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Extensions;
 namespace WebVella.DocumentTemplates.Engines.ExcelFile;
 public class WvExcelFileTemplate : WvTemplateBase
 {
-	public XLWorkbook? Template { get; set; }
+	public MemoryStream? Template { get; set; }
 	public WvExcelFileTemplateProcessResult Process(DataTable? dataSource, CultureInfo? culture = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
@@ -30,6 +26,8 @@ public class WvExcelFileTemplate : WvTemplateBase
 			});
 			return result;
 		};
+		result.Workbook = new XLWorkbook(Template);
+
 		new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
 		new WvExcelFileEngineUtility().ProcessExcelTemplateCalculateDependencies(result);
 		var templateContextDict = result.TemplateContexts.ToDictionary(x => x.Id);
@@ -47,7 +45,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 				resultItem: resultItem,
 				dataSource: grouptedDs,
 				culture: culture,
-				templateContextDict:templateContextDict);
+				templateContextDict: templateContextDict);
 			result.ResultItems.Add(resultItem);
 		}
 		return result;

@@ -18,7 +18,7 @@ public partial class ExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			WvExcelFileTemplateProcessResult? result = null;
 			//When
@@ -44,7 +44,7 @@ public partial class ExcelEngineTests : TestBase
 			var templateFile = "TemplateError1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -52,7 +52,7 @@ public partial class ExcelEngineTests : TestBase
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);

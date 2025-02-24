@@ -15,14 +15,14 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.Equal(2, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 3);
@@ -39,7 +39,7 @@ public partial class PlacementExcelEngineTests : TestBase
 			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[0].Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[1].Range!, 1, 2, 1, 3);
 			CheckCellPropertiesCopy(result.TemplateContexts, result!.ResultItems[0]!);
-			var tempWs = result.Template.Worksheets.First();
+			var tempWs = result.Workbook.Worksheets.First();
 			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
 			CompareRowProperties(tempWs.Row(1), resultWs.Row(1));
 			CompareColumnProperties(tempWs.Column(1), resultWs.Column(1));
@@ -58,14 +58,14 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Equal(2, result!.Template!.Worksheets.Count);
+			Assert.Equal(2, result!.Workbook!.Worksheets.Count);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -84,7 +84,7 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -92,7 +92,7 @@ public partial class PlacementExcelEngineTests : TestBase
 			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.Equal(6, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
@@ -135,14 +135,14 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement4.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.Single(result.TemplateContexts);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 
@@ -167,14 +167,14 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement5.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.Equal(4, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
@@ -209,14 +209,14 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement6.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.Equal(6, result.TemplateContexts.Count);
 			CheckRangeDimensions(result!.TemplateContexts[0]!.Range!, 1, 1, 1, 1);
 			CheckRangeDimensions(result!.TemplateContexts[1]!.Range!, 1, 2, 1, 2);
@@ -258,7 +258,7 @@ public partial class PlacementExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement7.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -268,7 +268,7 @@ public partial class PlacementExcelEngineTests : TestBase
 			GeneralResultChecks(result);
 
 			//Check template
-			Assert.NotNull(result.Template);
+			Assert.NotNull(result.Workbook);
 			Assert.NotNull(result.TemplateContexts);
 			Assert.Equal(3, result.TemplateContexts.Count);
 

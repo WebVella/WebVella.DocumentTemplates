@@ -132,12 +132,12 @@ public class TestBase
 	public static void GeneralResultChecks(WvExcelFileTemplateProcessResult? result)
 	{
 		Assert.NotNull(result);
-		Assert.NotNull(result.Template);
+		Assert.NotNull(result.Workbook);
 		Assert.NotNull(result.ResultItems);
 		Assert.True(result.ResultItems.Count > 0);
 
-		Assert.NotNull(result.Template.Worksheets);
-		Assert.True(result.Template.Worksheets.Count > 0);
+		Assert.NotNull(result.Workbook.Worksheets);
+		Assert.True(result.Workbook.Worksheets.Count > 0);
 
 		Assert.NotNull(result.ResultItems[0].Result);
 		Assert.NotNull(result.ResultItems[0].Result!.Worksheets);
@@ -304,7 +304,7 @@ public class TestBase
 		Assert.True(fi.Exists);
 		var templateWB = new XLWorkbook(path);
 		Assert.NotNull(templateWB);
-		MemoryStream? ms = null;
+		MemoryStream? ms = new();
 		templateWB.SaveAs(ms);
 		Assert.NotNull(ms);
 		return ms;

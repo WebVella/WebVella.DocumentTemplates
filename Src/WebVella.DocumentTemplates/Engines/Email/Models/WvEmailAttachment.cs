@@ -7,7 +7,7 @@ public class WvEmailAttachment
 	public List<string> GroupDataByColumns { get; set; } = new List<string>();
 	public WvEmailAttachmentType Type { get; set; } = WvEmailAttachmentType.TextFile;
 	public string? Filename { get; set; }
-	public MemoryStream? Content { get; set; }
+	public MemoryStream? Template { get; set; }
 }
 
 public enum WvEmailAttachmentType{ 

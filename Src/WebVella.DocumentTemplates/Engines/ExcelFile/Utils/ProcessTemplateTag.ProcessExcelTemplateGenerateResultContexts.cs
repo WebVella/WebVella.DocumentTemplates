@@ -26,7 +26,7 @@ public partial class WvExcelFileEngineUtility
 		//Validate
 		if (resultItem is null) throw new Exception("No result provided!");
 		if (dataSource is null) throw new Exception("No datasource provided!");
-		if (result.Template is null) throw new Exception("No Template provided!");
+		if (result.Workbook is null) throw new Exception("No Template provided!");
 		if (result.TemplateContexts is null) throw new Exception("No Template provided!");
 		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
 
@@ -149,12 +149,12 @@ public partial class WvExcelFileEngineUtility
 			DataTable dataSource, CultureInfo culture
 		)
 	{
-		if (result.Template is null) throw new ArgumentException("result.Template not initialized", nameof(result));
+		if (result.Workbook is null) throw new ArgumentException("result.Template not initialized", nameof(result));
 		if (resultItem.Result is null) throw new ArgumentException("resultItem.Result not initialized", nameof(resultItem));
-		if (result.Template.Worksheets.Count == 0) return;
+		if (result.Workbook.Worksheets.Count == 0) return;
 
 		var firstRowDt = dataSource.CreateAsNew(new List<int> { 0 });
-		foreach (var templateWs in result.Template.Worksheets.OrderBy(x => x.Position))
+		foreach (var templateWs in result.Workbook.Worksheets.OrderBy(x => x.Position))
 		{
 			var resultWs = resultItem.Result.AddWorksheet();
 			resultWs.Name = templateWs.Name;

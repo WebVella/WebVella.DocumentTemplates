@@ -18,14 +18,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -53,14 +53,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -89,7 +89,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -129,7 +129,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
 
 
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -164,7 +164,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction4.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -204,7 +204,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			Assert.Contains(functionContext2!.Id, functionContext3.ContextDependencies);
 
 
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -242,14 +242,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-ABS-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -280,14 +280,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-AVERAGE-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -318,14 +318,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-CONCAT-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -356,14 +356,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-MAX-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -394,14 +394,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-MIN-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -432,7 +432,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-SUM-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -441,7 +441,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -484,7 +484,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-SUM-2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -493,7 +493,7 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -529,14 +529,14 @@ public partial class ExcelFunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateExcelFunction-SUM-3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);

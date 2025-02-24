@@ -41,7 +41,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContext1.xlsx";
 			WvExcelFileTemplateProcessResult? result = new()
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			//When
 			var action = () => new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -62,9 +62,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "test";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -91,9 +93,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "{{test1}}{{test(F=H)}}";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -118,9 +122,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var wb = new XLWorkbook();
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "{{test(F=H)}}";
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -146,9 +152,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "{{test(F=H)}} some text {{test1(F=H)}}";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -176,10 +184,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "test";
 			ws.Cell(1, 2).Value = "test";
-
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -204,9 +213,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			ws.Cell(1, 1).Value = "test";
 			ws.Cell(2, 1).Value = "test";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -232,10 +243,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			range.Merge();
 			range.Value = "test";
 			ws.Cell(1, 4).Value = "test";
-
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -262,9 +274,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			range.Merge();
 			range.Value = "test";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -291,9 +305,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			range.Value = "test";
 			ws.Cell(2, 1).Value = "test";
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -322,9 +338,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var picture = ws.AddPicture(LoadFileAsStream(imageFilename), imageFilename);
 			picture.MoveTo(ws.Cell(3, 2));
 
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
 			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -350,10 +368,12 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var ws = wb.Worksheets.Add();
 			ws.Cell(1, 1).Value = "{{position}}";
 			ws.Cell(1, 2).Value = "{{=SUM(A1:A1)}}";
-
+			
+			MemoryStream? ms = new();
+			wb.SaveAs(ms);
 			var template = new WvExcelFileTemplate
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			var result = template.Process(TypedData, DefaultCulture);
@@ -380,9 +400,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			ws.Cell(1, 1).Value = "{{position}}";
 			ws.Cell(1, 2).Value = "{{=SUM(B100:C200)}}";
 
+			MemoryStream? ms = new();
+			wb.SaveAs(ms);
 			var template = new WvExcelFileTemplate
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			var result = template.Process(TypedData, DefaultCulture);
@@ -408,9 +430,11 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			ws.Cell(1, 1).Value = "{{position}}";
 			ws.Cell(1, 2).Value = "{{=SUM(A1:C5)}}";
 
+			MemoryStream? ms = new();
+			wb.SaveAs(ms);
 			var template = new WvExcelFileTemplate
 			{
-				Template = wb
+				Template = ms
 			};
 			//When
 			var result = template.Process(TypedData, DefaultCulture);
@@ -438,7 +462,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -446,9 +470,9 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.NotNull(result);
-			Assert.NotNull(result.Template);
-			Assert.Single(result.Template.Worksheets);
-			var ws = result.Template.Worksheets.First();
+			Assert.NotNull(result.Workbook);
+			Assert.Single(result.Workbook.Worksheets);
+			var ws = result.Workbook.Worksheets.First();
 			Assert.Equal(10, result.TemplateContexts.Count);
 			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
 			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
@@ -494,7 +518,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -502,9 +526,9 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.NotNull(result);
-			Assert.NotNull(result.Template);
-			Assert.Single(result.Template.Worksheets);
-			var ws = result.Template.Worksheets.First();
+			Assert.NotNull(result.Workbook);
+			Assert.Single(result.Workbook.Worksheets);
+			var ws = result.Workbook.Worksheets.First();
 			Assert.Equal(8, result.TemplateContexts.Count);
 			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
 			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
@@ -545,7 +569,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -553,9 +577,9 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.NotNull(result);
-			Assert.NotNull(result.Template);
-			Assert.Single(result.Template.Worksheets);
-			var ws = result.Template.Worksheets.First();
+			Assert.NotNull(result.Workbook);
+			Assert.Single(result.Workbook.Worksheets);
+			var ws = result.Workbook.Worksheets.First();
 			Assert.Equal(8, result.TemplateContexts.Count);
 			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
 			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
@@ -599,7 +623,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow4.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -608,9 +632,9 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.NotNull(result);
-			Assert.NotNull(result.Template);
-			Assert.Single(result.Template.Worksheets);
-			var ws = result.Template.Worksheets.First();
+			Assert.NotNull(result.Workbook);
+			Assert.Single(result.Workbook.Worksheets);
+			var ws = result.Workbook.Worksheets.First();
 			Assert.Equal(16, result.TemplateContexts.Count);
 			var a1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 1).FirstOrDefault();
 			var b1Context = result.TemplateContexts.GetByAddress(ws.Position, 1, 2).FirstOrDefault();
@@ -716,7 +740,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow5.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -724,8 +748,8 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			//Then
 			GeneralResultChecks(result);
 			Assert.NotNull(result);
-			Assert.NotNull(result.Template);
-			Assert.Single(result.Template.Worksheets);
+			Assert.NotNull(result.Workbook);
+			Assert.Single(result.Workbook.Worksheets);
 			Assert.Equal(2, result.TemplateContexts.Count);
 
 			Assert.NotNull(result!.ResultItems);

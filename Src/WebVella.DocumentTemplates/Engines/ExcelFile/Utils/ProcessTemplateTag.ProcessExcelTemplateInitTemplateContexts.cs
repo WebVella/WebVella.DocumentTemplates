@@ -15,11 +15,14 @@ public partial class WvExcelFileEngineUtility
 	{
 		if (result is null) throw new ArgumentException("No result provided!", nameof(result));
 		if (result.Template is null) throw new ArgumentException("No Template provided!", nameof(result));
-		if (result.Template.Worksheets is null || result.Template.Worksheets.Count == 0) throw new ArgumentException("No worksheets in template provided!", nameof(result));
+		if(result.Workbook is null){ 
+			result.Workbook = new XLWorkbook(result.Template);
+		}
+		if (result.Workbook.Worksheets is null || result.Workbook.Worksheets.Count == 0) throw new ArgumentException("No worksheets in template provided!", nameof(result));
 
 		//Cell contexts
 		var processedAddresses = new HashSet<string>();
-		foreach (IXLWorksheet ws in result.Template.Worksheets)
+		foreach (IXLWorksheet ws in result.Workbook.Worksheets)
 		{
 			var (usedRowsCount, usedColumnsCount) = ws.GetGrossUsedRange();
 
@@ -162,7 +165,7 @@ public partial class WvExcelFileEngineUtility
 		}
 
 		//Picture contexts
-		foreach (IXLWorksheet ws in result.Template.Worksheets)
+		foreach (IXLWorksheet ws in result.Workbook.Worksheets)
 		{
 			foreach (IXLPicture picture in ws.Pictures)
 			{

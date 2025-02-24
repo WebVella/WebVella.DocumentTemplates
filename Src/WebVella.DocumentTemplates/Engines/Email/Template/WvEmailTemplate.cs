@@ -74,7 +74,7 @@ public class WvEmailTemplate : WvTemplateBase
 						if (item.Type == WvEmailAttachmentType.TextFile)
 						{
 							var attachment = ProcessEmailTextAttachment(
-								template: item.Content,
+								template: item.Template,
 								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.txt",
 								dsIndex: attachmentDsIndex,
 								dataSource: itemDataSource,
@@ -85,7 +85,7 @@ public class WvEmailTemplate : WvTemplateBase
 						else if (item.Type == WvEmailAttachmentType.ExcelFile)
 						{
 							var attachment = ProcessEmailExcelAttachment(
-								template: item.Content,
+								template: item.Template,
 								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.xlsx",
 								dsIndex: attachmentDsIndex,
 								dataSource: itemDataSource,
@@ -253,7 +253,7 @@ public class WvEmailTemplate : WvTemplateBase
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.TextFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Content = attachmentTemplateResult.ResultItems[0].Result 
+			Template = attachmentTemplateResult.ResultItems[0].Result 
 		};
 
 
@@ -264,12 +264,10 @@ public class WvEmailTemplate : WvTemplateBase
 	{
 		if (template is null) return null;
 		WvEmailAttachment? attachment = null;
-		XLWorkbook? workbook = new XLWorkbook(template);
-		if (workbook is null) return null;
 
 		var attachmentTemplate = new WvExcelFileTemplate
 		{
-			Template = workbook
+			Template = template
 		};
 
 		var attachmentTemplateResult = attachmentTemplate.Process(dataSource, culture);
@@ -280,7 +278,7 @@ public class WvEmailTemplate : WvTemplateBase
 		}
 		var ext = Path.GetExtension(fileName);
 		var name = Path.GetFileNameWithoutExtension(fileName);
-		MemoryStream? ms = null;
+		MemoryStream? ms = new();
 		attachmentTemplateResult.ResultItems[0]!.Result!.SaveAs(ms);
 
 		if (ms is null) return null;
@@ -290,7 +288,7 @@ public class WvEmailTemplate : WvTemplateBase
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.ExcelFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Content = ms
+			Template = ms
 		};
 
 

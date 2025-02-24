@@ -16,14 +16,14 @@ public partial class EmbeddedExcelEngineTests : TestBase
 			var templateFile = "TemplateData5.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -41,14 +41,14 @@ public partial class EmbeddedExcelEngineTests : TestBase
 			var templateFile = "TemplateData6.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);

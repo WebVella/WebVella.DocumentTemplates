@@ -22,14 +22,14 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -57,14 +57,14 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -92,14 +92,14 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
@@ -158,9 +158,11 @@ public partial class DataExcelEngineTests : TestBase
 
 
 			var templateFile = "TemplateDataGenerated.xlsx";
-			var result = new WvExcelFileTemplateProcessResult
+			MemoryStream ms = new();
+			wb.SaveAs(ms);
+			WvExcelFileTemplateProcessResult result = new()
 			{
-				Template = wb
+				Template = ms
 			};
 			var resultItem = new WvExcelFileTemplateProcessResultItem()
 			{
@@ -199,20 +201,20 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement3MultiWs.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile)
+				Template = LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
 			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
 			Assert.Equal(6, result!.ResultItems[0]!.Contexts.Count);
-			var tempWs = result!.Template!.Worksheets.First();
+			var tempWs = result!.Workbook!.Worksheets.First();
 			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
 
 			var tempA1 = tempWs.Cell(1, 1);
@@ -257,7 +259,7 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbook(templateFile),
+				Template = LoadWorkbookAsMemoryStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
 			var dataSource = SampleData;
@@ -266,7 +268,7 @@ public partial class DataExcelEngineTests : TestBase
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			GeneralResultChecks(result);
-			Assert.Single(result!.Template!.Worksheets);
+			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Equal(4, result!.ResultItems.Count);
 			Assert.NotNull(result!.ResultItems[0]!.Result);
