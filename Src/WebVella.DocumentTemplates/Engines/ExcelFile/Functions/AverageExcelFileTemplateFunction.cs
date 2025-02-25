@@ -13,7 +13,7 @@ public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProc
 	public string? ErrorMessage { get; set; }
 
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -38,7 +38,7 @@ public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProc
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
-			long sum = 0;
+			decimal sum = 0;
 			long count = 0;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
@@ -80,12 +80,15 @@ public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProc
 									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
 								}
 
-								var valueString = resultCell.Value.ToString();
-								if (long.TryParse(valueString, out long longValue))
+								if (!resultCell.Value.IsNumber)
 								{
-									sum += longValue;
-									count++;
+									HasError = true;
+									ErrorMessage = $"non numeric value in range";
+									return null;
 								}
+
+								sum += (decimal)resultCell.Value.GetNumber();
+								count++;
 							}
 						}
 					}
@@ -94,12 +97,12 @@ public class AverageExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProc
 
 			decimal average = (decimal)sum / count;
 
-			if (!String.IsNullOrWhiteSpace(tagValue))
+			if (!String.IsNullOrWhiteSpace(value))
 			{
-				if (tagValue == tag.FullString)
+				if (value == tag.FullString)
 					resultValue = average;
 				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, average.ToString());
+					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, average.ToString());
 			}
 		}
 

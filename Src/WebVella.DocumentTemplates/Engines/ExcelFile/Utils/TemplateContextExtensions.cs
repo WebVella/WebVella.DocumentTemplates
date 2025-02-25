@@ -63,7 +63,7 @@ public static class TemplateContextExtensions
 				FirstColumn = context.Range!.FirstColumn().ColumnNumber(),
 				LastColumn = context.Range!.LastColumn().ColumnNumber()
 			};
-			if (CheckIntersection(range, contextRange))
+			if (range.CheckIntersection(contextRange))
 				result.Add(context);
 		}
 		return result.Where(x => type == null || x.Type == type.Value).ToList();
@@ -102,8 +102,7 @@ public static class TemplateContextExtensions
 			}
 		}
 	}
-
-	private static bool CheckIntersection(WvExcelRange range1, WvExcelRange range2)
+	private static bool CheckIntersection(this WvExcelRange range1, WvExcelRange range2)
 	{
 		// Check if the ranges intersect
 		bool intersects = !(range1.LastRow < range2.FirstRow ||

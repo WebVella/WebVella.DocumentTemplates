@@ -2,6 +2,7 @@
 using WebVella.DocumentTemplates.Engines.TextFile;
 using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public class TextFileEngineTests : TestBase
@@ -14,12 +15,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template1.txt";
 		var resultFile = "Template1Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -37,12 +38,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template2.txt";
 		var resultFile = "Template2Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -60,12 +61,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template3.txt";
 		var resultFile = "Template3Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -83,12 +84,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template4.txt";
 		var resultFile = "Template4Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -106,12 +107,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template5.txt";
 		var resultFile = "Template5Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -129,12 +130,12 @@ public class TextFileEngineTests : TestBase
 	{
 		var templateFile = "Template6.txt";
 		var resultFile = "Template6Result.txt";
-		var expectedResultText = Encoding.UTF8.GetString(LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
+		var expectedResultText = Encoding.UTF8.GetString( new TestUtils().LoadFile(resultFile)).RemoveZeroBitSpaceCharacters();
 		lock (locker)
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile)
+				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
 			Assert.NotNull(result);
@@ -156,7 +157,7 @@ public class TextFileEngineTests : TestBase
 		{
 			var template = new WvTextFileTemplate
 			{
-				Template = LoadFileStream(templateFile),
+				Template =  new TestUtils().LoadFileStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
 			var data = SampleData.CreateAsNew();

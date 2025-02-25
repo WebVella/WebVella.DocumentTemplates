@@ -12,7 +12,7 @@ public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -40,7 +40,7 @@ public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
-			long? min = null;
+			decimal? min = null;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
@@ -81,12 +81,15 @@ public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
 								}
 
-								var valueString = resultCell.Value.ToString();
-								if (long.TryParse(valueString, out long longValue))
+								if (!resultCell.Value.IsNumber)
 								{
-									if (min is null || min > longValue)
-										min = longValue;
+									HasError = true;
+									ErrorMessage = $"non numeric value in range";
+									return null;
 								}
+
+								if (min is null || min > (decimal)resultCell.Value.GetNumber())
+									min = (decimal)resultCell.Value.GetNumber();
 							}
 						}
 					}
@@ -99,12 +102,12 @@ public class MinExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 				return null;
 			};
 
-			if (!String.IsNullOrWhiteSpace(tagValue))
+			if (!String.IsNullOrWhiteSpace(value))
 			{
-				if (tagValue == tag.FullString)
+				if (value == tag.FullString)
 					resultValue = min;
 				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, min.ToString());
+					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, min.ToString());
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using System.Data;
+using System.Diagnostics;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Models;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
@@ -13,7 +14,7 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 	public string? ErrorMessage { get; set; }
 
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -47,8 +48,9 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 		);
 
 		object? resultValue = null;
-		long sum = 0;
+		decimal sum = 0;
 		var processedCellsHS = new HashSet<string>();
+
 		foreach (var rangeAddress in rangeList)
 		{
 			var cellRange = worksheet.Range(rangeAddress);
@@ -77,79 +79,31 @@ public class SumExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 						processedCellsHS.Add(resultCell.Address.ToString() ?? "");
 					}
 
-					var valueString = resultCell.Value.ToString();
-					if (long.TryParse(valueString, out long longValue))
+					if (!resultCell.Value.IsNumber)
 					{
-						sum += longValue;
+						Console.WriteLine("============= BOZ ====");
+						Console.WriteLine(resultCell.Value.ToString());
+						Console.WriteLine("====================");
+						Console.WriteLine(rangeAddress);
+						Console.WriteLine("====================");
+
+						HasError = true;
+						ErrorMessage = $"non numeric value in range";
+						return null;
 					}
+
+					sum += (decimal)resultCell.Value.GetNumber();
 				}
 			}
 		}
-		if (!String.IsNullOrWhiteSpace(tagValue))
+
+		if (!String.IsNullOrWhiteSpace(value))
 		{
-			if (tagValue == tag.FullString)
+			if (value == tag.FullString)
 				resultValue = sum;
 			else
-				resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString());
+				resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, sum.ToString());
 		}
-		//if (tag.ParamGroups.Count > 0
-		//	&& tag.ParamGroups[0].Parameters.Count > 0
-		//	&& !String.IsNullOrWhiteSpace(tag.FullString))
-		//{
-		//	long sum = 0;
-		//	foreach (var parameter in tag.ParamGroups[0].Parameters)
-		//	{
-		//		if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-		//		var range = new WvExcelRangeHelpers().GetRangeFromString(parameter.ValueString ?? String.Empty);
-		//		if (range is not null)
-		//		{
-		//			var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
-		//				worksheetPosition: worksheet.Position,
-		//				range: range,
-		//				type: WvExcelFileTemplateContextType.CellRange
-		//			);
-		//			var resultContexts = resultItem.ResultContexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
-		//			var processedCellsHS = new HashSet<string>();
-		//			foreach (var resContext in resultContexts)
-		//			{
-		//				var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
-		//				var lastAddress = resContext.Range!.RangeAddress.LastAddress;
-		//				for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
-		//				{
-		//					for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
-		//					{
-		//						var resultCell = worksheet.Cell(rowNum, colNum);
-		//						if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
-		//						var mergedRange = resultCell.MergedRange();
-		//						var mergedRows = 1;
-		//						var mergedCols = 1;
-		//						if (mergedRange != null)
-		//						{
-		//							foreach (var cell in mergedRange.Cells())
-		//							{
-		//								processedCellsHS.Add(cell.Address.ToString() ?? "");
-		//							}
-		//							mergedRows = mergedRange.RowCount();
-		//							mergedCols = mergedRange.ColumnCount();
-		//						}
-		//						else
-		//						{
-		//							processedCellsHS.Add(resultCell.Address.ToString() ?? "");
-		//						}
-
-		//						var valueString = resultCell.Value.ToString();
-		//						if (long.TryParse(valueString, out long longValue))
-		//						{
-		//							sum += longValue;
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-		//	}
-
-
-		//}
 
 		return resultValue;
 	}

@@ -5,6 +5,7 @@ using WebVella.DocumentTemplates.Engines.Email;
 using WebVella.DocumentTemplates.Engines.Email.Models;
 using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public class EmailEngineTests : TestBase
@@ -643,7 +644,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Template = LoadWorkbookAsMemoryStream(fileName),
+							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
 							Type =  WvEmailAttachmentType.ExcelFile
 						}
 					}
@@ -672,7 +673,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[1]["recipient_email"], ws.Cell(3, 2).Value.ToString());
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], ws.Cell(4, 2).Value.ToString());
 
-			SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
+			new TestUtils().SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
 		}
 	}
 
@@ -690,7 +691,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Template = LoadWorkbookAsMemoryStream(fileName),
+							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
 							Type =  WvEmailAttachmentType.ExcelFile,
 							GroupDataByColumns = new List<string>{"sender_email"}
 						}
@@ -729,7 +730,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], secondWs.Cell(2, 2).Value.ToString());
 			Assert.Equal(String.Empty, secondWs.Cell(3, 2).Value.ToString());
 
-			SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
+			new TestUtils().SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
 		}
 	}
 	#endregion

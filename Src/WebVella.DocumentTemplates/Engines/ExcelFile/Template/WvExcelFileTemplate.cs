@@ -22,7 +22,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 		{
 			result.ResultItems.Add(new WvExcelFileTemplateProcessResultItem
 			{
-				Result = null
+				Workbook = null
 			});
 			return result;
 		};
@@ -36,7 +36,7 @@ public class WvExcelFileTemplate : WvTemplateBase
 		{
 			var resultItem = new WvExcelFileTemplateProcessResultItem
 			{
-				Result = new XLWorkbook(),
+				Workbook = new XLWorkbook(),
 				NumberOfDataTableRows = grouptedDs.Rows.Count
 			};
 			var templateContextsDict = result.TemplateContexts.ToDictionary(x => x.Id);
@@ -46,6 +46,14 @@ public class WvExcelFileTemplate : WvTemplateBase
 				dataSource: grouptedDs,
 				culture: culture,
 				templateContextDict: templateContextDict);
+
+			
+			resultItem.Result = null;
+			if(resultItem.Workbook is not null){ 
+			var ms = new MemoryStream();
+				resultItem.Workbook.SaveAs(ms);
+				resultItem.Result = ms;
+			}
 			result.ResultItems.Add(resultItem);
 		}
 		return result;

@@ -48,29 +48,19 @@ public class WvExcelFileMetaService
 		}
 	}
 
-	public List<IWvExcelFileTemplateFunctionProcessor> GetRegisteredFunctionProcessors()
-	{
-		return _functionsList!;
-	}
-
-	public IWvExcelFileTemplateFunctionProcessor? GetFunctionProcessorByName(string name)
+	public Type? GetFunctionProcessorByName(string name)
 	{
 		if (String.IsNullOrWhiteSpace(name)) return null;
 		var matches = _functionsList!.Where(a => a.Name.ToLowerInvariant() == name.Trim().ToLowerInvariant());
-		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First();
+		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First().GetType();
 		return null;
 	}
 
-	public List<IWvExcelFileTemplateExcelFunctionProcessor> GetRegisteredExcelFunctionProcessors()
-	{
-		return _excelFunctionsList!;
-	}
-
-	public IWvExcelFileTemplateExcelFunctionProcessor? GetExcelFunctionProcessorByName(string name)
+	public Type? GetExcelFunctionProcessorByName(string name)
 	{
 		if (String.IsNullOrWhiteSpace(name)) return null;
 		var matches = _excelFunctionsList!.Where(a => a.Name.ToLowerInvariant() == name.Trim().ToLowerInvariant());
-		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First();
+		if (matches.Any()) return matches.OrderByDescending(x => x.Priority).First().GetType();
 		return null;
 	}
 

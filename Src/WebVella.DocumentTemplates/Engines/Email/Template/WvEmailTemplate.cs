@@ -278,17 +278,13 @@ public class WvEmailTemplate : WvTemplateBase
 		}
 		var ext = Path.GetExtension(fileName);
 		var name = Path.GetFileNameWithoutExtension(fileName);
-		MemoryStream? ms = new();
-		attachmentTemplateResult.ResultItems[0]!.Result!.SaveAs(ms);
-
-		if (ms is null) return null;
 
 		attachment = new WvEmailAttachment
 		{
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.ExcelFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Template = ms
+			Template = attachmentTemplateResult.ResultItems[0]!.Result
 		};
 
 

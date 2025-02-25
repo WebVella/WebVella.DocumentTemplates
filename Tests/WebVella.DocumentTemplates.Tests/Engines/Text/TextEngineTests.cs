@@ -2,6 +2,7 @@
 using WebVella.DocumentTemplates.Engines.Text;
 using WebVella.DocumentTemplates.Extensions;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public class TextEngineTests : TestBase
@@ -55,7 +56,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
@@ -72,7 +73,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal(template.Template, result.ResultItems[0].Result);
 	}
@@ -89,7 +90,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}", result.ResultItems[0].Result);
 	}
@@ -106,7 +107,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}", result.ResultItems[0].Result);
 	}
@@ -123,7 +124,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}{data.Rows[1]["sku"]} test {data.Rows[1]["name"]}", result.ResultItems[0].Result);
 	}
@@ -140,7 +141,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Equal(2, lines.Count);
 		Assert.Equal($"{data.Rows[0]["sku"]} test {data.Rows[0]["name"]}", lines[0]);
 		Assert.Equal($"{data.Rows[1]["sku"]} test {data.Rows[1]["name"]}", lines[1]);
@@ -158,7 +159,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]}", lines[0]);
 	}
@@ -175,7 +176,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"test {data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]} {data.Rows[0]["name"]},{data.Rows[1]["name"]},{data.Rows[2]["name"]}", lines[0]);
 	}
@@ -192,7 +193,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"test {data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]} {data.Rows[0]["name"]}, {data.Rows[1]["name"]}, {data.Rows[2]["name"]}", lines[0]);
 	}
@@ -209,7 +210,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"Component: {data.Rows[0]["sku"]}, {data.Rows[1]["sku"]}, {data.Rows[2]["sku"]} with ETA: {data.Rows[0]["name"]}, {data.Rows[1]["name"]}, {data.Rows[2]["name"]}", lines[0]);
 	}
@@ -226,7 +227,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]}", lines[0]);
 	}
@@ -245,7 +246,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Equal(4, result.ResultItems.Count);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}{data.Rows[0]["sku"]}{data.Rows[1]["name"]}", result.ResultItems[0].Result);
 	}
@@ -279,7 +280,7 @@ public class TextEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.ResultItems);
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
-		var lines = GetLines(result.ResultItems[0].Result ?? String.Empty);
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal("john@domain.com,peter@domain.com", result.ResultItems[0].Result);
 	}

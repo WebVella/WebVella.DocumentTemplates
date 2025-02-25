@@ -12,7 +12,7 @@ public class AbsExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -38,7 +38,7 @@ public class AbsExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
-			long sum = 0;
+			decimal sum = 0;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
@@ -79,11 +79,14 @@ public class AbsExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
 								}
 
-								var valueString = resultCell.Value.ToString();
-								if (long.TryParse(valueString, out long longValue))
+								if (!resultCell.Value.IsNumber)
 								{
-									sum += longValue;
+									HasError = true;
+									ErrorMessage = $"non numeric value in range";
+									return null;
 								}
+
+								sum += (decimal)resultCell.Value.GetNumber();
 							}
 						}
 					}
@@ -92,12 +95,12 @@ public class AbsExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 
 			sum = Math.Abs(sum);
 
-			if (tagValue is not null && tagValue is string)
+			if (value is not null && value is string)
 			{
-				if (tagValue == tag.FullString)
+				if (value == tag.FullString)
 					resultValue = sum;
 				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sum.ToString());
+					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, sum.ToString());
 			}
 		}
 

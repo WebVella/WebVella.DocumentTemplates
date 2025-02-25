@@ -1,5 +1,6 @@
 ﻿using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public partial class FunctionsExcelEngineTests : TestBase
@@ -17,19 +18,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -40,7 +41,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("item1 TOTAL: 15", worksheet.Cell(8, 1).Value.ToString());
 
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -53,19 +54,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -76,7 +77,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("15", worksheet.Cell(7, 2).Value.ToString());
 
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -89,13 +90,13 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			var positionContext1 = result!.TemplateContexts
 				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
 					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
@@ -130,9 +131,9 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -144,7 +145,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("30", worksheet.Cell(7, 3).Value.ToString());
 
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	[Fact]
@@ -156,13 +157,13 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction4.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			var positionContext1 = result!.TemplateContexts
 				.FirstOrDefault(x => x.Range!.RangeAddress.FirstAddress.RowNumber == 2
 					&& x.Range!.RangeAddress.FirstAddress.ColumnNumber == 1);
@@ -197,9 +198,9 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -211,7 +212,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("30", worksheet.Cell(7, 3).Value.ToString());
 
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -227,20 +228,20 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-ABS-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			SampleData.Rows[0]["position"] = -100;
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal(-100, worksheet.Cell(2, 1).Value);
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -248,7 +249,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("4", worksheet.Cell(5, 1).Value.ToString());
 			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("86", worksheet.Cell(7, 1).Value.ToString());
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion
@@ -263,19 +264,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-Average-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -284,7 +285,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("3", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 AVERAGE: 3", worksheet.Cell(8, 1).Value.ToString());
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion
@@ -299,19 +300,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-CONCAT-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("name", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("item1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("item2", worksheet.Cell(3, 1).Value.ToString());
@@ -319,7 +320,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("item4", worksheet.Cell(5, 1).Value.ToString());
 			Assert.Equal("item5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("item1item2item3item4item5", worksheet.Cell(7, 1).Value.ToString());
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion
@@ -334,19 +335,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-MAX-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -355,7 +356,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("5", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 MAX: 5", worksheet.Cell(8, 1).Value.ToString());
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion
@@ -370,19 +371,19 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-MIN-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -391,7 +392,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 MIN: 1", worksheet.Cell(8, 1).Value.ToString());
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion
@@ -406,21 +407,21 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-SUM-1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value.ToString());
 			Assert.Equal("1", worksheet.Cell(2, 1).Value.ToString());
 			Assert.Equal("2", worksheet.Cell(3, 1).Value.ToString());
@@ -440,7 +441,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal("8", worksheet.Cell(5, 3).Value.ToString());
 			Assert.Equal("10", worksheet.Cell(6, 3).Value.ToString());
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -453,21 +454,21 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-SUM-2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value);
 			Assert.Equal(1, worksheet.Cell(2, 1).Value);
 			Assert.Equal(2, worksheet.Cell(3, 1).Value);
@@ -484,7 +485,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal(15, worksheet.Cell(7, 1).Value);
 			Assert.Equal(15, worksheet.Cell(7, 2).Value);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -497,21 +498,21 @@ public partial class FunctionsExcelEngineTests : TestBase
 			var templateFile = "TemplateFunction-SUM-3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var worksheet = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var worksheet = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal("position", worksheet.Cell(1, 1).Value);
 			Assert.Equal(1, worksheet.Cell(2, 1).Value);
 			Assert.Equal(2, worksheet.Cell(3, 1).Value);
@@ -531,7 +532,7 @@ public partial class FunctionsExcelEngineTests : TestBase
 			Assert.Equal(5, worksheet.Cell(5, 3).Value);
 			Assert.Equal(6, worksheet.Cell(6, 3).Value);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion

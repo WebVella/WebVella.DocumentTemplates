@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.ExcelFile.Models;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Services;
 using WebVella.DocumentTemplates.Extensions;
 
@@ -26,9 +27,9 @@ public partial class WvExcelFileEngineUtility
 		//Validate
 		if (resultItem is null) throw new Exception("No result provided!");
 		if (dataSource is null) throw new Exception("No datasource provided!");
-		if (result.Workbook is null) throw new Exception("No Template provided!");
+		if (result.Template is null) throw new Exception("No Template provided!");
 		if (result.TemplateContexts is null) throw new Exception("No Template provided!");
-		if (resultItem.Result is null) resultItem.Result = new XLWorkbook();
+		if (resultItem.Workbook is null) resultItem.Workbook = new XLWorkbook();
 
 		//Init
 		if (result.TemplateContexts.Count == 0) return;
@@ -42,7 +43,7 @@ public partial class WvExcelFileEngineUtility
 		);
 		var currentResultRowStartRow = 1;
 		//Process
-		foreach (var resultWorksheet in resultItem.Result.Worksheets)
+		foreach (var resultWorksheet in resultItem.Workbook.Worksheets)
 		{
 			#region << Process Cell Ranges >>
 			foreach (var templateRow in result.TemplateRows.Where(x =>
@@ -150,13 +151,13 @@ public partial class WvExcelFileEngineUtility
 		)
 	{
 		if (result.Workbook is null) throw new ArgumentException("result.Template not initialized", nameof(result));
-		if (resultItem.Result is null) throw new ArgumentException("resultItem.Result not initialized", nameof(resultItem));
+		if (resultItem.Workbook is null) throw new ArgumentException("resultItem.Result not initialized", nameof(resultItem));
 		if (result.Workbook.Worksheets.Count == 0) return;
 
 		var firstRowDt = dataSource.CreateAsNew(new List<int> { 0 });
 		foreach (var templateWs in result.Workbook.Worksheets.OrderBy(x => x.Position))
 		{
-			var resultWs = resultItem.Result.AddWorksheet();
+			var resultWs = resultItem.Workbook.AddWorksheet();
 			resultWs.Name = templateWs.Name;
 			var templateResult = new WvTemplateUtility().ProcessTemplateTag(templateWs.Name, firstRowDt, culture);
 			if (templateResult != null && templateResult.Values.Count > 0
@@ -324,48 +325,56 @@ public partial class WvExcelFileEngineUtility
 							}
 							else if (tag.Type == WvTemplateTagType.Function)
 							{
-								var functionProcessor = new WvExcelFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
-								if (functionProcessor is null)
+								var processorType = new WvExcelFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+								if (processorType is null)
 								{
 									throw new Exception($"Unsupported function name: {tag.Name} in tag");
 								}
-
+								IWvExcelFileTemplateFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvExcelFileTemplateFunctionProcessor;
+								if (processor is null)
+								{
+									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+								}
 								//Need to work here to make it relative
-								var value = functionProcessor.Process(
-													tagValue: tempCell.Value.ToString(),
+								var value = processor.Process(
+													value: tempCell.Value.ToString(),
 													tag: tag,
-													expandPosition: expandPosition,
-													expandPositionMax:tagProcessResult.ExpandCount,
 													templateContext: templateContext,
+													expandPosition: expandPosition,
+													expandPositionMax: tagProcessResult.ExpandCount,
 													dataSource: dataSource,
 													result: result,
 													resultItem: resultItem,
 													processedCellRange: resultRange,
 													processedWorksheet: resultRow.Worksheet
 												);
-								if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
+								if (processor.HasError) throw new Exception(processor.ErrorMessage);
 								resultRange.Value = XLCellValue.FromObject(value);
 							}
 							else if (tag.Type == WvTemplateTagType.ExcelFunction)
 							{
-								var functionProcessor = new WvExcelFileMetaService().GetExcelFunctionProcessorByName(tag.FunctionName ?? String.Empty);
-								if (functionProcessor is null)
+								var processorType = new WvExcelFileMetaService().GetExcelFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+								if (processorType is null)
 								{
 									throw new Exception($"Unsupported function name: {tag.Name} in tag");
 								}
-
-								var value = functionProcessor.Process(
+								IWvExcelFileTemplateExcelFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvExcelFileTemplateExcelFunctionProcessor;
+								if (processor is null)
+								{
+									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+								}
+								var value = processor.Process(
 													value: tempCell.Value.ToString(),
 													tag: tag,
 													expandPosition: expandPosition,
-													expandPositionMax:tagProcessResult.ExpandCount,
+													expandPositionMax: tagProcessResult.ExpandCount,
 													templateContext: templateContext,
 													result: result,
 													resultItem: resultItem,
 													processedWorksheet: resultRow.Worksheet
 												);
-								if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
-								resultRange.FormulaA1 = functionProcessor.FormulaA1;
+								if (processor.HasError) throw new Exception(processor.ErrorMessage);
+								resultRange.FormulaA1 = processor.FormulaA1;
 							}
 						}
 						else
@@ -383,16 +392,21 @@ public partial class WvExcelFileEngineUtility
 								}
 								else if (tag.Type == WvTemplateTagType.Function)
 								{
-									var functionProcessor = new WvExcelFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
-									if (functionProcessor is null)
+									var processorType = new WvExcelFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+									if (processorType is null)
 									{
 										throw new Exception($"Unsupported function name: {tag.Name} in tag");
 									}
-									value = functionProcessor.Process(
-														tagValue: value.ToString(),
+									IWvExcelFileTemplateFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvExcelFileTemplateFunctionProcessor;
+									if (processor is null)
+									{
+										throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+									}
+									value = processor.Process(
+														value: value.ToString(),
 														tag: tag,
 														expandPosition: expandPosition,
-														expandPositionMax:tagProcessResult.ExpandCount,
+														expandPositionMax: tagProcessResult.ExpandCount,
 														templateContext: templateContext,
 														dataSource: dataSource,
 														result: result,
@@ -400,7 +414,7 @@ public partial class WvExcelFileEngineUtility
 														processedCellRange: resultRange,
 														processedWorksheet: resultRow.Worksheet
 													);
-									if (functionProcessor.HasError) throw new Exception(functionProcessor.ErrorMessage);
+									if (processor.HasError) throw new Exception(processor.ErrorMessage);
 								}
 								else if (tag.Type == WvTemplateTagType.ExcelFunction)
 								{

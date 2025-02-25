@@ -5,6 +5,7 @@ using System.Globalization;
 using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public partial class DataExcelEngineTests : TestBase
@@ -22,19 +23,19 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var ws = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal((string)SampleData.Rows[0]["name"], ws.Name);
 
 			for (int i = 0; i < SampleData.Rows.Count; i++)
@@ -44,7 +45,7 @@ public partial class DataExcelEngineTests : TestBase
 				Assert.Equal(data.ToString(), cell.ToString());
 			}
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -57,19 +58,19 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var ws = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal((string)SampleData.Rows[0]["name"], ws.Name);
 
 			for (int i = 0; i < SampleData.Rows.Count; i++)
@@ -79,7 +80,7 @@ public partial class DataExcelEngineTests : TestBase
 				Assert.Equal(rowValueString, cellValueString);
 			}
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -92,19 +93,19 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var ws = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal((string)SampleData.Rows[0]["name"], ws.Name);
 
 			for (int i = 0; i < SampleData.Rows.Count; i++)
@@ -120,7 +121,7 @@ public partial class DataExcelEngineTests : TestBase
 				Assert.Equal(rowValueString, cellValueString);
 			}
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -166,7 +167,7 @@ public partial class DataExcelEngineTests : TestBase
 			};
 			var resultItem = new WvExcelFileTemplateProcessResultItem()
 			{
-				Result = new XLWorkbook()
+				Workbook = new XLWorkbook()
 			};
 			var dataSource = ds;
 			var culture = new CultureInfo("en-US");
@@ -186,7 +187,7 @@ public partial class DataExcelEngineTests : TestBase
 			timeMS += sw.ElapsedMilliseconds;
 			sw.Stop();
 			//Then
-			SaveWorkbook(resultItem.Result!, templateFile);
+			new TestUtils().SaveWorkbook(resultItem.Workbook!, templateFile);
 			Assert.True(15 * 1000 > timeMS);
 		}
 	}
@@ -201,21 +202,21 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplatePlacement3MultiWs.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
 			Assert.Equal(6, result!.ResultItems[0]!.Contexts.Count);
 			var tempWs = result!.Workbook!.Worksheets.First();
-			var resultWs = result!.ResultItems[0]!.Result!.Worksheets.First();
+			var resultWs = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 
 			var tempA1 = tempWs.Cell(1, 1);
 			var resultA1 = tempWs.Cell(1, 1);
@@ -235,14 +236,14 @@ public partial class DataExcelEngineTests : TestBase
 			var tempF1 = tempWs.Cell(1, 6);
 			var resultF1 = tempWs.Cell(1, 6);
 
-			CompareStyle(tempA1, resultA1);
-			CompareStyle(tempB1, resultB1);
-			CompareStyle(tempC1, resultC1);
-			CompareStyle(tempD1, resultD1);
-			CompareStyle(tempE1, resultE1);
-			CompareStyle(tempF1, resultF1);
+			new TestUtils().CompareStyle(tempA1, resultA1);
+			new TestUtils().CompareStyle(tempB1, resultB1);
+			new TestUtils().CompareStyle(tempC1, resultC1);
+			new TestUtils().CompareStyle(tempD1, resultD1);
+			new TestUtils().CompareStyle(tempE1, resultE1);
+			new TestUtils().CompareStyle(tempF1, resultF1);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -259,7 +260,7 @@ public partial class DataExcelEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile),
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
 			var dataSource = SampleData;
@@ -267,13 +268,13 @@ public partial class DataExcelEngineTests : TestBase
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Equal(4, result!.ResultItems.Count);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var ws = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal((string)SampleData.Rows[0]["name"], ws.Name);
 
 			var row1SkuValueString = ws.Cell(1, 2).Value.ToString();
@@ -282,5 +283,6 @@ public partial class DataExcelEngineTests : TestBase
 		}
 	}
 	#endregion
+
 
 }

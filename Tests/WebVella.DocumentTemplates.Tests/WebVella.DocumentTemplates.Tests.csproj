@@ -92,6 +92,9 @@
     <None Update="Files\TemplateContextFlow2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\TemplateDoc1.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\TemplateError1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,5 +1,6 @@
 ﻿using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public partial class EmbeddedExcelEngineTests : TestBase
@@ -16,20 +17,20 @@ public partial class EmbeddedExcelEngineTests : TestBase
 			var templateFile = "TemplateData5.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	[Fact]
@@ -41,20 +42,20 @@ public partial class EmbeddedExcelEngineTests : TestBase
 			var templateFile = "TemplateData6.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.Single(result!.Workbook!.Worksheets);
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 

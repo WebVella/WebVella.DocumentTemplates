@@ -4,6 +4,7 @@ using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
+using WebVella.DocumentTemplates.Tests.Utils;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
 public partial class TemplateContextsExcelEngineTests : TestBase
@@ -41,7 +42,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContext1.xlsx";
 			WvExcelFileTemplateProcessResult? result = new()
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			//When
 			var action = () => new WvExcelFileEngineUtility().ProcessExcelTemplateInitTemplateContexts(result);
@@ -335,7 +336,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			ws.Cell(1, 1).Value = "test";
 			ws.Cell(1, 2).Value = "test";
 			var imageFilename = "wv-logo.jpg";
-			var picture = ws.AddPicture(LoadFileAsStream(imageFilename), imageFilename);
+			var picture = ws.AddPicture(new TestUtils().LoadFileAsStream(imageFilename), imageFilename);
 			picture.MoveTo(ws.Cell(3, 2));
 
 			MemoryStream ms = new();
@@ -462,13 +463,13 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow1.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Workbook);
 			Assert.Single(result.Workbook.Worksheets);
@@ -506,7 +507,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a5Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b5Context.Flow);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	[Fact]
@@ -518,13 +519,13 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow2.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Workbook);
 			Assert.Single(result.Workbook.Worksheets);
@@ -557,7 +558,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b3Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, b4Context.Flow);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	[Fact]
@@ -569,13 +570,13 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow3.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Workbook);
 			Assert.Single(result.Workbook.Worksheets);
@@ -611,7 +612,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(WvTemplateTagDataFlow.Vertical, a4Context.Flow);
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.ForcedFlow);
 			Assert.Equal(WvTemplateTagDataFlow.Horizontal, b4Context.Flow);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	[Fact]
@@ -623,14 +624,14 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow4.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Workbook);
 			Assert.Single(result.Workbook.Worksheets);
@@ -727,7 +728,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.NotNull(b4Context.ForcedContext);
 			Assert.Equal(b1Context.Id, b4Context.ForcedContext.Id);
 			Assert.Equal(b1Context.Flow, b4Context.Flow);
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 
@@ -740,13 +741,13 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			var templateFile = "TemplateContextFlow5.xlsx";
 			var template = new WvExcelFileTemplate
 			{
-				Template = LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
 			WvExcelFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
-			GeneralResultChecks(result);
+			new TestUtils().GeneralResultChecks(result);
 			Assert.NotNull(result);
 			Assert.NotNull(result.Workbook);
 			Assert.Single(result.Workbook.Worksheets);
@@ -754,13 +755,13 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 
 			Assert.NotNull(result!.ResultItems);
 			Assert.Single(result!.ResultItems);
-			Assert.NotNull(result!.ResultItems[0]!.Result);
-			Assert.NotNull(result!.ResultItems[0]!.Result!.Worksheets);
-			Assert.Single(result!.ResultItems[0]!.Result!.Worksheets);
-			var ws = result!.ResultItems[0]!.Result!.Worksheets.First();
+			Assert.NotNull(result!.ResultItems[0]!.Workbook);
+			Assert.NotNull(result!.ResultItems[0]!.Workbook!.Worksheets);
+			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
+			var ws = result!.ResultItems[0]!.Workbook!.Worksheets.First();
 			Assert.Equal(2, result!.ResultItems[0]!.Contexts.Count);
-			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[0].Range!, 1, 1, 1, 1);
-			CheckRangeDimensions(result!.ResultItems[0]!.Contexts[1].Range!, 2, 1, 6, 1);
+			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[0].Range!, 1, 1, 1, 1);
+			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[1].Range!, 2, 1, 6, 1);
 
 			Assert.Equal("position", ws.Cell(1, 1).Value.ToString());
 			Assert.Equal(1, ws.Cell(2, 1).Value);
@@ -769,7 +770,7 @@ public partial class TemplateContextsExcelEngineTests : TestBase
 			Assert.Equal(4, ws.Cell(5, 1).Value);
 			Assert.Equal(5, ws.Cell(6, 1).Value);
 
-			SaveWorkbook(result!.ResultItems[0]!.Result!, templateFile);
+			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
 	#endregion

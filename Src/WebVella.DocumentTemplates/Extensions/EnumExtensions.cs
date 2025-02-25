@@ -29,7 +29,7 @@ public static class EnumExtensions
 		return description;
 	}
 
-	public static TEnum ConvertIntToEnum<TEnum>(int value, TEnum defaultValue) where TEnum : IConvertible
+	public static TEnum ConvertIntToEnum<TEnum>(this int value, TEnum defaultValue) where TEnum : IConvertible
 	{
 		if (Enum.IsDefined(typeof(TEnum), value))
 		{
@@ -38,13 +38,12 @@ public static class EnumExtensions
 		return defaultValue;
 
 	}
-
-	public static TEnum ConvertStringToEnum<TEnum>(string value, TEnum defaultValue) where TEnum : IConvertible
+	public static TEnum ConvertStringToEnum<TEnum>(this string value, TEnum defaultValue) where TEnum : IConvertible
 	{
 		if (String.IsNullOrEmpty(value)) return defaultValue;
 		if (int.TryParse(value, out var n))
 		{
-			return ConvertIntToEnum(n, defaultValue);
+			return n.ConvertIntToEnum(defaultValue);
 		}
 		return defaultValue;
 	}

@@ -12,7 +12,7 @@ public class MaxExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -40,7 +40,7 @@ public class MaxExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 			&& tag.ParamGroups[0].Parameters.Count > 0
 			&& !String.IsNullOrWhiteSpace(tag.FullString))
 		{
-			long? max = null;
+			decimal? max = null;
 			foreach (var parameter in tag.ParamGroups[0].Parameters)
 			{
 				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
@@ -81,12 +81,15 @@ public class MaxExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
 								}
 
-								var valueString = resultCell.Value.ToString();
-								if (long.TryParse(valueString, out long longValue))
+								if (!resultCell.Value.IsNumber)
 								{
-									if (max is null || max < longValue)
-										max = longValue;
+									HasError = true;
+									ErrorMessage = $"non numeric value in range";
+									return null;
 								}
+
+								if (max is null || max < (decimal)resultCell.Value.GetNumber())
+									max = (decimal)resultCell.Value.GetNumber();
 							}
 						}
 					}
@@ -100,12 +103,12 @@ public class MaxExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProcesso
 				return null;
 			};
 
-			if (!String.IsNullOrWhiteSpace(tagValue))
+			if (!String.IsNullOrWhiteSpace(value))
 			{
-				if (tagValue == tag.FullString)
+				if (value == tag.FullString)
 					resultValue = max;
 				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, max.ToString());
+					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, max.ToString());
 			}
 		}
 

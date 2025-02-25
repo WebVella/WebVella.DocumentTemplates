@@ -10,7 +10,7 @@ public interface IWvExcelFileTemplateFunctionProcessor
 	public bool HasError { get; set; }
 	public string? ErrorMessage { get; set; }
 	public object? Process(
-		string? tagValue,
+		string? value,
 		WvTemplateTag tag,
 		WvExcelFileTemplateContext templateContext,
 		int expandPosition,

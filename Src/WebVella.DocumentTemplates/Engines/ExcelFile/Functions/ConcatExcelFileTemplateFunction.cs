@@ -14,7 +14,7 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 	public string? ErrorMessage { get; set; }
 
 	public object? Process(
-			string? tagValue,
+			string? value,
 			WvTemplateTag tag,
 			WvExcelFileTemplateContext templateContext,
 			int expandPosition,
@@ -89,12 +89,12 @@ public class ConcatExcelFileTemplateFunction : IWvExcelFileTemplateFunctionProce
 				}
 			}
 
-			if (tagValue is not null && tagValue is string)
+			if (value is not null && value is string)
 			{
-				if (tagValue == tag.FullString)
+				if (value == tag.FullString)
 					resultValue = sb.ToString();
 				else
-					resultValue = ((string)tagValue).Replace(tag.FullString ?? String.Empty, sb.ToString());
+					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, sb.ToString());
 			}
 		}
 
