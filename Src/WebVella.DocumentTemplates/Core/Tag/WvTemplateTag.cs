@@ -53,6 +53,9 @@ public class WvTemplateTag
 				{
 					if (param.Type.InheritsClass(typeof(WvTemplateTagSeparatorParameterProcessor)))
 					{
+						if(((WvTemplateTagSeparatorParameterProcessor)param).ValueString == "$rn"){ 
+							return Environment.NewLine;
+						}
 						return ((WvTemplateTagSeparatorParameterProcessor)param).ValueString;
 					}
 				}

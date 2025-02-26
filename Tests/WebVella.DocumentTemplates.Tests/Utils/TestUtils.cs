@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebVella.DocumentTemplates.Engines.ExcelFile;
+using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 
 namespace WebVella.DocumentTemplates.Tests.Utils;
 public class TestUtils
 {
-//TODO BOZ
+
 	public List<string> GetLines(string content)
 	{
 		if (string.IsNullOrEmpty(content)) return new List<string>();
 		return content.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
 	}
-	//TODO BOZ
+	
 	public byte[] LoadFile(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -23,12 +23,12 @@ public class TestUtils
 		if (!fi.Exists) throw new FileNotFoundException();
 		return File.ReadAllBytes(path);
 	}
-	//TODO BOZ
+	
 	public MemoryStream LoadFileStream(string fileName)
 	{
 		return new MemoryStream(LoadFile(fileName));
 	}
-	//TODO BOZ
+	
 	public void SaveFile(string content, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -41,7 +41,7 @@ public class TestUtils
 		sw.Write(content);
 		sw.Close();
 	}
-	//TODO BOZ
+	
 	public MemoryStream LoadFileAsStream(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -52,8 +52,8 @@ public class TestUtils
 			file.CopyTo(ms);
 		return ms;
 	}
-	//TODO BOZ
-	public void GeneralResultChecks(WvExcelFileTemplateProcessResult? result)
+	
+	public void GeneralResultChecks(WvSpreadsheetFileTemplateProcessResult? result)
 	{
 		Assert.NotNull(result);
 		Assert.NotNull(result.Workbook);
@@ -68,7 +68,7 @@ public class TestUtils
 		Assert.NotNull(result.ResultItems[0].Workbook!.Worksheets);
 		Assert.True(result.ResultItems[0].Workbook!.Worksheets.Count > 0);
 	}
-	//TODO BOZ
+	
 	public void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)
 	{
 		Assert.NotNull(range);
@@ -81,9 +81,9 @@ public class TestUtils
 		Assert.Equal(lastRowNumber, range.RangeAddress.LastAddress.RowNumber);
 		Assert.Equal(lastColumnNumber, range.RangeAddress.LastAddress.ColumnNumber);
 	}
-	//TODO BOZ
-	public void CheckCellPropertiesCopy(List<WvExcelFileTemplateContext> templateContexts,
-		WvExcelFileTemplateProcessResultItem resultItem)
+	
+	public void CheckCellPropertiesCopy(List<WvSpreadsheetFileTemplateContext> templateContexts,
+		WvSpreadsheetFileTemplateProcessResultItem resultItem)
 	{
 		foreach (var tempContext in templateContexts)
 		{
@@ -103,7 +103,7 @@ public class TestUtils
 			CompareStyle(firstTemplateCell, firstResultCell);
 		}
 	}
-	//TODO BOZ
+	
 	public void CompareStyle(IXLCell template, IXLCell result)
 	{
 		if (template.Style is null)
@@ -123,7 +123,7 @@ public class TestUtils
 			CompareProtection(template.Style.Protection, result.Style.Protection);
 		}
 	}
-	//TODO BOZ
+	
 	public void CompareStyleAlignment(IXLAlignment template, IXLAlignment result)
 	{
 		Assert.Equal(template.TopToBottom, result.TopToBottom);
@@ -137,7 +137,7 @@ public class TestUtils
 		Assert.Equal(template.Horizontal, result.Horizontal);
 		Assert.Equal(template.WrapText, result.WrapText);
 	}
-	//TODO BOZ
+	
 	public void CompareStyleBorder(IXLBorder template, IXLBorder result)
 	{
 		CompareStyleColor(template.DiagonalBorderColor, result.DiagonalBorderColor);
@@ -153,20 +153,20 @@ public class TestUtils
 		Assert.Equal(template.DiagonalDown, result.DiagonalDown);
 		CompareStyleColor(template.RightBorderColor, result.RightBorderColor);
 	}
-	//TODO BOZ
+	
 	public void CompareStyleFormat(IXLNumberFormat template, IXLNumberFormat result)
 	{
 		Assert.Equal(template.NumberFormatId, result.NumberFormatId);
 		Assert.Equal(template.Format, result.Format);
 	}
-	//TODO BOZ
+	
 	public void CompareStyleFill(IXLFill template, IXLFill result)
 	{
 		CompareStyleColor(template.BackgroundColor, result.BackgroundColor);
 		CompareStyleColor(template.PatternColor, result.PatternColor);
 		Assert.Equal(template.PatternType, result.PatternType);
 	}
-	//TODO BOZ
+	
 	public void CompareStyleFont(IXLFont template, IXLFont result)
 	{
 		Assert.Equal(template.Bold, result.Bold);
@@ -182,13 +182,13 @@ public class TestUtils
 		Assert.Equal(template.FontCharSet, result.FontCharSet);
 		Assert.Equal(template.FontScheme, result.FontScheme);
 	}
-	//TODO BOZ
+	
 	public void CompareProtection(IXLProtection template, IXLProtection result)
 	{
 		Assert.Equal(template.Locked, result.Locked);
 		Assert.Equal(template.Hidden, result.Hidden);
 	}
-	//TODO BOZ
+	
 	public void CompareStyleColor(XLColor template, XLColor result)
 	{
 		if (template is null)
@@ -205,19 +205,19 @@ public class TestUtils
 				Assert.Equal(template.ToString(), result.ToString());
 		}
 	}
-	//TODO BOZ
+	
 	public void CompareRowProperties(IXLRow template, IXLRow result)
 	{
 		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
 		Assert.Equal(template.Height, result.Height);
 	}
-	//TODO BOZ
+	
 	public void CompareColumnProperties(IXLColumn template, IXLColumn result)
 	{
 		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
 		Assert.Equal(template.Width, result.Width);
 	}
-	//TODO BOZ
+	
 	public XLWorkbook LoadWorkbook(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -228,7 +228,7 @@ public class TestUtils
 		Assert.NotNull(templateWB);
 		return templateWB;
 	}
-	//TODO BOZ
+	
 	public MemoryStream? LoadWorkbookAsMemoryStream(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -242,7 +242,7 @@ public class TestUtils
 		Assert.NotNull(ms);
 		return ms;
 	}
-	//TODO BOZ
+	
 	public void SaveWorkbook(XLWorkbook workbook, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -253,7 +253,7 @@ public class TestUtils
 		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
 		workbook.SaveAs(path);
 	}
-	//TODO BOZ
+	
 
 	public void SaveWorkbookFromMemoryStream(MemoryStream content, string fileName)
 	{

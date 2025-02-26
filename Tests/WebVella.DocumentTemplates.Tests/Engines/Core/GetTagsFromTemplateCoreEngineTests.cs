@@ -1,6 +1,6 @@
 ﻿using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.ExcelFile.Utility;
+using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
 using WebVella.DocumentTemplates.Tests.Models;
 
 namespace WebVella.DocumentTemplates.Tests.Engines;
@@ -718,7 +718,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 	}
 
 	[Fact]
-	public void ExactTemplateWithExcelFunctionSupported()
+	public void ExactTemplateWithSpreadsheetFunctionSupported()
 	{
 		//Given
 		var function = "SUM";
@@ -729,7 +729,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
-		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
 		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
@@ -737,7 +737,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 	}
 
 	[Fact]
-	public void ExactTemplateShouldReturnOneExcelFunctionTag()
+	public void ExactTemplateShouldReturnOneSpreadsheetFunctionTag()
 	{
 		//Given
 		var functionName = "functionName";
@@ -749,13 +749,13 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
 		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
-		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 	}
 
 	[Fact]
-	public void ExactTemplateShouldReturnOneExcelFunctionTagWithMissingParams()
+	public void ExactTemplateShouldReturnOneSpreadsheetFunctionTagWithMissingParams()
 	{
 		//Given
 		var functionName = "functionName";
@@ -767,7 +767,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
 		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
-		Assert.Equal(WvTemplateTagType.ExcelFunction, result[0].Type);
+		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 	}

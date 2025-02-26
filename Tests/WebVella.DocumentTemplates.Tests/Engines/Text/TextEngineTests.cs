@@ -233,6 +233,24 @@ public class TextEngineTests : TestBase
 	}
 
 	[Fact]
+	public void Text_Tag_HorizontalIsForcedIfSeparatorNewLine()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{sku(S='$rn')}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Equal(3,lines.Count);
+
+	}
+
+
+	[Fact]
 	public void Text_Tag_DataGroup()
 	{
 		var template = new WvTextTemplate()

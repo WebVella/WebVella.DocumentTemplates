@@ -18,7 +18,7 @@ public class WvTemplateTagResultList
 			foreach (WvTemplateTag tag in Tags) {
 				if(tag.IndexList.Count > 0) continue;
 				if(tag.Type == WvTemplateTagType.Function) continue;
-				if(tag.Type == WvTemplateTagType.ExcelFunction) continue;
+				if(tag.Type == WvTemplateTagType.SpreadsheetFunction) continue;
 				if(tag.ParamGroups.Any(g => g.Parameters.Any(x=> x.Type.FullName == typeof(WvTemplateTagSeparatorParameterProcessor).FullName)))
 					continue;
 

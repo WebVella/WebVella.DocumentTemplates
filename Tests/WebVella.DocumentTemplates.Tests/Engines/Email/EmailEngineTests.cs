@@ -645,7 +645,7 @@ public class EmailEngineTests : TestBase
 						new WvEmailAttachment{
 							Filename = fileName,
 							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
-							Type =  WvEmailAttachmentType.ExcelFile
+							Type =  WvEmailAttachmentType.SpreadsheetFile
 						}
 					}
 				}
@@ -692,7 +692,7 @@ public class EmailEngineTests : TestBase
 						new WvEmailAttachment{
 							Filename = fileName,
 							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
-							Type =  WvEmailAttachmentType.ExcelFile,
+							Type =  WvEmailAttachmentType.SpreadsheetFile,
 							GroupDataByColumns = new List<string>{"sender_email"}
 						}
 					}

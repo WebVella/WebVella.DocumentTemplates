@@ -38,7 +38,7 @@ public partial class WvTemplateUtility
 				newResultObject = templateResultString;//temporary
 				//Processed by processor
 			}
-			else if (tag.Type == WvTemplateTagType.ExcelFunction)
+			else if (tag.Type == WvTemplateTagType.SpreadsheetFunction)
 			{
 				newResultObject = templateResultString;//temporary
 				//Processed by processor

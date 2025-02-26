@@ -1,12 +1,11 @@
-﻿using ClosedXML.Excel;
-using System.Data;
+﻿using System.Data;
 using System.Globalization;
 using System.Text;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.Email.Models;
-using WebVella.DocumentTemplates.Engines.ExcelFile;
 using WebVella.DocumentTemplates.Engines.Html;
+using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 using WebVella.DocumentTemplates.Engines.Text;
 using WebVella.DocumentTemplates.Engines.TextFile;
 using WebVella.DocumentTemplates.Extensions;
@@ -82,9 +81,9 @@ public class WvEmailTemplate : WvTemplateBase
 								encoding: item.Encoding);
 							if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
 						}
-						else if (item.Type == WvEmailAttachmentType.ExcelFile)
+						else if (item.Type == WvEmailAttachmentType.SpreadsheetFile)
 						{
-							var attachment = ProcessEmailExcelAttachment(
+							var attachment = ProcessEmailSpreadsheetAttachment(
 								template: item.Template,
 								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.xlsx",
 								dsIndex: attachmentDsIndex,
@@ -95,7 +94,8 @@ public class WvEmailTemplate : WvTemplateBase
 					}
 				}
 			}
-			catch (Exception ex) {
+			catch (Exception ex)
+			{
 				context.Errors.Add(ex.Message);
 			}
 			resultItem.Contexts.Add(context);
@@ -253,19 +253,19 @@ public class WvEmailTemplate : WvTemplateBase
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.TextFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
-			Template = attachmentTemplateResult.ResultItems[0].Result 
+			Template = attachmentTemplateResult.ResultItems[0].Result
 		};
 
 
 		return attachment;
 	}
 
-	public WvEmailAttachment? ProcessEmailExcelAttachment(MemoryStream? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture)
+	public WvEmailAttachment? ProcessEmailSpreadsheetAttachment(MemoryStream? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture)
 	{
 		if (template is null) return null;
 		WvEmailAttachment? attachment = null;
 
-		var attachmentTemplate = new WvExcelFileTemplate
+		var attachmentTemplate = new WvSpreadsheetFileTemplate
 		{
 			Template = template
 		};
@@ -282,7 +282,7 @@ public class WvEmailTemplate : WvTemplateBase
 		attachment = new WvEmailAttachment
 		{
 			GroupDataByColumns = new(),
-			Type = WvEmailAttachmentType.ExcelFile,
+			Type = WvEmailAttachmentType.SpreadsheetFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
 			Template = attachmentTemplateResult.ResultItems[0]!.Result
 		};

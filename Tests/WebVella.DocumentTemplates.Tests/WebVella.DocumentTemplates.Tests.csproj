@@ -98,37 +98,37 @@
     <None Update="Files\TemplateError1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-CONCAT-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-CONCAT-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-ABS-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-ABS-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-SUM-3.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-SUM-3.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-SUM-2.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-SUM-2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-SUM-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-SUM-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-MIN-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-MIN-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-MAX-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-MAX-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction-AVERAGE-1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction-AVERAGE-1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction4.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction4.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction3.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction3.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction2.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction2.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\TemplateFunction-SUM-3.xlsx">
@@ -191,7 +191,7 @@
     <None Update="Files\TemplateEmail1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\TemplateExcelFunction1.xlsx">
+    <None Update="Files\TemplateSpreadsheetFunction1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\TemplateContextFlow1.xlsx">
@@ -224,6 +224,10 @@
     <None Update="Files\wv-logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FileResults\" />
   </ItemGroup>
 
 </Project>

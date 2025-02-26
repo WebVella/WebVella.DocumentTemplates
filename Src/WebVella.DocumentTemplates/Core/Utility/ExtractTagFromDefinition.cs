@@ -15,10 +15,10 @@ public partial class WvTemplateUtility
 		processedDefinition = processedDefinition?.Trim();
 		if (String.IsNullOrWhiteSpace(processedDefinition)) return null;
 		result.FullString = tagDefinition;
-		//Excel function
+		//spreadsheet function
 		if (processedDefinition.StartsWith("=="))
 		{
-			result.Type = WvTemplateTagType.ExcelFunction;
+			result.Type = WvTemplateTagType.SpreadsheetFunction;
 			processedDefinition = processedDefinition.Remove(0, 2);
 		}
 		//Function
@@ -81,7 +81,7 @@ public partial class WvTemplateUtility
 				result.FunctionName = result.Name;
 			}
 		}
-		if (result.Type == WvTemplateTagType.ExcelFunction)
+		if (result.Type == WvTemplateTagType.SpreadsheetFunction)
 		{
 			if (!String.IsNullOrWhiteSpace(result.Name))
 			{
