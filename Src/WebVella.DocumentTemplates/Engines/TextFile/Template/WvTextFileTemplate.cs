@@ -32,7 +32,7 @@ public class WvTextFileTemplate : WvTemplateBase
 		{
 			var resultItem = new WvTextFileTemplateProcessResultItem()
 			{
-				NumberOfDataTableRows = grouptedDs.Rows.Count
+				DataTable = grouptedDs
 			};
 			var context = new WvTextFileTemplateProcessContext();
 			try

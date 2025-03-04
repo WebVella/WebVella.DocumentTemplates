@@ -46,7 +46,7 @@ public class WvHtmlTemplate : WvTemplateBase
 			doc.LoadHtml(result.Template);
 			var resultItem = new WvHtmlTemplateProcessResultItem()
 			{
-				NumberOfDataTableRows = grouptedDs.Rows.Count
+				DataTable = grouptedDs
 			};
 			foreach (HtmlNode templateNode in doc.DocumentNode.ChildNodes)
 			{

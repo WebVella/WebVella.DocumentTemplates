@@ -39,7 +39,7 @@ public class WvEmailTemplate : WvTemplateBase
 			var resultItem = new WvEmailTemplateProcessResultItem
 			{
 				Result = new WvEmail(),
-				NumberOfDataTableRows = grouptedDs.Rows.Count
+				DataTable = grouptedDs
 			};
 			var context = new WvEmailTemplateProcessContext();
 			try

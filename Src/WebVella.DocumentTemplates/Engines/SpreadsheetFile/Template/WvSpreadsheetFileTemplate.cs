@@ -37,7 +37,7 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 			var resultItem = new WvSpreadsheetFileTemplateProcessResultItem
 			{
 				Workbook = new XLWorkbook(),
-				NumberOfDataTableRows = grouptedDs.Rows.Count
+				DataTable = grouptedDs
 			};
 			var templateContextsDict = result.TemplateContexts.ToDictionary(x => x.Id);
 			new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateGenerateResultContexts(
