@@ -31,79 +31,68 @@ public class AbsSpreadsheetFileTemplateFunction : IWvSpreadsheetFileTemplateFunc
 		if (worksheet is null) throw new ArgumentException(nameof(worksheet));
 		if (tag.Type != WvTemplateTagType.Function)
 			throw new ArgumentException("Template tag is not Function type", nameof(tag));
+		if (String.IsNullOrWhiteSpace(tag.FullString)) return value;
+
 		object? resultValue = null;
-
-
-		if (tag.ParamGroups.Count > 0
-			&& tag.ParamGroups[0].Parameters.Count > 0
-			&& !String.IsNullOrWhiteSpace(tag.FullString))
+		decimal sum = 0;
+		var rangeList = new WvSpreadsheetRangeHelpers().GetRangeAddressesForTag(
+			tag: tag,
+			templateContext: templateContext,
+			expandPosition: expandPosition,
+			expandPositionMax: expandPositionMax,
+			result: result,
+			resultItem: resultItem,
+			worksheet: worksheet
+		);
+		var processedCellsHS = new HashSet<string>();
+		foreach (var rangeAddress in rangeList)
 		{
-			decimal sum = 0;
-			foreach (var parameter in tag.ParamGroups[0].Parameters)
+			var cellRange = worksheet.Range(rangeAddress);
+			var firstAddress = cellRange.RangeAddress.FirstAddress;
+			var lastAddress = cellRange.RangeAddress.LastAddress;
+			for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
 			{
-				if (String.IsNullOrWhiteSpace(parameter.ValueString)) continue;
-				var range = new WvSpreadsheetRangeHelpers().GetRangeFromString(parameter.ValueString ?? String.Empty);
-				if (range is not null)
+				for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
 				{
-					var rangeTemplateContexts = result.TemplateContexts.GetIntersections(
-						worksheetPosition: worksheet.Position,
-						range: range,
-						type: WvSpreadsheetFileTemplateContextType.CellRange
-					);
-					var resultContexts = resultItem.Contexts.Where(x => rangeTemplateContexts.Any(y => y.Id == x.TemplateContextId));
-					var processedCellsHS = new HashSet<string>();
-					foreach (var resContext in resultContexts)
+					var resultCell = worksheet.Cell(rowNum, colNum);
+					if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
+					var mergedRange = resultCell.MergedRange();
+					var mergedRows = 1;
+					var mergedCols = 1;
+					if (mergedRange != null)
 					{
-						var firstAddress = resContext.Range!.RangeAddress.FirstAddress;
-						var lastAddress = resContext.Range!.RangeAddress.LastAddress;
-						for (var rowNum = firstAddress.RowNumber; rowNum <= lastAddress.RowNumber; rowNum++)
+						foreach (var cell in mergedRange.Cells())
 						{
-							for (var colNum = firstAddress.ColumnNumber; colNum <= lastAddress.ColumnNumber; colNum++)
-							{
-								var resultCell = worksheet.Cell(rowNum, colNum);
-								if (processedCellsHS.Contains(resultCell.Address.ToString() ?? "")) continue;
-								var mergedRange = resultCell.MergedRange();
-								var mergedRows = 1;
-								var mergedCols = 1;
-								if (mergedRange != null)
-								{
-									foreach (var cell in mergedRange.Cells())
-									{
-										processedCellsHS.Add(cell.Address.ToString() ?? "");
-									}
-									mergedRows = mergedRange.RowCount();
-									mergedCols = mergedRange.ColumnCount();
-								}
-								else
-								{
-									processedCellsHS.Add(resultCell.Address.ToString() ?? "");
-								}
-
-								if (!resultCell.Value.IsNumber)
-								{
-									HasError = true;
-									ErrorMessage = $"non numeric value in range";
-									return null;
-								}
-
-								sum += (decimal)resultCell.Value.GetNumber();
-							}
+							processedCellsHS.Add(cell.Address.ToString() ?? "");
 						}
+						mergedRows = mergedRange.RowCount();
+						mergedCols = mergedRange.ColumnCount();
 					}
+					else
+					{
+						processedCellsHS.Add(resultCell.Address.ToString() ?? "");
+					}
+
+					if (!resultCell.Value.IsNumber)
+					{
+						HasError = true;
+						ErrorMessage = $"non numeric value in range";
+						return null;
+					}
+
+					sum += (decimal)resultCell.Value.GetNumber();
 				}
-			}
-
-			sum = Math.Abs(sum);
-
-			if (value is not null && value is string)
-			{
-				if (value == tag.FullString)
-					resultValue = sum;
-				else
-					resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, sum.ToString());
 			}
 		}
 
+		sum = Math.Abs(sum);
+		if (value is not null && value is string)
+		{
+			if (value == tag.FullString)
+				resultValue = sum;
+			else
+				resultValue = ((string)value).Replace(tag.FullString ?? String.Empty, sum.ToString());
+		}
 		return resultValue;
 	}
 }

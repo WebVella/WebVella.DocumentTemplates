@@ -33,24 +33,23 @@ public class SumSpreadsheetFileTemplateFunction : IWvSpreadsheetFileTemplateFunc
 		if (worksheet is null) throw new ArgumentException(nameof(worksheet));
 		if (tag.Type != WvTemplateTagType.Function)
 			throw new ArgumentException("Template tag is not Function type", nameof(tag));
-
 		if (String.IsNullOrWhiteSpace(tag.FunctionName))
 			throw new Exception($"Unsupported function name: {tag.Name} in tag");
-
-		var rangeList = new WvSpreadsheetRangeHelpers().GetRangeAddressesForTag(
-			tag: tag,
-			templateContext: templateContext,
-			expandPosition: expandPosition,
-			expandPositionMax: expandPositionMax,
-			result: result,
-			resultItem: resultItem,
-			worksheet: worksheet
-		);
+		if (String.IsNullOrWhiteSpace(tag.FullString)) return value;
 
 		object? resultValue = null;
 		decimal sum = 0;
-		var processedCellsHS = new HashSet<string>();
 
+		var rangeList = new WvSpreadsheetRangeHelpers().GetRangeAddressesForTag(
+					tag: tag,
+					templateContext: templateContext,
+					expandPosition: expandPosition,
+					expandPositionMax: expandPositionMax,
+					result: result,
+					resultItem: resultItem,
+					worksheet: worksheet
+				);
+		var processedCellsHS = new HashSet<string>();
 		foreach (var rangeAddress in rangeList)
 		{
 			var cellRange = worksheet.Range(rangeAddress);
@@ -81,12 +80,6 @@ public class SumSpreadsheetFileTemplateFunction : IWvSpreadsheetFileTemplateFunc
 
 					if (!resultCell.Value.IsNumber)
 					{
-						Console.WriteLine("============= BOZ ====");
-						Console.WriteLine(resultCell.Value.ToString());
-						Console.WriteLine("====================");
-						Console.WriteLine(rangeAddress);
-						Console.WriteLine("====================");
-
 						HasError = true;
 						ErrorMessage = $"non numeric value in range";
 						return null;
