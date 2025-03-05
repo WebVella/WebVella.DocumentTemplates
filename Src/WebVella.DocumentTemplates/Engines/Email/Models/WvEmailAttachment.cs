@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using WebVella.DocumentTemplates.Core;
 
 namespace WebVella.DocumentTemplates.Engines.Email.Models;
 public class WvEmailAttachment
@@ -8,6 +9,8 @@ public class WvEmailAttachment
 	public WvEmailAttachmentType Type { get; set; } = WvEmailAttachmentType.TextFile;
 	public string? Filename { get; set; }
 	public MemoryStream? Template { get; set; }
+	public bool HasError => Contexts.Any(x => x.HasError);
+	public List<WvTemplateProcessContextBase> Contexts { get; set; } = new();
 }
 
 public enum WvEmailAttachmentType{ 

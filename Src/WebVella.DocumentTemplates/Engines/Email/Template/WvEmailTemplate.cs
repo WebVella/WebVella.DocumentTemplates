@@ -31,7 +31,8 @@ public class WvEmailTemplate : WvTemplateBase
 				Result = null
 			});
 			return result;
-		};
+		}
+		;
 
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
@@ -255,7 +256,10 @@ public class WvEmailTemplate : WvTemplateBase
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
 			Template = attachmentTemplateResult.ResultItems[0].Result
 		};
-
+		foreach (var item in attachmentTemplateResult.ResultItems[0]!.Contexts)
+		{
+			attachment.Contexts.Add((WvTemplateProcessContextBase)item);
+		}
 
 		return attachment;
 	}
@@ -287,6 +291,10 @@ public class WvEmailTemplate : WvTemplateBase
 			Template = attachmentTemplateResult.ResultItems[0]!.Result
 		};
 
+		foreach (var item in attachmentTemplateResult.ResultItems[0]!.Contexts)
+		{
+			attachment.Contexts.Add((WvTemplateProcessContextBase)item);
+		}
 
 		return attachment;
 	}
