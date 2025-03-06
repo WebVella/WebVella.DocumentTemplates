@@ -26,7 +26,15 @@ public class WvTextFileTemplate : WvTemplateBase
 				Result = null
 			});
 			return result;
-		};
+		}
+		;
+		if (!Template.CanRead)
+		{
+			throw new Exception("The template memory stream is closed");
+		}
+		var fileStringContent = encoding.GetString(result.Template!.ToArray() ?? new byte[0]);
+		if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
+
 		var datasourceGroups = dataSource.GroupBy(GroupDataByColumns);
 		foreach (var grouptedDs in datasourceGroups)
 		{
@@ -37,17 +45,11 @@ public class WvTextFileTemplate : WvTemplateBase
 			var context = new WvTextFileTemplateProcessContext();
 			try
 			{
-				var fileStringContent = encoding.GetString(result.Template!.ToArray() ?? new byte[0]);
-
-				if (String.IsNullOrWhiteSpace(fileStringContent)) return result;
-
 				var textTemplate = new WvTextTemplate
 				{
 					Template = fileStringContent.RemoveZeroBitSpaceCharacters()
 				};
-
 				WvTextTemplateProcessResult textTemplateResult = textTemplate.Process(grouptedDs, culture);
-
 				if (textTemplateResult.ResultItems.Count == 0) continue;
 				resultItem.Result = new MemoryStream(encoding.GetBytes(textTemplateResult.ResultItems[0].Result ?? String.Empty));
 			}

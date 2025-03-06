@@ -42,7 +42,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContext1.xlsx";
 			WvSpreadsheetFileTemplateProcessResult? result = new()
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			//When
 			var action = () => new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateInitTemplateContexts(result);
@@ -463,7 +463,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContextFlow1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -519,7 +519,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContextFlow2.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -570,7 +570,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContextFlow3.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -624,7 +624,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContextFlow4.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -741,7 +741,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateContextFlow5.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When

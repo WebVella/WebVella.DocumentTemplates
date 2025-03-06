@@ -12,6 +12,7 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
 		if (dataSource is null) throw new ArgumentException("No datasource provided!", nameof(dataSource));
+
 		var result = new WvSpreadsheetFileTemplateProcessResult()
 		{
 			Template = Template,
@@ -25,9 +26,20 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 				Workbook = null
 			});
 			return result;
-		};
-		result.Workbook = new XLWorkbook(Template);
-
+		}
+		;
+		if (!Template.CanRead)
+		{
+			throw new Exception("The template memory stream is closed");
+		}
+		try
+		{
+			result.Workbook = new XLWorkbook(Template);
+		}
+		catch
+		{
+			throw new Exception("The provided template memory stream cannot be opened as XLWorkbook. Wrong file?");
+		}
 		new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateInitTemplateContexts(result);
 		new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateCalculateDependencies(result);
 		var templateContextDict = result.TemplateContexts.ToDictionary(x => x.Id);
@@ -47,10 +59,11 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 				culture: culture,
 				templateContextDict: templateContextDict);
 
-			
+
 			resultItem.Result = null;
-			if(resultItem.Workbook is not null){ 
-			var ms = new MemoryStream();
+			if (resultItem.Workbook is not null)
+			{
+				var ms = new MemoryStream();
 				resultItem.Workbook.SaveAs(ms);
 				resultItem.Result = ms;
 			}

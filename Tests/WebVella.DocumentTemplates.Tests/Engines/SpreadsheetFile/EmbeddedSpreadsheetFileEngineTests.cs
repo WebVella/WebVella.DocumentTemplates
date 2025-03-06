@@ -17,7 +17,7 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData5.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -42,7 +42,7 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData6.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When

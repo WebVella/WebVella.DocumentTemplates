@@ -27,7 +27,13 @@ public partial class WvTemplateUtility
 		//Check if it is a string value
 		if (
 			!String.IsNullOrWhiteSpace(paramValue)
-			&& ((paramValue.StartsWith("\"") && paramValue.EndsWith("\"")) || (paramValue.StartsWith("'") && paramValue.EndsWith("'")))
+			&& ((paramValue.StartsWith("\"") && paramValue.EndsWith("\"")) 
+				|| (paramValue.StartsWith("'") && paramValue.EndsWith("'"))
+				|| (paramValue.StartsWith("'") && paramValue.EndsWith("'"))
+				|| (paramValue.StartsWith("’") && paramValue.EndsWith("’"))
+				|| (paramValue.StartsWith("”") && paramValue.EndsWith("”"))
+				
+				)
 		)
 		{
 			paramValue = paramValue.Remove(0, 1);

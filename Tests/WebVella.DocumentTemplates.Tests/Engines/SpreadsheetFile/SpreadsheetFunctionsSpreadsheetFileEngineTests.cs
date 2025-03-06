@@ -19,7 +19,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -54,7 +54,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction2.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -90,7 +90,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction3.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -165,7 +165,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction4.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -243,7 +243,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-ABS-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -281,7 +281,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-AVERAGE-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -319,7 +319,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-CONCAT-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -357,7 +357,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-MAX-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -395,7 +395,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-MIN-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -433,7 +433,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-SUM-1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -485,7 +485,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-SUM-2.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -530,7 +530,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateSpreadsheetFunction-SUM-3.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When

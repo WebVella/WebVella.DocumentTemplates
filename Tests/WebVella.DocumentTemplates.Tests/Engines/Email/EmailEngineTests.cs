@@ -644,7 +644,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
+							Template = new TestUtils().LoadFileAsStream(fileName),
 							Type =  WvEmailAttachmentType.SpreadsheetFile
 						}
 					}
@@ -673,7 +673,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[1]["recipient_email"], ws.Cell(3, 2).Value.ToString());
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], ws.Cell(4, 2).Value.ToString());
 
-			new TestUtils().SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
+			new TestUtils().SaveFileFromStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
 		}
 	}
 
@@ -691,7 +691,7 @@ public class EmailEngineTests : TestBase
 					AttachmentItems = new(){
 						new WvEmailAttachment{
 							Filename = fileName,
-							Template = new TestUtils().LoadWorkbookAsMemoryStream(fileName),
+							Template = new TestUtils().LoadFileAsStream(fileName),
 							Type =  WvEmailAttachmentType.SpreadsheetFile,
 							GroupDataByColumns = new List<string>{"sender_email"}
 						}
@@ -730,7 +730,7 @@ public class EmailEngineTests : TestBase
 			Assert.Equal(EmailData.Rows[2]["recipient_email"], secondWs.Cell(2, 2).Value.ToString());
 			Assert.Equal(String.Empty, secondWs.Cell(3, 2).Value.ToString());
 
-			new TestUtils().SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
+			new TestUtils().SaveFileFromStream(result.ResultItems[0].Result!.AttachmentItems[0]!.Template!, fileName);
 		}
 	}
 	#endregion

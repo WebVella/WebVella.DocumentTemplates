@@ -172,4 +172,24 @@ public class TextFileEngineTests : TestBase
 			Assert.Equal($"1{Environment.NewLine}2{Environment.NewLine}item1{Environment.NewLine}item2{Environment.NewLine}", resultString);
 		}
 	}
+
+	[Fact]
+	public void Error_File()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "Template1.xlsx";
+			var template = new WvTextFileTemplate
+			{
+				Template =  new TestUtils().LoadFileStream(templateFile)
+			};
+			var dataSource = SampleData;
+			WvTextFileTemplateProcessResult? result = null;
+			//When
+			var action = () => result = template.Process(dataSource);
+			var ex = Record.Exception(action);
+			Assert.Null(ex); //not a good way to check if it is plaintext
+		}
+	}
 }

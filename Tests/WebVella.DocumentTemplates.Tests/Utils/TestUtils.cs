@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ public class TestUtils
 		if (string.IsNullOrEmpty(content)) return new List<string>();
 		return content.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
 	}
-	
+
 	public byte[] LoadFile(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -23,12 +24,12 @@ public class TestUtils
 		if (!fi.Exists) throw new FileNotFoundException();
 		return File.ReadAllBytes(path);
 	}
-	
+
 	public MemoryStream LoadFileStream(string fileName)
 	{
 		return new MemoryStream(LoadFile(fileName));
 	}
-	
+
 	public void SaveFile(string content, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -41,7 +42,7 @@ public class TestUtils
 		sw.Write(content);
 		sw.Close();
 	}
-	
+
 	public MemoryStream LoadFileAsStream(string fileName)
 	{
 		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
@@ -52,7 +53,21 @@ public class TestUtils
 			file.CopyTo(ms);
 		return ms;
 	}
-	
+	public void SaveFileFromStream(MemoryStream content, string fileName)
+	{
+		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
+		if (debugFolder is null) throw new Exception("debugFolder not found");
+		var projectFolder = debugFolder.Parent?.Parent;
+		if (projectFolder is null) throw new Exception("projectFolder not found");
+
+		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
+		using (FileStream fs = new FileStream(path, FileMode.Create))
+		{
+			content.WriteTo(fs);
+		}
+	}
+
+
 	public void GeneralResultChecks(WvSpreadsheetFileTemplateProcessResult? result)
 	{
 		Assert.NotNull(result);
@@ -68,7 +83,7 @@ public class TestUtils
 		Assert.NotNull(result.ResultItems[0].Workbook!.Worksheets);
 		Assert.True(result.ResultItems[0].Workbook!.Worksheets.Count > 0);
 	}
-	
+
 	public void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)
 	{
 		Assert.NotNull(range);
@@ -81,7 +96,7 @@ public class TestUtils
 		Assert.Equal(lastRowNumber, range.RangeAddress.LastAddress.RowNumber);
 		Assert.Equal(lastColumnNumber, range.RangeAddress.LastAddress.ColumnNumber);
 	}
-	
+
 	public void CheckCellPropertiesCopy(List<WvSpreadsheetFileTemplateContext> templateContexts,
 		WvSpreadsheetFileTemplateProcessResultItem resultItem)
 	{
@@ -103,7 +118,7 @@ public class TestUtils
 			CompareStyle(firstTemplateCell, firstResultCell);
 		}
 	}
-	
+
 	public void CompareStyle(IXLCell template, IXLCell result)
 	{
 		if (template.Style is null)
@@ -123,7 +138,7 @@ public class TestUtils
 			CompareProtection(template.Style.Protection, result.Style.Protection);
 		}
 	}
-	
+
 	public void CompareStyleAlignment(IXLAlignment template, IXLAlignment result)
 	{
 		Assert.Equal(template.TopToBottom, result.TopToBottom);
@@ -137,7 +152,7 @@ public class TestUtils
 		Assert.Equal(template.Horizontal, result.Horizontal);
 		Assert.Equal(template.WrapText, result.WrapText);
 	}
-	
+
 	public void CompareStyleBorder(IXLBorder template, IXLBorder result)
 	{
 		CompareStyleColor(template.DiagonalBorderColor, result.DiagonalBorderColor);
@@ -153,20 +168,20 @@ public class TestUtils
 		Assert.Equal(template.DiagonalDown, result.DiagonalDown);
 		CompareStyleColor(template.RightBorderColor, result.RightBorderColor);
 	}
-	
+
 	public void CompareStyleFormat(IXLNumberFormat template, IXLNumberFormat result)
 	{
 		Assert.Equal(template.NumberFormatId, result.NumberFormatId);
 		Assert.Equal(template.Format, result.Format);
 	}
-	
+
 	public void CompareStyleFill(IXLFill template, IXLFill result)
 	{
 		CompareStyleColor(template.BackgroundColor, result.BackgroundColor);
 		CompareStyleColor(template.PatternColor, result.PatternColor);
 		Assert.Equal(template.PatternType, result.PatternType);
 	}
-	
+
 	public void CompareStyleFont(IXLFont template, IXLFont result)
 	{
 		Assert.Equal(template.Bold, result.Bold);
@@ -182,13 +197,13 @@ public class TestUtils
 		Assert.Equal(template.FontCharSet, result.FontCharSet);
 		Assert.Equal(template.FontScheme, result.FontScheme);
 	}
-	
+
 	public void CompareProtection(IXLProtection template, IXLProtection result)
 	{
 		Assert.Equal(template.Locked, result.Locked);
 		Assert.Equal(template.Hidden, result.Hidden);
 	}
-	
+
 	public void CompareStyleColor(XLColor template, XLColor result)
 	{
 		if (template is null)
@@ -205,44 +220,19 @@ public class TestUtils
 				Assert.Equal(template.ToString(), result.ToString());
 		}
 	}
-	
+
 	public void CompareRowProperties(IXLRow template, IXLRow result)
 	{
 		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
 		Assert.Equal(template.Height, result.Height);
 	}
-	
+
 	public void CompareColumnProperties(IXLColumn template, IXLColumn result)
 	{
 		Assert.Equal(template.OutlineLevel, result.OutlineLevel);
 		Assert.Equal(template.Width, result.Width);
 	}
-	
-	public XLWorkbook LoadWorkbook(string fileName)
-	{
-		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
-		var fi = new FileInfo(path);
-		Assert.NotNull(fi);
-		Assert.True(fi.Exists);
-		var templateWB = new XLWorkbook(path);
-		Assert.NotNull(templateWB);
-		return templateWB;
-	}
-	
-	public MemoryStream? LoadWorkbookAsMemoryStream(string fileName)
-	{
-		var path = Path.Combine(Environment.CurrentDirectory, $"Files\\{fileName}");
-		var fi = new FileInfo(path);
-		Assert.NotNull(fi);
-		Assert.True(fi.Exists);
-		var templateWB = new XLWorkbook(path);
-		Assert.NotNull(templateWB);
-		MemoryStream? ms = new();
-		templateWB.SaveAs(ms);
-		Assert.NotNull(ms);
-		return ms;
-	}
-	
+
 	public void SaveWorkbook(XLWorkbook workbook, string fileName)
 	{
 		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
@@ -253,19 +243,7 @@ public class TestUtils
 		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
 		workbook.SaveAs(path);
 	}
-	
 
-	public void SaveWorkbookFromMemoryStream(MemoryStream content, string fileName)
-	{
-		DirectoryInfo? debugFolder = Directory.GetParent(Environment.CurrentDirectory);
-		if (debugFolder is null) throw new Exception("debugFolder not found");
-		var projectFolder = debugFolder.Parent?.Parent;
-		if (projectFolder is null) throw new Exception("projectFolder not found");
 
-		var path = Path.Combine(projectFolder.FullName, $"FileResults\\result-{fileName}");
-		using (FileStream fs = new FileStream(path, FileMode.Create))
-		{
-			content.WriteTo(fs);
-		}
-	}
+
 }

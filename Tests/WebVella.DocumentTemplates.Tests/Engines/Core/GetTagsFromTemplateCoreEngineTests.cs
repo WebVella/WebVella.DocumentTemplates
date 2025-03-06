@@ -699,6 +699,42 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 	}
 
 	[Fact]
+	public void OnInTextTemplateShouldReturnOneDataTagWitGroupWithParamsWithQuotes3()
+	{
+		//Given
+		var columnName = "column_name";
+		var paramName = "F";
+		var paramValue = "H";
+		var paramName2 = "S";
+		var paramValue2 = ", ";
+		var paramName3 = "B";
+		var paramValue3 = ", ";
+		//var text = "{{sku(F=H,S=',',B=\", \")}}";
+		string template = "{{" + columnName + "(" + paramName + "=" + paramValue + "," + paramName2 + "=\"" + paramValue2 + "\"," + paramName3 + "=\"" + paramValue3 + "\")}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Equal(3, result[0].ParamGroups[0].Parameters.Count);
+
+		Assert.Equal(paramName.ToLowerInvariant(), result[0].ParamGroups[0].Parameters[0].Name);
+		Assert.Equal(paramValue, result[0].ParamGroups[0].Parameters[0].ValueString);
+
+		Assert.Equal(paramName2.ToLowerInvariant(), result[0].ParamGroups[0].Parameters[1].Name);
+		Assert.Equal(paramValue2, result[0].ParamGroups[0].Parameters[1].ValueString);
+
+		Assert.Equal(paramName3.ToLowerInvariant(), result[0].ParamGroups[0].Parameters[2].Name);
+		Assert.Equal(paramValue3, result[0].ParamGroups[0].Parameters[2].ValueString);
+	}
+
+	[Fact]
 	public void ExactTemplateWithFunctionSupported()
 	{
 		//Given

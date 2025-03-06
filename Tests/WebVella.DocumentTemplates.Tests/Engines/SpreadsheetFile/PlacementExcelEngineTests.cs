@@ -16,7 +16,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -59,7 +59,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement2.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -85,7 +85,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement3.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -136,7 +136,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement4.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -168,7 +168,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement5.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -210,7 +210,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement6.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -259,7 +259,7 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			var templateFile = "TemplatePlacement7.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When

@@ -23,7 +23,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -58,7 +58,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData2.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -93,7 +93,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData3.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -202,7 +202,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplatePlacement3MultiWs.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -260,7 +260,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateData1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile),
+				Template = new TestUtils().LoadFileAsStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
 			var dataSource = SampleData;

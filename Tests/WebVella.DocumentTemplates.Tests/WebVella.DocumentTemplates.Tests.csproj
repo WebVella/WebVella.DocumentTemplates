@@ -38,6 +38,9 @@
     <None Update="Files\Template1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Template1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template2.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

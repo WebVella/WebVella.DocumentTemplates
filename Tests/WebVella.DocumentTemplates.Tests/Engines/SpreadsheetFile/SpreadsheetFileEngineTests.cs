@@ -20,7 +20,7 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplatePlacement1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			WvSpreadsheetFileTemplateProcessResult? result = null;
 			//When
@@ -46,7 +46,7 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			var templateFile = "TemplateError1.xlsx";
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			var dataSource = SampleData;
 			//When
@@ -67,7 +67,27 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}
 	}
-
+	[Fact]
+	public void Error_File()
+	{
+		lock (locker)
+		{
+			//Given
+			var templateFile = "Template1.txt";
+			var template = new WvSpreadsheetFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			WvSpreadsheetFileTemplateProcessResult? result = null;
+			//When
+			var action = () => result = template.Process(dataSource);
+			var ex = Record.Exception(action);
+			Assert.NotNull(ex);
+			Assert.IsType<Exception>(ex);
+			Assert.StartsWith("The provided template memory stream cannot be opened", ex.Message);
+		}
+	}
 
 	#endregion
 
@@ -95,11 +115,11 @@ public partial class SpreadsheetFileEngineTests : TestBase
 
 			var template = new WvSpreadsheetFileTemplate
 			{
-				Template = new TestUtils().LoadWorkbookAsMemoryStream(templateFile)
+				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(ds);
 			
-			new TestUtils().SaveWorkbookFromMemoryStream(result.ResultItems[0].Result!,"TemplateDoc1.xlsx");
+			new TestUtils().SaveFileFromStream(result.ResultItems[0].Result!,"TemplateDoc1.xlsx");
 		}
 	}
 	#endregion
