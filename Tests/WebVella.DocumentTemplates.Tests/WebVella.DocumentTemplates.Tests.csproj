@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\Template-Paragraph2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template1Result.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -38,10 +41,10 @@
     <None Update="Files\Template1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\Template1.docx">
+    <None Update="Files\Template-Paragraph1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\Template2.docx">
+    <None Update="Files\Template-Table1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\Template2.txt">
@@ -227,10 +230,6 @@
     <None Update="Files\wv-logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FileResults\" />
   </ItemGroup>
 
 </Project>
