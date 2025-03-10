@@ -1,10 +1,10 @@
 ﻿---
-order: 4
+order: 6
 title: Acknowledgments
 ---
 
 ## ClosedXML
-The best .net library for reading, manipulating and writing Excel. Remarkable project and community.
+The best .net library for reading, manipulating and writing Spreadsheets. Remarkable project and community.
 
 [Repository page](https://github.com/ClosedXML/ClosedXML) | [MIT License](https://github.com/ClosedXML/ClosedXML/blob/develop/LICENSE)
 

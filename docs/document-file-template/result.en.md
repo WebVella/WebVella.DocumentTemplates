@@ -1,6 +1,6 @@
 ﻿---
-order: 5
-title: Result and Handling errors
+order: 4
+title: Document File Template - Result and Handling errors
 menu: Result & Errors
 toc: false
 ---
@@ -18,13 +18,11 @@ public abstract class WvTemplateProcessResultBase
 	public virtual List<WvTemplateProcessResultItemBase> ResultItems { get; set; } = new();
 }
 
-public class WvExcelFileTemplateProcessResult : WvTemplateProcessResultBase
+public class WvDocumentFileTemplateProcessResult : WvTemplateProcessResultBase
 {
-	public XLWorkbook? Workbook { get; set; } = null;
+	public WordprocessingDocument? WordDocument { get; set; } = null;
 	public new MemoryStream? Template { get; set; } = null;
-	public List<WvExcelFileTemplateRow> TemplateRows { get; set; } = new();
-	public List<WvExcelFileTemplateContext> TemplateContexts { get; set; } = new();
-	public new List<WvExcelFileTemplateProcessResultItem> ResultItems { get; set; } = new();
+	public new List<WvDocumentFileTemplateProcessResultItem> ResultItems { get; set; } = new();
 }
 
 //Result item
@@ -37,12 +35,11 @@ public abstract class WvTemplateProcessResultItemBase
 	public long NumberOfDataTableRows { get; set; } = 0;
 }
 
-public class WvExcelFileTemplateProcessResultItem : WvTemplateProcessResultItemBase
+public class WvDocumentFileTemplateProcessResultItem : WvTemplateProcessResultItemBase
 {
-	public new XLWorkbook? Result { get; set; } = new();
-	public new List<WvExcelFileTemplateProcessContext> Contexts { get; set; } = new();
-	public List<WvExcelFileTemplateProcessResultItemRow> ResultRows { get; set; } = new();
-	public Dictionary<Guid, int> ContextProcessLog { get; set; } = new();
+	public new MemoryStream? Result { get; set; } = new();
+	public WordprocessingDocument? WordDocument { get; set; } = null;
+	public new List<WvDocumentFileTemplateProcessContext> Contexts { get; set; } = new();
 }
 
 //Process context
@@ -53,14 +50,9 @@ public abstract class WvTemplateProcessContextBase
 	public List<string> Errors { get; set;} = new();
 }
 
-public class WvExcelFileTemplateProcessResultItemContext
+public class WvDocumentFileTemplateProcessContext : WvTemplateProcessContextBase
 {
 	public Guid TemplateContextId { get; set; }
-	public IXLRange? Range { get; set; }
-	public int ExpandCount { get; set; } = 1;
-	public WvExcelFileTemplateProcessResultItemContextError? Error { get; set; } = null;
-	public string? ErrorMessage { get; set; } = null;
-
 }
 
 ```

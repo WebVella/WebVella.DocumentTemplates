@@ -1,6 +1,6 @@
 ﻿---
 order: 3
-title: Result and Handling errors
+title: HTML Template - Result and Handling errors
 menu: Result & Errors
 toc: false
 ---

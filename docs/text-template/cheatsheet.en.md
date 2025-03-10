@@ -1,6 +1,6 @@
 ﻿---
 order: 2
-title: Cheat sheet - Text Template
+title: Text Template - Cheat sheet
 menu: Cheat sheet
 toc: false
 --- 

@@ -1,6 +1,6 @@
 ﻿---
 order: 1
-title: Introduction to the Text File Template
+title: Text File Template - Introduction
 menu: Introduction
 toc: false
 ---

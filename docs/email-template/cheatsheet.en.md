@@ -1,6 +1,6 @@
 ﻿---
 order: 2
-title: Cheat sheet - Email Template
+title: Email Template - Cheat sheet
 menu: Cheat sheet
 toc: true
 --- 
@@ -55,5 +55,5 @@ Optional when HtmlContent is provided. This property will be processed by the [T
 | `{{column_name}} other text` | *multiple rows* in the data table with values *(string)test* and *(string)test2* | byte[] of `test other text\r\ntest2 other text` | each result is generated on a new line with the additional text expended
 
 ## Attachment list
-Optional. The attachments are defined by filling the corresponding property of the Email template. Currently only two types are supported: TextFile (processed by the TextFile template) and ExcelFile (processed by the Excel file template). 
+Optional. The attachments are defined by filling the corresponding property of the Email template. Currently only two types are supported: TextFile (processed by the TextFile template) and SpreadsheetFile (processed by the Excel file template). 
 When the attachment *GroupDataByColumns* is defined it will work with the subset of each email result (if it has its own data grouping) and will create subsets from it. In this way one attachment can result in multiple files.

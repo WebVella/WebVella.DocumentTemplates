@@ -1,6 +1,6 @@
 ﻿---
-order: 3
-title: Result and Handling errors
+order: 4
+title: Email Template - Result and Handling errors
 menu: Result & Errors
 toc: false
 ---

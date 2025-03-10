@@ -1,6 +1,6 @@
 ﻿---
 order: 1
-title: Introduction to the Email Template
+title: Email Template - Introduction
 menu: Introduction
 toc: false
 ---

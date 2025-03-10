@@ -32,21 +32,21 @@ The usual format of the tag is as follows:
 {{=sum(A2)}}
 ```
 ```csharp
-//when excel function is expected to follow tags start with '=='
+//when spreadsheet function is expected to follow tags start with '=='
 {{==sum(A2)}}
 ```
 ## Template
 The template (a.k.a. the template processor) inherits the WvTemplateBase class. It defines the characteristics of the provided template and provides ready result when its 'Process' method is used. 
-Currently available templates are: WvExcelFileTemplate, WvEmailTemplate, WvTextFileTemplate, WvTextTemplate, WvHtmlTemplate and the WvWordFileTemplate as a next objective. 
+Currently available templates are: WvSpreadsheetFileTemplate, WvEmailTemplate, WvTextFileTemplate, WvTextTemplate, WvHtmlTemplate and the WvWordFileTemplate as a next objective. 
 More details can be reviewed in the relevant pages of this site, but in general this is what a template class looks like:
 
 ```csharp
-public class WvExcelFileTemplate : WvTemplateBase
+public class WvSpreadsheetFileTemplate : WvTemplateBase
 {
 	// template objects reflect the media that is being processed 
 	// and they can be different for each template
 	public XLWorkbook? Template { get; set; } 
-	public WvExcelFileTemplateProcessResult Process(DataTable? dataSource, 
+	public WvSpreadsheetFileTemplateProcessResult Process(DataTable? dataSource, 
 		CultureInfo? culture = null)
 	{
 		//calling the processor for result generation

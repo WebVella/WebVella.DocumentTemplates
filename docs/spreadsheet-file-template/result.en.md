@@ -1,6 +1,6 @@
 ﻿---
-order: 4
-title: Text File Template - Result and Handling errors
+order: 6
+title: Spreadsheet File Template - Result and Handling errors
 menu: Result & Errors
 toc: false
 ---
@@ -18,10 +18,13 @@ public abstract class WvTemplateProcessResultBase
 	public virtual List<WvTemplateProcessResultItemBase> ResultItems { get; set; } = new();
 }
 
-public class WvTextFileTemplateProcessResult : WvTemplateProcessResultBase
+public class WvSpreadsheetFileTemplateProcessResult : WvTemplateProcessResultBase
 {
+	public XLWorkbook? Workbook { get; set; } = null;
 	public new MemoryStream? Template { get; set; } = null;
-	public new List<WvTextFileTemplateProcessResultItem> ResultItems { get; set; } = new();
+	public List<WvSpreadsheetFileTemplateRow> TemplateRows { get; set; } = new();
+	public List<WvSpreadsheetFileTemplateContext> TemplateContexts { get; set; } = new();
+	public new List<WvSpreadsheetFileTemplateProcessResultItem> ResultItems { get; set; } = new();
 }
 
 //Result item
@@ -34,10 +37,12 @@ public abstract class WvTemplateProcessResultItemBase
 	public long NumberOfDataTableRows { get; set; } = 0;
 }
 
-public class WvTextFileTemplateProcessResultItem : WvTemplateProcessResultItemBase
+public class WvSpreadsheetFileTemplateProcessResultItem : WvTemplateProcessResultItemBase
 {
-	public new MemoryStream? Result { get; set; } = null;
-	public new List<WvTextFileTemplateProcessContext> Contexts { get; set; } = new();
+	public new XLWorkbook? Result { get; set; } = new();
+	public new List<WvSpreadsheetFileTemplateProcessContext> Contexts { get; set; } = new();
+	public List<WvSpreadsheetFileTemplateProcessResultItemRow> ResultRows { get; set; } = new();
+	public Dictionary<Guid, int> ContextProcessLog { get; set; } = new();
 }
 
 //Process context
@@ -48,8 +53,14 @@ public abstract class WvTemplateProcessContextBase
 	public List<string> Errors { get; set;} = new();
 }
 
-public class WvTextFileTemplateProcessContext : WvTemplateProcessContextBase
+public class WvSpreadsheetFileTemplateProcessResultItemContext
 {
+	public Guid TemplateContextId { get; set; }
+	public IXLRange? Range { get; set; }
+	public int ExpandCount { get; set; } = 1;
+	public WvSpreadsheetFileTemplateProcessResultItemContextError? Error { get; set; } = null;
+	public string? ErrorMessage { get; set; } = null;
+
 }
 
 ```

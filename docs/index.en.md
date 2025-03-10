@@ -2,8 +2,10 @@
 categories: 
 - title: Introduction
   slug: introduction
-- title: Excel File Template
-  slug: excel-file-template
+- title: Spreadsheet File Template
+  slug: spreadsheet-file-template
+- title: Document File Template
+  slug: document-file-template
 - title: Email Template
   slug: email-template
 - title: Text File Template

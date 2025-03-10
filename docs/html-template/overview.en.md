@@ -1,6 +1,6 @@
 ﻿---
 order: 1
-title: Introduction to the HTML Template
+title: HTML Template - Introduction
 menu: Introduction
 toc: false
 ---
