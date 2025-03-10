@@ -16,7 +16,7 @@ GitHub stars guide developers toward great tools. If you find this project valua
 
 ## What can it do?
 * Generate Spreadsheet files (MS Excel .xlsx) - Support for wide range of options to generate spreadsheet files from data, using template spreadsheet files provided by the end user.
-* Generate Document files (MS Word .docx - Generates documents from template, with rich content support.
+* Generate Document files (MS Word .docx) - Generates documents from template, with rich content support.
 * Generate Emails - Turn a DataTable into a collection of emails with attachments, by using templates provided by the end user.
 * Generate HTML - Generate HTML code from a template and a DataTable
 * Easy to extend - It needs to be easy to add new template processors or extend or override the existing ones.
