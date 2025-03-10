@@ -16,12 +16,13 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
 using System.Text;
+using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Models;
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
-private Word.Table _processDocumentTable(Word.Table template,
-		DataTable dataSource, CultureInfo culture)
+	private Word.Table _processDocumentTable(Word.Table template,
+			DataTable dataSource, CultureInfo culture)
 	{
 		Word.Table resultEl = new Word.Table();
 
@@ -72,36 +73,17 @@ private Word.Table _processDocumentTable(Word.Table template,
 
 		var ws = spreadSheetTemplateResult.ResultItems[0].Workbook!.Worksheets.First();
 
-		var testRowProps = xlToTableRowContextDict[1];
+
 		var testCellProps = xlToTableCellContextDict[$"{1}-{1}"];
 
 		for (var rowPosition = 1; rowPosition <= ws.LastRowUsed()!.RowNumber(); rowPosition++)
 		{
-			var rowEl = new TableRow();
-			var rowProps = testCellProps.Descendants<TableRowProperties>().FirstOrDefault();
-			if (rowProps is not null)
-				rowEl.PrependChild(rowProps.CloneNode(true));
-
+			var rowEl = createTableRowEl(rowPosition, xlToTableRowContextDict, spreadSheetTemplateResult);
 			for (var colPosition = 1; colPosition <= ws.LastColumnUsed()!.ColumnNumber(); colPosition++)
 			{
-				var cellEl = new TableCell();
-				var cellProps = testCellProps.Descendants<TableCellProperties>().FirstOrDefault();
-				if (cellProps is not null)
-					cellEl.PrependChild(cellProps.CloneNode(true));
-
 				var cell = ws.Cell(rowPosition, colPosition);
-				Word.Run run = new Word.Run(new Word.Text(cell.Value.ToString()));
-				var paragraph = new Paragraph();
-				var cellParagraph = testCellProps.Descendants<Paragraph>().FirstOrDefault();
-				if (cellParagraph is not null)
-				{
-					var cellParagraphProperties = cellParagraph.Descendants<ParagraphProperties>().FirstOrDefault();
-					if (cellParagraphProperties is not null)
-						paragraph.PrependChild(cellParagraphProperties.CloneNode(true));
-				}
-				paragraph.AppendChild(run);
-				cellEl.AppendChild(paragraph);
-
+				var cellEl = createTableCellEl(rowPosition, colPosition, xlToTableCellContextDict,
+					spreadSheetTemplateResult, cell.Value.ToString());
 				rowEl.AppendChild(cellEl);
 			}
 			resultEl.AppendChild(rowEl);
@@ -109,5 +91,70 @@ private Word.Table _processDocumentTable(Word.Table template,
 
 
 		return resultEl;
+	}
+
+	private Word.TableRow createTableRowEl(int rowPosition,
+	Dictionary<int, TableRow> originalRowDict,
+	WvSpreadsheetFileTemplateProcessResult wsResult)
+	{
+		var range = new WvSpreadsheetRange
+		{
+			FirstRow = rowPosition,
+			LastRow = rowPosition,
+			FirstColumn = 1,
+			LastColumn = 1,
+		};
+		var wsResultRows = wsResult.ResultItems[0].Contexts.GetByAddress(rowPosition, 1);
+		if(wsResultRows.Count == 0) return new Word.TableRow();
+		var wsResultRow = wsResultRows.First();
+		var wsTemplateRow = wsResult.TemplateContexts.Single(x=> x.Id == wsResultRow.TemplateContextId);
+		var wsRow = wsTemplateRow.Range?.RangeAddress.FirstAddress.RowNumber ?? 1;
+		if (!originalRowDict.ContainsKey(wsRow)) return new Word.TableRow();
+
+		var originalRow = originalRowDict[wsRow];
+		var rowEl = (Word.TableRow)originalRow.CloneNode(true);
+		rowEl.RemoveAllChildren<Word.TableCell>();
+		return rowEl;
+	}
+
+	private Word.TableCell createTableCellEl(int rowPosition, int columnPosition,
+	Dictionary<string, TableCell> originalCellDict,
+	WvSpreadsheetFileTemplateProcessResult wsResult, string value)
+	{
+		var wsResultRows = wsResult.ResultItems[0].Contexts.GetByAddress(rowPosition, columnPosition);
+		if(wsResultRows.Count == 0) return new Word.TableCell();
+		var wsResultRow = wsResultRows.First();
+		var wsTemplateRow = wsResult.TemplateContexts.Single(x=> x.Id == wsResultRow.TemplateContextId);
+		var wsRow = wsTemplateRow.Range?.RangeAddress.FirstAddress.RowNumber ?? 1;
+		var wsCol = wsTemplateRow.Range?.RangeAddress.FirstAddress.ColumnNumber ?? 1;
+		var dictKey = $"{wsRow}-{wsCol}";
+		if (!originalCellDict.ContainsKey(dictKey)) return new Word.TableCell();
+		var originalCell = originalCellDict[dictKey];
+		var cellEl = (Word.TableCell)originalCell.CloneNode(true);
+		cellEl.RemoveAllChildren<Word.Paragraph>();
+
+		var cellParagraph = new Paragraph(new Word.Run(new Word.Text(value)));
+		var originalCellParagraph = originalCell.Descendants<Word.Paragraph>().FirstOrDefault();
+		if (originalCellParagraph is not null)
+		{
+			cellParagraph = (Word.Paragraph)originalCellParagraph.CloneNode(true);
+			cellParagraph.RemoveAllChildren<Word.Run>();
+
+			var originalCellRun = originalCellParagraph.Descendants<Word.Run>().FirstOrDefault();
+			if (originalCellRun is not null)
+			{
+				var paragraphRun = (Word.Run)originalCellRun.CloneNode(true);
+				paragraphRun.RemoveAllChildren<Word.Text>();
+				paragraphRun.AppendChild(new Word.Text(value));
+				cellParagraph.AppendChild(paragraphRun);
+			}
+			else
+			{
+				cellParagraph.AppendChild(new Word.Run(new Word.Text(value)));
+			}
+		}
+		cellEl.AppendChild(cellParagraph);
+
+		return cellEl;
 	}
 }

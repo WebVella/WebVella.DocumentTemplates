@@ -247,6 +247,7 @@ public class DocumentFileEngineTests : TestBase
 			var dataSource = SampleData;
 			//When
 			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 			//Then
 			utils.GeneralResultChecks(result);
 			var tableElList = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Descendants<Word.Table>();

@@ -35,10 +35,10 @@ public partial class WvDocumentFileEngineUtility
 			return _processDocumentTable((Word.Table)template, dataSource, culture);
 
 		if (template.GetType().FullName == typeof(Word.TableCell).FullName)
-			return _processDocumentTableCell((Word.TableCell)template, dataSource, culture);
+			return null; //Table is processed as a whole
 
 		if (template.GetType().FullName == typeof(Word.TableRow).FullName)
-			return _processDocumentTableRow((Word.TableRow)template, dataSource, culture);
+			return null; //Table is processed as a whole
 
 		if (template.GetType().FullName == typeof(Word.Text).FullName)
 			return _processDocumentText((Word.Text)template, dataSource, culture);
