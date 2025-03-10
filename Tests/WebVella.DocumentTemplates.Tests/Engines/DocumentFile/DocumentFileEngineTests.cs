@@ -249,6 +249,53 @@ public class DocumentFileEngineTests : TestBase
 			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
 			//Then
 			utils.GeneralResultChecks(result);
+			var tableElList = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Descendants<Word.Table>();
+			Assert.Single(tableElList);
+			var tableEl = tableElList.First();
+			var tableRows = tableEl.Descendants<Word.TableRow>().ToList();
+			Assert.Equal(6, tableRows.Count);
+			for (int i = 0; i < tableRows.Count; i++)
+			{
+				if(i == 0)	
+					utils.CheckWordTableRowContents(tableRows[i], new List<string>{ "Position", "Name","price"});
+				else
+					utils.CheckWordTableRowContents(tableRows[i], new List<string>{ 
+						SampleData.Rows[i-1]["position"].ToString() ?? String.Empty,
+						SampleData.Rows[i-1]["name"].ToString() ?? String.Empty,
+						SampleData.Rows[i-1]["price"].ToString() ?? String.Empty,
+						});
+			}
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void DocumentFile_Table2()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Table2.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = utils.LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var tableElList = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Descendants<Word.Table>();
+			Assert.Single(tableElList);
+			var tableEl = tableElList.First();
+			var tableRows = tableEl.Descendants<Word.TableRow>().ToList();
+			Assert.Equal(2, tableRows.Count);
+			var firstRow = tableRows[0];
+			var secondRow = tableRows[1];
+			utils.CheckWordTableRowContents(firstRow, new List<string>{ "Position", "","","","",});
+			utils.CheckWordTableRowContents(secondRow, new List<string>{ "1", "2","3","4","5",});
+
 			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}

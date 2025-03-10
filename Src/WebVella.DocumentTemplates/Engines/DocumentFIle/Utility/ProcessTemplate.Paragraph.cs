@@ -114,7 +114,7 @@ public partial class WvDocumentFileEngineUtility
 		}
 		if(mergedElement is null) return;
 
-		mergedElement.RemoveAllChildren();
+		mergedElement.RemoveAllChildren<Word.Text>();
 		var textEl = new Word.Text();
 		textEl.Text = sb.ToString();
 		mergedElement.AppendChild(textEl);

@@ -56,22 +56,12 @@ public partial class WvDocumentFileEngineUtility
 		foreach (var originalHeader in originalMainPart.HeaderParts)
 		{
 			var targetHeader = _getOrCreateHeader(targetMainPart);
-			var inputStream = originalHeader.GetStream();
-			var outputStream = targetHeader.GetStream();
-			_copyStream(inputStream, outputStream);
-			inputStream.Close();
-			outputStream.Close();
 			_copyHeaderImages(originalHeader, targetHeader, imageIdMap);
 		}
 
 		foreach (var originalFooter in originalMainPart.FooterParts)
 		{
 			var targetFooter = _getOrCreateFooter(targetMainPart);
-			var inputStream = originalFooter.GetStream();
-			var outputStream = targetFooter.GetStream();
-			_copyStream(inputStream, outputStream);
-			inputStream.Close();
-			outputStream.Close();
 			_copyFooterImages(originalFooter, targetFooter, imageIdMap);
 		}
 	}

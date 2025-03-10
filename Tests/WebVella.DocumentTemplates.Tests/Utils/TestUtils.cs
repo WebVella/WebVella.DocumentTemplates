@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebVella.DocumentTemplates.Engines.DocumentFile;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
-
+using Word = DocumentFormat.OpenXml.Wordprocessing;
 namespace WebVella.DocumentTemplates.Tests.Utils;
 public class TestUtils
 {
@@ -263,6 +263,15 @@ public class TestUtils
 		workbook.SaveAs(path);
 	}
 
+	public void CheckWordTableRowContents(Word.TableRow row, List<string> values)
+	{
+		var rowCells = row.Descendants<Word.TableCell>().ToList();
+		Assert.Equal(values.Count,rowCells.Count);
+		for (int i = 0; i < values.Count; i++)
+		{
+			Assert.Equal(values[i],rowCells[i].InnerText);
+		}
 
+	}
 
 }

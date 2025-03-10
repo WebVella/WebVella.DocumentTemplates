@@ -28,17 +28,16 @@ public partial class WvDocumentFileEngineUtility
 		if (originalMainPart == null || targetMainPart == null)
 			return;
 
-		var body = targetMainPart.Document.Body!;
+		var targetBody = targetMainPart.Document.Body!;
 		var originalSectPr = originalMainPart.Document.Body!.Elements<SectionProperties>().LastOrDefault();
 		if (originalSectPr == null)
 			return;
 
-		var targetSectPr = body.Elements<SectionProperties>().LastOrDefault();
-		if (targetSectPr == null)
-		{
-			targetSectPr = new SectionProperties();
-			body.Append(targetSectPr);
-		}
+		targetBody.RemoveAllChildren<SectionProperties>();
+		var targetSectPr = originalSectPr.CloneNode(true);
+		targetSectPr.RemoveAllChildren<HeaderReference>();
+		targetSectPr.RemoveAllChildren<FooterReference>();
+		targetBody.Append(targetSectPr);
 
 		foreach (var headerRef in originalSectPr.Elements<HeaderReference>())
 		{
@@ -49,7 +48,7 @@ public partial class WvDocumentFileEngineUtility
 			_copyPartContent(originalHeader, targetHeader);
 
 			List<OpenXmlElement> processed = new();
-			foreach (var headerEl in targetHeader.Header.ChildElements)
+			foreach (var headerEl in originalHeader.Header.ChildElements)
 			{
 				var procEl = _processDocumentElement(headerEl,dataSource,culture);
 				if(procEl is not null) processed.Add(procEl);
@@ -57,7 +56,7 @@ public partial class WvDocumentFileEngineUtility
 			targetHeader.Header.RemoveAllChildren();
 			foreach (var procEl in processed)
 			{
-				targetHeader.Header.AddChild(procEl);
+				targetHeader.Header.AppendChild(procEl);
 			}
 
 			var newHeaderReference = new HeaderReference
@@ -77,7 +76,7 @@ public partial class WvDocumentFileEngineUtility
 			_copyPartContent(originalFooter, targetFooter);
 
 			List<OpenXmlElement> processed = new();
-			foreach (var headerEl in targetFooter.Footer.ChildElements)
+			foreach (var headerEl in originalFooter.Footer.ChildElements)
 			{
 				var procEl = _processDocumentElement(headerEl,dataSource,culture);
 				if(procEl is not null) processed.Add(procEl);
@@ -85,7 +84,7 @@ public partial class WvDocumentFileEngineUtility
 			targetFooter.Footer.RemoveAllChildren();
 			foreach (var procEl in processed)
 			{
-				targetFooter.Footer.AddChild(procEl);
+				targetFooter.Footer.AppendChild(procEl);
 			}
 
 			var newFooterReference = new FooterReference
