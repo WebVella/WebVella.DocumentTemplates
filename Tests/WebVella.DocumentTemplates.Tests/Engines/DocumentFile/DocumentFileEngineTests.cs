@@ -130,6 +130,68 @@ public class DocumentFileEngineTests : TestBase
 			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
+
+	[Fact]
+	public void DocumentFile_Paragraph_5()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Paragraph-5.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>().ToList();
+			Assert.NotNull(paragraphs);
+			Assert.Equal(6,paragraphs.Count);
+			Assert.Equal("{{name",paragraphs[0].InnerText);
+			Assert.Equal("(S=’,’)}}",paragraphs[1].InnerText);
+			Assert.Equal("{{Gubergren et in.",paragraphs[2].InnerText);
+			Assert.Equal("{{Gubergren.}}",paragraphs[3].InnerText);
+			Assert.Equal("{{Veniam.",paragraphs[4].InnerText);
+			Assert.Equal("option.}}",paragraphs[5].InnerText);
+
+
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+
+	[Fact]
+	public void DocumentFile_Paragraph_6()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Paragraph-6.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>().ToList();
+			Assert.NotNull(paragraphs);
+			Assert.Equal(3,paragraphs.Count);
+			Assert.Equal("item1 volutpat.",paragraphs[0].InnerText);
+			Assert.Equal("Gubergren item1 erat",paragraphs[1].InnerText);
+			Assert.Equal("Gubergren lorem item1 erat.",paragraphs[2].InnerText);
+
+
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
 	#endregion
 	#region << HeaderFooter >>
 	[Fact]

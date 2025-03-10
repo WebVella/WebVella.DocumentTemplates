@@ -32,6 +32,12 @@
     <None Update="Files\Template-HeaderFooter-1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Template-Paragraph-6.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Template-Paragraph-5.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template-Paragraph-4.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
