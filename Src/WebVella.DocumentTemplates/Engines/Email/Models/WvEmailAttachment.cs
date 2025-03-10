@@ -15,5 +15,6 @@ public class WvEmailAttachment
 
 public enum WvEmailAttachmentType{ 
 	TextFile = 0,
-	SpreadsheetFile = 1
+	SpreadsheetFile = 1,
+	DocumentFile = 2
 }

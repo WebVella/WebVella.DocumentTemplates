@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Engines.DocumentFile;
 using WebVella.DocumentTemplates.Engines.Email.Models;
 using WebVella.DocumentTemplates.Engines.Html;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
@@ -87,6 +88,16 @@ public class WvEmailTemplate : WvTemplateBase
 							var attachment = ProcessEmailSpreadsheetAttachment(
 								template: item.Template,
 								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.xlsx",
+								dsIndex: attachmentDsIndex,
+								dataSource: itemDataSource,
+								culture: culture);
+							if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
+						}
+						else if (item.Type == WvEmailAttachmentType.DocumentFile)
+						{
+							var attachment = ProcessEmailDocumentAttachment(
+								template: item.Template,
+								fileName: item.Filename ?? $"file{(attachmentIndex == 0 ? "" : attachmentIndex.ToString())}.docx",
 								dsIndex: attachmentDsIndex,
 								dataSource: itemDataSource,
 								culture: culture);
@@ -287,6 +298,41 @@ public class WvEmailTemplate : WvTemplateBase
 		{
 			GroupDataByColumns = new(),
 			Type = WvEmailAttachmentType.SpreadsheetFile,
+			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
+			Template = attachmentTemplateResult.ResultItems[0]!.Result
+		};
+
+		foreach (var item in attachmentTemplateResult.ResultItems[0]!.Contexts)
+		{
+			attachment.Contexts.Add((WvTemplateProcessContextBase)item);
+		}
+
+		return attachment;
+	}
+
+	public WvEmailAttachment? ProcessEmailDocumentAttachment(MemoryStream? template, string fileName, int dsIndex, DataTable dataSource, CultureInfo culture)
+	{
+		if (template is null) return null;
+		WvEmailAttachment? attachment = null;
+
+		var attachmentTemplate = new WvDocumentFileTemplate
+		{
+			Template = template
+		};
+
+		var attachmentTemplateResult = attachmentTemplate.Process(dataSource, culture);
+		if (attachmentTemplateResult.ResultItems.Count == 0
+					|| attachmentTemplateResult.ResultItems[0].Result is null)
+		{
+			return null;
+		}
+		var ext = Path.GetExtension(fileName);
+		var name = Path.GetFileNameWithoutExtension(fileName);
+
+		attachment = new WvEmailAttachment
+		{
+			GroupDataByColumns = new(),
+			Type = WvEmailAttachmentType.DocumentFile,
 			Filename = dsIndex == 0 ? fileName : $"{name}-{dsIndex}{ext}",
 			Template = attachmentTemplateResult.ResultItems[0]!.Result
 		};
