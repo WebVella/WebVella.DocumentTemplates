@@ -7,22 +7,15 @@ public partial class WvTemplateUtility
 {
 	public (string?, object?) ReplaceAllValuesDataTagInTemplate(string? templateResultString, object? templateResultObject, WvTemplateTag tag, DataTable dataSource)
 	{
-		if(String.IsNullOrWhiteSpace(templateResultString)) return (templateResultString, templateResultObject);
+		if (String.IsNullOrWhiteSpace(templateResultString)) return (templateResultString, templateResultObject);
+		int columnIndex = GetColumnIndexFromTagName(tag.Name, dataSource);
 
-		int columnIndex = -1;
-		foreach (DataColumn col in dataSource.Columns)
+		if (columnIndex == -1 || dataSource.Rows.Count == 0)
 		{
-			if (col.ColumnName.ToLowerInvariant() == tag.Name)
-			{
-				columnIndex = dataSource.Columns.IndexOf(col);
-				break;
-			}
+			if(templateResultObject is null)
+				templateResultObject = templateResultString;
+			return (templateResultString, templateResultObject);
 		}
-
-		if (columnIndex == -1) return (templateResultString, templateResultObject);
-		if (dataSource.Rows.Count == 0) return (templateResultString, templateResultObject);
-
-		var oneTagOnlyTemplate = templateResultString?.ToLowerInvariant() == tag.FullString?.ToLowerInvariant();
 
 		var tagContentList = new List<string>();
 		for (int rowIndex = 0; rowIndex < dataSource.Rows.Count; rowIndex++)
@@ -34,8 +27,8 @@ public partial class WvTemplateUtility
 			}
 		}
 
-		if (!String.IsNullOrWhiteSpace(templateResultString) 
-			&&	!String.IsNullOrWhiteSpace(tag.FullString) 
+		if (!String.IsNullOrWhiteSpace(templateResultString)
+			&& !String.IsNullOrWhiteSpace(tag.FullString)
 			&& tagContentList.Count > 0)
 		{
 			var separator = tag.FlowSeparator ?? "";

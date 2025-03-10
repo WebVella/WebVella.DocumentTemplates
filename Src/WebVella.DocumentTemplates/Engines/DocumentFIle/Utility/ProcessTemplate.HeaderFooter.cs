@@ -20,7 +20,8 @@ using System.Text;
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
-	private void _copyHeadersAndFooters(WordprocessingDocument original, WordprocessingDocument target)
+	private void _copyHeadersAndFooters(WordprocessingDocument original, WordprocessingDocument target,
+		DataTable dataSource, CultureInfo culture)
 	{
 		var originalMainPart = original.MainDocumentPart;
 		var targetMainPart = target.MainDocumentPart;
@@ -47,6 +48,18 @@ public partial class WvDocumentFileEngineUtility
 			var targetHeader =  _getOrCreateHeader(targetMainPart);
 			_copyPartContent(originalHeader, targetHeader);
 
+			List<OpenXmlElement> processed = new();
+			foreach (var headerEl in targetHeader.Header.ChildElements)
+			{
+				var procEl = _processDocumentElement(headerEl,dataSource,culture);
+				if(procEl is not null) processed.Add(procEl);
+			}
+			targetHeader.Header.RemoveAllChildren();
+			foreach (var procEl in processed)
+			{
+				targetHeader.Header.AddChild(procEl);
+			}
+
 			var newHeaderReference = new HeaderReference
 			{
 				Type = headerRef.Type,
@@ -62,6 +75,18 @@ public partial class WvDocumentFileEngineUtility
 			if (originalFooter is null) continue;
 			var targetFooter = _getOrCreateFooter(targetMainPart);
 			_copyPartContent(originalFooter, targetFooter);
+
+			List<OpenXmlElement> processed = new();
+			foreach (var headerEl in targetFooter.Footer.ChildElements)
+			{
+				var procEl = _processDocumentElement(headerEl,dataSource,culture);
+				if(procEl is not null) processed.Add(procEl);
+			}
+			targetFooter.Footer.RemoveAllChildren();
+			foreach (var procEl in processed)
+			{
+				targetFooter.Footer.AddChild(procEl);
+			}
 
 			var newFooterReference = new FooterReference
 			{

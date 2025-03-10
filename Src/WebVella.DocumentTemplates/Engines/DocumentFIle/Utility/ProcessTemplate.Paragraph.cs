@@ -26,13 +26,19 @@ public partial class WvDocumentFileEngineUtility
 		Word.Paragraph resultEl = (Word.Paragraph)template.CloneNode(true);
 		if (String.IsNullOrWhiteSpace(template.InnerText)) return resultEl;
 		resultEl.RemoveAllChildren();
-		//Process Runs
+
+		//Runs Need to be preprocessed as there is often a problem where the tag is 
+		//delivered in different runs
+		var queue = new Queue<Word.Run>();
+		
 		foreach (var childEl in template.ChildElements)
 		{
+			
 			var resultChildEl =  _processDocumentElement(childEl, dataSource, culture);
 			if(resultChildEl is not null)
 				resultEl.AppendChild(resultChildEl);
 		}
 		return resultEl;
 	}
+
 }

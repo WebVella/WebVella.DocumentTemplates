@@ -29,7 +29,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Files\Template-Paragraph2.docx">
+    <None Update="Files\Template-HeaderFooter-1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Template-Paragraph-4.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Template-Paragraph-3.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Template-Paragraph-2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Template-Complex-1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\Template1Result.txt">
@@ -41,7 +53,7 @@
     <None Update="Files\Template1.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\Template-Paragraph1.docx">
+    <None Update="Files\Template-Paragraph-1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Files\Template-Table1.docx">

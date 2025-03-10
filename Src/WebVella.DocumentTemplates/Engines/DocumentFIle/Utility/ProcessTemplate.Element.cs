@@ -60,4 +60,13 @@ public partial class WvDocumentFileEngineUtility
 
 		return template.CloneNode(true);
 	}
+
+
+	public List<OpenXmlElement> _preprocessChildElementsForSplittedTags(List<OpenXmlElement> childElements)
+	{
+		var result = new List<OpenXmlElement>();
+
+
+		return result;
+	}
 }

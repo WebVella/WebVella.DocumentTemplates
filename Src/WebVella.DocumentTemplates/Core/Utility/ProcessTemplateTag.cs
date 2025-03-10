@@ -19,7 +19,7 @@ public partial class WvTemplateUtility
 			return result;
 		}
 		//if all tags are index - return one with processed template
-		if (result.AllTagsAreIndexedFunctionOrWithSeparator)
+		if (result.ShouldGenerateOneResult(dataSource))
 		{
 			var resultValue = GenerateTemplateTagResult(template, result.Tags, dataSource, null, culture);
 			if (resultValue is not null && resultValue.Value is not null)
@@ -28,19 +28,39 @@ public partial class WvTemplateUtility
 			}
 			return result;
 		}
-
+		var resultValues = new List<object>();
 		for (int i = 0; i < dataSource.Rows.Count; i++)
 		{
 			var resultValue = GenerateTemplateTagResult(template, result.Tags, dataSource, i, culture);
 			if (resultValue is not null && resultValue.Value is not null)
 			{
-				result.Values.Add(resultValue.Value);
+				resultValues.Add(resultValue.Value);
 			}
 			else
 			{
-				result.Values.Add(String.Empty);
+				resultValues.Add(String.Empty);
+			}
+
+		}
+		if (resultValues.Count == 0)
+		{
+			result.Values = new();
+			result.ExpandCount = 0;
+			return result;
+		}
+
+		//If all the results are the same as the template return only one
+		bool allValuesMatchTemplate = true;
+		foreach (var rstValue in resultValues)
+		{
+			if (rstValue is not string || rstValue.ToString() != template)
+			{
+				allValuesMatchTemplate = false;
+				break;
 			}
 		}
+		if (allValuesMatchTemplate) result.Values.Add(resultValues[0]);
+		else result.Values.AddRange(resultValues);
 		result.ExpandCount = result.Values.Count;
 		return result;
 	}
@@ -58,7 +78,7 @@ public partial class WvTemplateUtility
 
 		string? valueString = template;
 		object? value = null;
-		if(dataRowPosition < 1) dataRowPosition = 1;
+		if (dataRowPosition < 1) dataRowPosition = 1;
 		if (tags.Count == 1 && tags[0].FullString == template)
 		{
 			(valueString, value) = ProcessTagInTemplate(valueString, value, tags[0], dataSource, dataRowPosition - 1, culture);

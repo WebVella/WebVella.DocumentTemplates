@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebVella.DocumentTemplates.Engines.DocumentFile;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 
 namespace WebVella.DocumentTemplates.Tests.Utils;
@@ -82,6 +83,24 @@ public class TestUtils
 		Assert.NotNull(result.ResultItems[0].Workbook);
 		Assert.NotNull(result.ResultItems[0].Workbook!.Worksheets);
 		Assert.True(result.ResultItems[0].Workbook!.Worksheets.Count > 0);
+	}
+
+	public void GeneralResultChecks(WvDocumentFileTemplateProcessResult? result)
+	{
+		Assert.NotNull(result);
+		Assert.NotNull(result.WordDocument);
+		Assert.NotNull(result.ResultItems);
+		Assert.True(result.ResultItems.Count > 0);
+
+		Assert.NotNull(result.WordDocument.MainDocumentPart);
+		Assert.NotNull(result.WordDocument.MainDocumentPart.Document);
+		Assert.NotNull(result.WordDocument.MainDocumentPart.Document.Body);
+
+		Assert.NotNull(result.ResultItems[0].Result);
+		Assert.NotNull(result.ResultItems[0].WordDocument);
+		Assert.NotNull(result.ResultItems[0].WordDocument.MainDocumentPart);
+		Assert.NotNull(result.ResultItems[0].WordDocument.MainDocumentPart.Document);
+		Assert.NotNull(result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body);
 	}
 
 	public void CheckRangeDimensions(IXLRange range, int startRowNumber, int startColumnNumber, int lastRowNumber, int lastColumnNumber)

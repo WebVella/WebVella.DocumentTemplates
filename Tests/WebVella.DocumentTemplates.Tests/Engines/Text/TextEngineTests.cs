@@ -216,11 +216,97 @@ public class TextEngineTests : TestBase
 	}
 
 	[Fact]
+	public void Text_Tag9()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{some text in the tag}}"
+		};
+		var data = SampleData;
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("{{some text in the tag}}", lines[0]);
+	}
+
+
+	[Fact]
+	public void Text_Tag10()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{notFoundColumnName}}"
+		};
+		var data = SampleData;
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("{{notFoundColumnName}}", lines[0]);
+	}
+
+	[Fact]
+	public void Text_Tag11()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{notFoundColumnName(F=H)}}"
+		};
+		var data = SampleData;
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("{{notFoundColumnName(F=H)}}", lines[0]);
+	}
+
+	[Fact]
+	public void Text_Tag12()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "text {{notFoundColumnName(F=H)}} text"
+		};
+		var data = SampleData;
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("text {{notFoundColumnName(F=H)}} text", lines[0]);
+	}
+
+	[Fact]
+	public void Text_Tag13()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{name(S=',')}} {{notFoundColumnName(F=H)}} text"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1});
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal($"{data.Rows[0]["name"]},{data.Rows[1]["name"]} {{{{notFoundColumnName(F=H)}}}} text", lines[0]);
+	}
+
+	[Fact]
 	public void Text_Tag_HorizontalIsForcedIfSeparator()
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{sku(S=',')}}"
+			Template = "{{sku(S=',')}} test"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1, 2 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -229,7 +315,7 @@ public class TextEngineTests : TestBase
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]}", lines[0]);
+		Assert.Equal($"{data.Rows[0]["sku"]},{data.Rows[1]["sku"]},{data.Rows[2]["sku"]} test", lines[0]);
 	}
 
 	[Fact]

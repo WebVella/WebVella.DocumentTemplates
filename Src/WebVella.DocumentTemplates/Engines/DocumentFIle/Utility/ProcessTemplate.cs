@@ -48,7 +48,7 @@ public partial class WvDocumentFileEngineUtility
 		}
 
 		_copyDocumentStylesAndSettings(result.WordDocument, resultItem.WordDocument);
-		_copyHeadersAndFooters(result.WordDocument, resultItem.WordDocument);
+		_copyHeadersAndFooters(result.WordDocument, resultItem.WordDocument,dataSource,culture);
 		_copyFootnotesAndEndnotes(result.WordDocument, resultItem.WordDocument);
 		_copyImages(result.WordDocument, resultItem.WordDocument);
 	}

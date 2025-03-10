@@ -8,17 +8,15 @@ public partial class WvTemplateUtility
 	public (string?, object?) ReplaceSingleValueDataTagInTemplate(string? templateResultString, object? templateResultObject, WvTemplateTag tag, DataTable dataSource, int? contextRowIndex)
 	{
 
-		int columnIndex = -1;
-		foreach (DataColumn col in dataSource.Columns)
+		int columnIndex = GetColumnIndexFromTagName(tag.Name, dataSource);
+
+		if (columnIndex == -1 || dataSource.Rows.Count == 0)
 		{
-			if (col.ColumnName.ToLowerInvariant() == tag.Name)
-			{
-				columnIndex = dataSource.Columns.IndexOf(col);
-				break;
-			}
+			if(templateResultObject is null)
+				templateResultObject = templateResultString;
+			return (templateResultString, templateResultObject);
 		}
-		if (columnIndex == -1) return (templateResultString, templateResultObject);
-		if (dataSource.Rows.Count == 0) return (templateResultString, templateResultObject);
+
 		int rowIndex = 0;
 		if (tag.IndexList is not null && tag.IndexList.Count > 0)
 		{
@@ -39,7 +37,10 @@ public partial class WvTemplateUtility
 		object? newResultObject = null;
 		if (oneTagOnlyTemplate)
 		{
-			if (templateResultObject is not null)
+			if (
+				(templateResultObject is string && !String.IsNullOrWhiteSpace(templateResultObject as string))
+				|| (templateResultObject is not string && templateResultObject is not null)
+				)
 			{
 				newResultObject = templateResultString;
 			}
@@ -57,6 +58,8 @@ public partial class WvTemplateUtility
 		{
 			newResultObject = templateResultString;
 		}
+
+
 		return (templateResultString, newResultObject);
 	}
 
