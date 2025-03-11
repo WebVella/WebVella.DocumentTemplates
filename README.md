@@ -6,7 +6,7 @@
 [![WebVella Document Templates License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://document-templates.webvella.com/en/license/)
 
 ## What is WebVella Document Templates?
-An open-source .net library that can generates Email, Spreadsheet, Text and HTML, by using a DataTable and a Template Document.
+An open-source .net library that can generates Email, Micosoft Excel, Microsoft Word, Plain text files, Text and HTML, by using a DataTable and a Template Document.
 
 ## How to get it
 You can either clone this repository or get the [Nuget package](https://www.nuget.org/packages/WebVella.DocumentTemplates)
