@@ -11,7 +11,7 @@ This example is also available in a [GitHub repository](https://github.com/WebVe
 ## Template - Spreadsheet file
 The goal is to process a template Spreadsheet file "TemplateDoc1.xlsx" with a DataTable. The template file is always processed from left to right and top to bottom. Cell dependencies are taken into consideration. The template content is:
 
-![TemplateDoc1.xlsx contents](/docs/static/spreadsheet-template-1.png)
+![TemplateDoc1.xlsx contents](/docs/media/spreadsheet-template-1.png)
 
 ## Processing the template
 There are two helper methods *LoadFileAsStream* and *SaveFileFromStream* which are not displayed here, but if you are interested in their contents, check out the [Github Repository](https://github.com/WebVella/WebVella.DocumentTemplates.ExcelExample/blob/main/Utils.cs).
@@ -56,7 +56,7 @@ internal class Program
 
 ## The result
 
-![TemplateDoc1.xlsx result](/docs/static/spreadsheet-template-1-result.png)
+![TemplateDoc1.xlsx result](/docs/media/spreadsheet-template-1-result.png)
 
 Take notice to:
 

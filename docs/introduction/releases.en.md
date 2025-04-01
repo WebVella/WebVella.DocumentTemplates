@@ -3,6 +3,10 @@ order: 5
 title: Releases
 ---
 
+## v.1.1.1
+- support for Microsoft Word file templates added
+- bug fixes and optimizations
+
 ## v.1.0.3
 - namespace refactoring
 

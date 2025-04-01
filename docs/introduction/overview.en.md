@@ -5,7 +5,7 @@ toc: false
 ---
 
 ## Welcome to the project
-This is an open source .net library that aims to improve the way you generate your content from data. It is born from our need, while developing our (Tefter.bg)[https://tefter.bg] open source project, 
+This is an open source .net library that aims to improve the way you generate your content from data. It is born from our need, while developing our [Tefter.bg](https://tefter.bg) open source project, 
 to have a unified library that can handle and generate different types of media results. To generate an Email from data, we needed to generate content from text, HTML and file templates. 
 We couldn't find a library that does it all, in a very simple way, so we decided to created one.
 

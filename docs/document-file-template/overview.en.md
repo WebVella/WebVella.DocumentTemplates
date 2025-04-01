@@ -11,7 +11,7 @@ This example is also available in a [GitHub repository](https://github.com/WebVe
 ## Template - Document file
 The goal is to process a template MS Word file "TemplateDoc1.docx" with a DataTable. The template file is always processed from top to bottom.
 
-![TemplateDoc1.docx original](/docs/static/document-template-original.png)
+![TemplateDoc1.docx original](/docs/media/document-template-original.png)
 
 ## Processing the template
 There are two helper methods *LoadFileAsStream* and *SaveFileFromStream* which are not displayed here, but if you are interested in their contents, check out the [Github Repository](https://github.com/WebVella/WebVella.DocumentTemplates.WordExample/blob/main/Utils.cs).
@@ -57,7 +57,7 @@ internal class Program
 
 ## The result
 
-![TemplateDoc1.docx result](/docs/static/document-template-result.png)
+![TemplateDoc1.docx result](/docs/media/document-template-result.png)
 
 Take notice to:
 
