@@ -24,7 +24,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			//When
 			var action = () => new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateInitTemplateContexts(result);
 			//Then
-			var ex = Record.Exception(action);
+			Exception ex = Record.Exception(action);
 			Assert.NotNull(ex);
 			Assert.IsType<ArgumentException>(ex);
 			var argEx = (ArgumentException)ex;
@@ -47,7 +47,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			//When
 			var action = () => new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateInitTemplateContexts(result);
 			//Then
-			var ex = Record.Exception(action);
+			Exception ex = Record.Exception(action);
 			Assert.Null(ex);
 		}
 	}
