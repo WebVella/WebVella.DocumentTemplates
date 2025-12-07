@@ -340,7 +340,7 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("item5", worksheet.Cell(6, 1).Value.ToString());
 			IXLCell SpreadsheetFunctionCell = worksheet.Cell(7, 1);
 			Assert.True(SpreadsheetFunctionCell.HasFormula);
-			Assert.Equal("CONCAT(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
+			Assert.Equal("_xlfn.CONCAT(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
 		}

@@ -37,7 +37,7 @@
 	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.0" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-		<PackageReference Include="Markdig" Version="0.43.0" />
+		<PackageReference Include="Markdig" Version="0.44.0" />
 	</ItemGroup>
 
 </Project>
