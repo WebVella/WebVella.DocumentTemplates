@@ -25,9 +25,15 @@ public class WvTemplateTagResultList
 				int columnIndex = new WvTemplateUtility().GetColumnIndexFromTagName(tag.Name,dataSource);
 				if(columnIndex == -1) continue;
 			}
+			//if there is a single tag with separator
 			if (tag.ParamGroups.Any(g => g.Parameters.Any(x => x.Type.FullName == typeof(WvTemplateTagSeparatorParameterProcessor).FullName)))
 				continue;
-
+			//if there is a single tag with vertical flow
+			if (tag.ParamGroups.Any(g => g.Parameters.Any(x => 
+				    x.Type.FullName == typeof(WvTemplateTagDataFlowParameterProcessor).FullName
+				    )))
+				continue;			
+			
 			return false;
 		}
 		return true;

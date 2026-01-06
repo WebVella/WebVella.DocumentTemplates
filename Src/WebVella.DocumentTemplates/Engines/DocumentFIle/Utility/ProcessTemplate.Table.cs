@@ -21,8 +21,10 @@ using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Models;
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
-	private Word.Table _processDocumentTable(Word.Table template,
-			DataTable dataSource, CultureInfo culture)
+	private List<OpenXmlElement> _processDocumentTable(Word.Table template,
+			DataTable dataSource, CultureInfo culture,
+			Dictionary<string,WvDocumentFileTemplate> templateLibrary,
+			int stackLevel)
 	{
 		Word.Table resultEl = new Word.Table();
 
@@ -69,7 +71,7 @@ public partial class WvDocumentFileEngineUtility
 		if (spreadSheetTemplateResult.ResultItems.Count == 0
 			|| spreadSheetTemplateResult.ResultItems[0].Workbook is null
 			|| spreadSheetTemplateResult.ResultItems[0].Workbook!.Worksheets!.Count == 0)
-			return resultEl;
+			return [resultEl];
 
 		var ws = spreadSheetTemplateResult.ResultItems[0].Workbook!.Worksheets.First();
 
@@ -90,7 +92,7 @@ public partial class WvDocumentFileEngineUtility
 		}
 
 
-		return resultEl;
+		return [resultEl];
 	}
 
 	private Word.TableRow createTableRowEl(int rowPosition,

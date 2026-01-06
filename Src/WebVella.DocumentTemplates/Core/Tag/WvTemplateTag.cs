@@ -36,7 +36,7 @@ public class WvTemplateTag
 				}
 			}
 
-			if (!String.IsNullOrEmpty(FlowSeparator))
+			if (flow is null && !String.IsNullOrEmpty(FlowSeparator))
 			{
 				flow = WvTemplateTagDataFlow.Horizontal;
 			}
@@ -53,10 +53,17 @@ public class WvTemplateTag
 				{
 					if (param.Type.InheritsClass(typeof(WvTemplateTagSeparatorParameterProcessor)))
 					{
-						if(((WvTemplateTagSeparatorParameterProcessor)param).ValueString == "$rn"){ 
+						var parsedParam = (WvTemplateTagSeparatorParameterProcessor)param;
+						if(parsedParam.ValueString == "$rn") 
 							return Environment.NewLine;
-						}
-						return ((WvTemplateTagSeparatorParameterProcessor)param).ValueString;
+						return parsedParam.ValueString;
+					}
+
+					if (param.Type.InheritsClass(typeof(WvTemplateTagDataFlowParameterProcessor)))
+					{
+						var parsedParam = (WvTemplateTagDataFlowParameterProcessor)param;
+						if(parsedParam.Value == WvTemplateTagDataFlow.Vertical)
+							return Environment.NewLine;						
 					}
 				}
 			}

@@ -10,6 +10,7 @@ public partial class WvTemplateUtility
 		DataTable dataSource,
 		CultureInfo culture)
 	{
+	
 		var result = new WvTemplateTagResultList();
 		result.Tags = GetTagsFromTemplate(template);
 		//if there are no tags - return one with the template

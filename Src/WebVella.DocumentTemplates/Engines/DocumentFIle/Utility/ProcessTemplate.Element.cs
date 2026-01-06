@@ -1,64 +1,53 @@
-﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Packaging;
 using System.Data;
 using System.Globalization;
-using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Text;
-using WebVella.DocumentTemplates.Extensions;
-using System;
-using System.Linq;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Spreadsheet;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
-using System.Text;
+
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
-	private OpenXmlElement? _processDocumentElement(
-		OpenXmlElement template,
-		DataTable dataSource, CultureInfo culture
-		)
+	private List<OpenXmlElement> _processDocumentElement(
+		OpenXmlElement templateEl,
+		DataTable dataSource, CultureInfo culture,
+		Dictionary<string,WvDocumentFileTemplate> templateLibrary,
+		int stackLevel)
 	{
-		if (template.GetType().FullName == typeof(Paragraph).FullName)
-			return _processDocumentParagaraph((Paragraph)template, dataSource, culture);
+		if (templateEl.GetType().FullName == typeof(Paragraph).FullName)
+			return _processDocumentParagaraph((Paragraph)templateEl, dataSource, culture,templateLibrary, stackLevel);
 
-		if (template.GetType().FullName == typeof(Word.Run).FullName)
-			return _processDocumentRun((Word.Run)template, dataSource, culture);
+		if (templateEl.GetType().FullName == typeof(Word.Run).FullName)
+			return _processDocumentRun((Word.Run)templateEl, dataSource, culture,templateLibrary, stackLevel);
 
-		if (template.GetType().FullName == typeof(Word.Table).FullName)
-			return _processDocumentTable((Word.Table)template, dataSource, culture);
+		if (templateEl.GetType().FullName == typeof(Word.Table).FullName)
+			return _processDocumentTable((Word.Table)templateEl, dataSource, culture,templateLibrary, stackLevel);
 
-		if (template.GetType().FullName == typeof(Word.TableCell).FullName)
-			return null; //Table is processed as a whole
+		if (templateEl.GetType().FullName == typeof(Word.TableCell).FullName)
+			return new List<OpenXmlElement>(); //Table is processed as a whole
 
-		if (template.GetType().FullName == typeof(Word.TableRow).FullName)
-			return null; //Table is processed as a whole
+		if (templateEl.GetType().FullName == typeof(Word.TableRow).FullName)
+			return new List<OpenXmlElement>(); //Table is processed as a whole
 
-		if (template.GetType().FullName == typeof(Word.Text).FullName)
-			return _processDocumentText((Word.Text)template, dataSource, culture);
+		if (templateEl.GetType().FullName == typeof(Word.Text).FullName)
+			return _processDocumentText((Word.Text)templateEl, dataSource, culture,templateLibrary, stackLevel);
 
-		if (template.GetType().FullName == typeof(Word.Comment).FullName)
-			return null;
+		if (templateEl.GetType().FullName == typeof(Word.Comment).FullName)
+			return new List<OpenXmlElement>();
 
-		if (template.GetType().FullName == typeof(Word.ProofError).FullName)
-			return null;
+		if (templateEl.GetType().FullName == typeof(Word.ProofError).FullName)
+			return new List<OpenXmlElement>();
 
-		if (template.GetType().FullName == typeof(Word.SectionProperties).FullName)
-			return null;
+		if (templateEl.GetType().FullName == typeof(Word.SectionProperties).FullName)
+			return new List<OpenXmlElement>();
 
-		if (template.GetType().FullName == typeof(Word.ParagraphProperties).FullName)
-			return template.CloneNode(true);
+		// if (templateEl.GetType().FullName == typeof(Word.ParagraphProperties).FullName)
+		// 	return [templateEl.CloneNode(true)];
+	
+		// if (templateEl.GetType().FullName == typeof(Word.RunProperties).FullName)
+		// 	return [templateEl.CloneNode(true)];
 
-		if (template.GetType().FullName == typeof(Word.RunProperties).FullName)
-			return template.CloneNode(true);
-
-		return template.CloneNode(true);
+		return [templateEl.CloneNode(true)];		
 	}
 
 

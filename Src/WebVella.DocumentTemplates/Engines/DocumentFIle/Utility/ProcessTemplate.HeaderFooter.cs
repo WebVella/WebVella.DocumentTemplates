@@ -50,8 +50,13 @@ public partial class WvDocumentFileEngineUtility
 			List<OpenXmlElement> processed = new();
 			foreach (var headerEl in originalHeader.Header.ChildElements)
 			{
-				var procEl = _processDocumentElement(headerEl,dataSource,culture);
-				if(procEl is not null) processed.Add(procEl);
+				var procElList = _processDocumentElement(
+					templateEl:headerEl,
+					dataSource:dataSource,
+					culture:culture,
+					templateLibrary:new Dictionary<string,WvDocumentFileTemplate>(),
+					stackLevel:0);
+				if(procElList.Count > 0) processed.Add(procElList[0]);
 			}
 			targetHeader.Header.RemoveAllChildren();
 			foreach (var procEl in processed)
@@ -76,10 +81,16 @@ public partial class WvDocumentFileEngineUtility
 			_copyPartContent(originalFooter, targetFooter);
 
 			List<OpenXmlElement> processed = new();
-			foreach (var headerEl in originalFooter.Footer.ChildElements)
+			foreach (var footerEl in originalFooter.Footer.ChildElements)
 			{
-				var procEl = _processDocumentElement(headerEl,dataSource,culture);
-				if(procEl is not null) processed.Add(procEl);
+				var procElList = _processDocumentElement(
+					templateEl:footerEl,
+					dataSource:dataSource,
+					culture:culture,
+					templateLibrary:new Dictionary<string,WvDocumentFileTemplate>(),
+					stackLevel:0
+					);
+				if(procElList.Count > 0) processed.Add(procElList[0]);
 			}
 			targetFooter.Footer.RemoveAllChildren();
 			foreach (var procEl in processed)

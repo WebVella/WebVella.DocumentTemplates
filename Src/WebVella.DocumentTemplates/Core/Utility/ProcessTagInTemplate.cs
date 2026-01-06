@@ -8,6 +8,11 @@ public partial class WvTemplateUtility
 	public (string?, object?) ProcessTagInTemplate(string? templateResultString, object? templateResultObject,
 		WvTemplateTag tag, DataTable dataSource, int? contextRowIndex, CultureInfo culture)
 	{
+		if (templateResultString.StartsWith("{{name("))
+		{
+			var boz = 1;
+		}					
+		
 		var currentCulture = Thread.CurrentThread.CurrentCulture;
 		var currentUICulture = Thread.CurrentThread.CurrentUICulture;
 		try
@@ -28,6 +33,11 @@ public partial class WvTemplateUtility
 					//If horizontal all items should be return in one template 
 					(templateResultString, newResultObject) = ReplaceAllValuesDataTagInTemplate(templateResultString, templateResultObject, tag, dataSource);
 				}
+				if (tag.Flow == WvTemplateTagDataFlow.Vertical && contextRowIndex is null)
+				{
+					//If vertical all items should be return in one template as well
+					(templateResultString, newResultObject) = ReplaceAllValuesDataTagInTemplate(templateResultString, templateResultObject, tag, dataSource);
+				}				
 				else
 				{
 					(templateResultString, newResultObject) = ReplaceSingleValueDataTagInTemplate(templateResultString, templateResultObject, tag, dataSource, contextRowIndex);

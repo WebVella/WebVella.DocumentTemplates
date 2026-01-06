@@ -11,6 +11,166 @@ public class DocumentFileEngineTests : TestBase
 
 	#region << Paragraph >>
 	[Fact]
+	public void DocumentFile_Flow_Horizontal()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Flow-Horizontal.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>();
+			Assert.NotNull(paragraphs);
+			Assert.Single(paragraphs);
+			var paragraph = paragraphs.First();
+			Assert.Equal("item1item2item3item4item5",paragraph.InnerText);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}
+	[Fact]
+	public void DocumentFile_Flow_Vertical()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Flow-Vertical.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>();
+			Assert.NotNull(paragraphs);
+			Assert.Single(paragraphs);
+			var paragraph = paragraphs.First();
+			Assert.Single(paragraph.ChildElements);
+			var run = paragraph.ChildElements[0];
+			Assert.Equal(9,run.ChildElements.Count);
+			Assert.IsType<Word.Text>(run.ChildElements[0]);
+			Assert.IsType<Word.Break>(run.ChildElements[1]);
+			Assert.IsType<Word.Text>(run.ChildElements[2]);
+			Assert.IsType<Word.Break>(run.ChildElements[3]);
+			Assert.IsType<Word.Text>(run.ChildElements[4]);
+			Assert.IsType<Word.Break>(run.ChildElements[5]);
+			Assert.IsType<Word.Text>(run.ChildElements[6]);
+			Assert.IsType<Word.Break>(run.ChildElements[7]);
+			Assert.IsType<Word.Text>(run.ChildElements[8]);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);			
+		}
+	}
+	
+	[Fact]
+	public void DocumentFile_Flow_Vertical_2()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Flow-Vertical-2.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>();
+			Assert.NotNull(paragraphs);
+			Assert.Single(paragraphs);
+			var paragraph = paragraphs.First();
+			Assert.Single(paragraph.ChildElements);
+			var run = paragraph.ChildElements[0];
+			Assert.Equal(9,run.ChildElements.Count);
+			Assert.IsType<Word.Text>(run.ChildElements[0]);
+			Assert.IsType<Word.Break>(run.ChildElements[1]);
+			Assert.IsType<Word.Text>(run.ChildElements[2]);
+			Assert.IsType<Word.Break>(run.ChildElements[3]);
+			Assert.IsType<Word.Text>(run.ChildElements[4]);
+			Assert.IsType<Word.Break>(run.ChildElements[5]);
+			Assert.IsType<Word.Text>(run.ChildElements[6]);
+			Assert.IsType<Word.Break>(run.ChildElements[7]);
+			Assert.IsType<Word.Text>(run.ChildElements[8]);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}	
+	
+	[Fact]
+	public void DocumentFile_Flow_Vertical_3()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var templateFile = "Template-Flow-Vertical-3.docx";
+			var template = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(templateFile)
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>();
+			Assert.NotNull(paragraphs);
+			Assert.Single(paragraphs);
+			var paragraph = paragraphs.First();
+			Assert.Equal(4,paragraph.ChildElements.Count);
+			var run1 = paragraph.ChildElements[0];
+			var run2 = paragraph.ChildElements[1];
+			var run3 = paragraph.ChildElements[2];
+			var run4 = paragraph.ChildElements[3];
+
+			Assert.Single(run1.ChildElements);
+			Assert.IsType<Word.Text>(run1.ChildElements[0]);
+			
+			Assert.Equal(9,run2.ChildElements.Count);
+			Assert.IsType<Word.Text>(run2.ChildElements[0]);
+			Assert.IsType<Word.Break>(run2.ChildElements[1]);
+			Assert.IsType<Word.Text>(run2.ChildElements[2]);
+			Assert.IsType<Word.Break>(run2.ChildElements[3]);
+			Assert.IsType<Word.Text>(run2.ChildElements[4]);
+			Assert.IsType<Word.Break>(run2.ChildElements[5]);
+			Assert.IsType<Word.Text>(run2.ChildElements[6]);
+			Assert.IsType<Word.Break>(run2.ChildElements[7]);
+			Assert.IsType<Word.Text>(run2.ChildElements[8]);
+			
+			Assert.Single(run3.ChildElements);
+			Assert.IsType<Word.Text>(run3.ChildElements[0]);			
+			
+			Assert.Equal(9,run2.ChildElements.Count);
+			Assert.IsType<Word.Text>(run4.ChildElements[0]);
+			Assert.IsType<Word.Break>(run4.ChildElements[1]);
+			Assert.IsType<Word.Text>(run4.ChildElements[2]);
+			Assert.IsType<Word.Break>(run4.ChildElements[3]);
+			Assert.IsType<Word.Text>(run4.ChildElements[4]);
+			Assert.IsType<Word.Break>(run4.ChildElements[5]);
+			Assert.IsType<Word.Text>(run4.ChildElements[6]);
+			Assert.IsType<Word.Break>(run4.ChildElements[7]);
+			Assert.IsType<Word.Text>(run4.ChildElements[8]);			
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}		
+	#endregion
+		
+	
+	#region << Paragraph >>
+	[Fact]
 	public void DocumentFile_Paragraph_1()
 	{
 		lock (locker)
@@ -193,6 +353,7 @@ public class DocumentFileEngineTests : TestBase
 		}
 	}
 	#endregion
+	
 	#region << HeaderFooter >>
 	[Fact]
 	public void DocumentFile_HeaderFooter_1()
@@ -324,5 +485,50 @@ public class DocumentFileEngineTests : TestBase
 			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 		}
 	}
+	#endregion
+
+	#region <<Parent & Child >>
+
+	[Fact]
+	public void DocumentFile_Parent_Child()
+	{
+		lock (locker)
+		{
+			//Given
+			var utils = new TestUtils();
+			var childTemplateName = "child-template";
+			var parentFile = "Template-Parent.docx";
+			var childFile = "Template-Child.docx";
+			var parentTemplate = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(parentFile)
+			};
+			
+			var childTemplate = new WvDocumentFileTemplate
+			{
+				Template = new TestUtils().LoadFileAsStream(childFile)
+			};			
+			var templateLibrary = new Dictionary<string, WvDocumentFileTemplate>()
+			{
+				{childFile,childTemplate}
+			};
+			var dataSource = SampleData;
+			//When
+			WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+				dataSource:dataSource,
+				culture:null,
+				templateLibrary:templateLibrary,
+				stackLevel:0);
+			//Then
+			utils.GeneralResultChecks(result);
+			var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body.Descendants<Word.Paragraph>();
+			Assert.NotNull(paragraphs);
+			Assert.Single(paragraphs);
+			var paragraph = paragraphs.First();
+			Assert.Equal("item1,item2,item3,item4,item5",paragraph.InnerText);
+			utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+		}
+	}
+
 	#endregion
 }

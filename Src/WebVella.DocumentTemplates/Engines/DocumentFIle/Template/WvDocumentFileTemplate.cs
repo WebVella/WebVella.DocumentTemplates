@@ -9,9 +9,13 @@ namespace WebVella.DocumentTemplates.Engines.DocumentFile;
 public class WvDocumentFileTemplate : WvTemplateBase
 {
 	public MemoryStream? Template { get; set; }
-	public WvDocumentFileTemplateProcessResult Process(DataTable? dataSource, CultureInfo? culture = null)
+	public WvDocumentFileTemplateProcessResult Process(DataTable? dataSource, 
+		CultureInfo? culture = null,
+		Dictionary<string,WvDocumentFileTemplate>? templateLibrary = null,
+		int stackLevel = 0)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
+		if (templateLibrary == null) templateLibrary = new();
 		if (dataSource is null) throw new ArgumentException("No datasource provided!", nameof(dataSource));
 
 		var result = new WvDocumentFileTemplateProcessResult()
@@ -57,7 +61,9 @@ public class WvDocumentFileTemplate : WvTemplateBase
 				result: result,
 				resultItem: resultItem,
 				dataSource: grouptedDs,
-				culture: culture);
+				culture: culture,
+				templateLibrary: templateLibrary,
+				stackLevel:stackLevel);
 			resultItem.WordDocument.Save();
 			result.ResultItems.Add(resultItem);
 		}

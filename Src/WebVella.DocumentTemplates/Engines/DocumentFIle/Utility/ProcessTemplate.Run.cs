@@ -17,21 +17,25 @@ using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
+
 public partial class WvDocumentFileEngineUtility
 {
-	private Word.Run _processDocumentRun(Word.Run template,
-	DataTable dataSource, CultureInfo culture)
-	{
-		Word.Run resultEl = (Word.Run)template.CloneNode(true);
-		if (String.IsNullOrWhiteSpace(template.InnerText)) return resultEl;
-		resultEl.RemoveAllChildren();
-		//Process Runs
-		foreach (var childEl in template.ChildElements)
-		{
-			var resultChildEl = _processDocumentElement(childEl, dataSource, culture);
-			if (resultChildEl is not null)
-				resultEl.AppendChild(resultChildEl);
-		}
-		return resultEl;
-	}
+    private List<OpenXmlElement> _processDocumentRun(Word.Run template,
+        DataTable dataSource, CultureInfo culture,
+        Dictionary<string, WvDocumentFileTemplate> templateLibrary,
+        int stackLevel)
+    {
+        Word.Run resultEl = (Word.Run)template.CloneNode(true);
+        if (String.IsNullOrWhiteSpace(template.InnerText)) return [resultEl];
+        resultEl.RemoveAllChildren();
+        //Process Runs
+        foreach (var childEl in template.ChildElements)
+        {
+            var resultChildElList = _processDocumentElement(childEl, dataSource, culture, templateLibrary, stackLevel);
+            foreach (var resultChildEl in resultChildElList)
+                resultEl.AppendChild(resultChildEl);
+        }
+
+        return [resultEl];
+    }
 }

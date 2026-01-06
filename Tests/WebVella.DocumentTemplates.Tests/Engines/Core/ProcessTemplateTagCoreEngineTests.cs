@@ -107,7 +107,7 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
 	}
 
 	[Fact]
-	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle()
+	public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle1()
 	{
 		//Given
 		string template = "{{name[0]}}";
@@ -118,9 +118,51 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result.Values);
 		Assert.Equal((string)ds.Rows[0]["name"], result.Values[0]);
+		Assert.Single(result.Tags);
+		Assert.Equal(WvTemplateTagType.Data,result.Tags[0].Type);
 	}
+    [Fact]
+    public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle2()
+    {
+        //Given
+        string template = "{{=name}}";
+        DataTable ds = SampleData;
+        //When
+        WvTemplateTagResultList result = new WvTemplateUtility().ProcessTemplateTag(template, ds, DefaultCulture);
+        //Then
+        Assert.NotNull(result);
+        Assert.Single(result.Tags);
+        Assert.Equal(WvTemplateTagType.Function, result.Tags[0].Type);
+    }
+    [Fact]
+    public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle3()
+    {
+        //Given
+        string template = "{{==name}}";
+        DataTable ds = SampleData;
+        //When
+        WvTemplateTagResultList result = new WvTemplateUtility().ProcessTemplateTag(template, ds, DefaultCulture);
+        //Then
+        Assert.NotNull(result);
+        Assert.Single(result.Tags);
+        Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result.Tags[0].Type);
+    }
 
-	[Fact]
+    [Fact]
+    public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle4()
+    {
+        //Given
+        string template = "{{@name}}";
+        DataTable ds = SampleData;
+        //When
+        WvTemplateTagResultList result = new WvTemplateUtility().ProcessTemplateTag(template, ds, DefaultCulture);
+        //Then
+        Assert.NotNull(result);
+        Assert.Single(result.Tags);
+        Assert.Equal(WvTemplateTagType.SubTemplate, result.Tags[0].Type);
+    }
+
+    [Fact]
 	public void ProcessValueShouldBeCorrect()
 	{
 		//Given

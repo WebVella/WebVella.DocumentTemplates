@@ -1,26 +1,17 @@
-﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
 using System.Data;
 using System.Globalization;
-using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
-using WebVella.DocumentTemplates.Engines.Text;
-using WebVella.DocumentTemplates.Extensions;
-using System;
-using System.Linq;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Spreadsheet;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
+
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
 	public void ProcessDocumentTemplate(WvDocumentFileTemplateProcessResult result,
-		WvDocumentFileTemplateProcessResultItem resultItem, DataTable dataSource, CultureInfo culture)
+		WvDocumentFileTemplateProcessResultItem resultItem, DataTable dataSource, 
+		CultureInfo culture,
+		Dictionary<string,WvDocumentFileTemplate> templateLibrary,
+		int stackLevel = 0)
 	{
 		//Validate
 		if (resultItem is null) throw new Exception("No result provided!");
@@ -42,8 +33,13 @@ public partial class WvDocumentFileEngineUtility
 		var resultBody = resultItem.WordDocument.MainDocumentPart!.Document!.Body!;
 		foreach (var childEl in templateBody.ChildElements)
 		{
-			var resultChiledEl = _processDocumentElement(childEl, dataSource, culture);
-			if (resultChiledEl is not null)
+			var resultChiledElList = _processDocumentElement(
+				templateEl:childEl,
+				dataSource:dataSource,
+				culture:culture,
+				templateLibrary:templateLibrary, 
+				stackLevel:stackLevel);
+			foreach (var resultChiledEl in resultChiledElList)
 				resultBody.AppendChild(resultChiledEl);
 		}
 

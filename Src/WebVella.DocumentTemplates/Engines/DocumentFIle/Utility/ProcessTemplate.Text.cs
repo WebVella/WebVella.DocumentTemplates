@@ -1,32 +1,21 @@
-﻿using ClosedXML.Excel;
-using ClosedXML.Excel.Drawings;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Packaging;
-using System.Data;
+﻿using System.Data;
 using System.Globalization;
-using WebVella.DocumentTemplates.Core;
-using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Engines.Text;
-using WebVella.DocumentTemplates.Extensions;
-using System;
-using System.Linq;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Spreadsheet;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile;
-using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
 using System.Text;
+using DocumentFormat.OpenXml;
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
-	private Word.Text _processDocumentText(Word.Text template,
-	DataTable dataSource, CultureInfo culture)
+	private List<OpenXmlElement> _processDocumentText(Word.Text template,
+		DataTable dataSource, CultureInfo culture,
+		Dictionary<string, WvDocumentFileTemplate> templateLibrary,
+		int stackLevel)
 	{
 		Word.Text resultEl = (Word.Text)template.CloneNode(true);
 		resultEl.Text = String.Empty;
-
-		if (String.IsNullOrWhiteSpace(template.InnerText)) return resultEl;
+		if (String.IsNullOrWhiteSpace(template.InnerText)) return [resultEl];
 
 		var textTemplate = new WvTextTemplate
 		{
@@ -38,7 +27,30 @@ public partial class WvDocumentFileEngineUtility
 		{
 			sb.Append(item.Result ?? String.Empty);
 		}
-		resultEl.Text = sb.ToString();
-		return resultEl;
+
+		var resultText = sb.ToString();
+		if (resultText.Contains(Environment.NewLine))
+		{
+			var result = new List<OpenXmlElement>();
+			var lines = resultText.Split(Environment.NewLine);
+			var count = 1;
+			foreach (var line in lines)
+			{
+				Word.Text nodeEl = (Word.Text)template.CloneNode(true);
+				nodeEl.Text = line;
+				result.Add(nodeEl);
+				if (count < lines.Length)
+					result.Add(new Word.Break());
+
+				count++;
+			}
+
+			return result;
+		}
+		else
+		{
+			resultEl.Text = sb.ToString();
+			return [resultEl];
+		}
 	}
 }
