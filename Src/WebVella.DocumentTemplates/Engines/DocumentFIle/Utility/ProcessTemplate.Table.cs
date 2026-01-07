@@ -22,9 +22,7 @@ namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
 	private List<OpenXmlElement> _processDocumentTable(Word.Table template,
-			DataTable dataSource, CultureInfo culture,
-			Dictionary<string,WvDocumentFileTemplate> templateLibrary,
-			int stackLevel)
+			DataTable dataSource, CultureInfo culture)
 	{
 		Word.Table resultEl = new Word.Table();
 

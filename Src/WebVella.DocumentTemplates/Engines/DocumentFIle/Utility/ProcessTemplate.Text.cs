@@ -9,9 +9,7 @@ namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
 	private List<OpenXmlElement> _processDocumentText(Word.Text template,
-		DataTable dataSource, CultureInfo culture,
-		Dictionary<string, WvDocumentFileTemplate> templateLibrary,
-		int stackLevel)
+		DataTable dataSource, CultureInfo culture)
 	{
 		Word.Text resultEl = (Word.Text)template.CloneNode(true);
 		resultEl.Text = String.Empty;
@@ -25,10 +23,12 @@ public partial class WvDocumentFileEngineUtility
 		var sb = new StringBuilder();
 		foreach (var item in textTemplateResults.ResultItems)
 		{
-			sb.Append(item.Result ?? String.Empty);
+			if(String.IsNullOrWhiteSpace(item.Result)) continue;
+			sb.Append(item.Result!);
 		}
 
 		var resultText = sb.ToString();
+		if(String.IsNullOrWhiteSpace(resultText)) return [resultEl];
 		if (resultText.Contains(Environment.NewLine))
 		{
 			var result = new List<OpenXmlElement>();

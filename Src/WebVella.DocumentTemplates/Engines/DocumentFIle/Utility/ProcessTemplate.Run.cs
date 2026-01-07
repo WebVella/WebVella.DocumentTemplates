@@ -21,9 +21,7 @@ namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
     private List<OpenXmlElement> _processDocumentRun(Word.Run template,
-        DataTable dataSource, CultureInfo culture,
-        Dictionary<string, WvDocumentFileTemplate> templateLibrary,
-        int stackLevel)
+        DataTable dataSource, CultureInfo culture)
     {
         Word.Run resultEl = (Word.Run)template.CloneNode(true);
         if (String.IsNullOrWhiteSpace(template.InnerText)) return [resultEl];
@@ -31,7 +29,7 @@ public partial class WvDocumentFileEngineUtility
         //Process Runs
         foreach (var childEl in template.ChildElements)
         {
-            var resultChildElList = _processDocumentElement(childEl, dataSource, culture, templateLibrary, stackLevel);
+            var resultChildElList = _processDocumentElement(childEl, dataSource, culture);
             foreach (var resultChildEl in resultChildElList)
                 resultEl.AppendChild(resultChildEl);
         }

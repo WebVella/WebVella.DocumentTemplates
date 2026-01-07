@@ -23,13 +23,13 @@ namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
 public partial class WvDocumentFileEngineUtility
 {
     private List<OpenXmlElement> _processDocumentParagaraph(Word.Paragraph template,
-        DataTable dataSource, CultureInfo culture, Dictionary<string, WvDocumentFileTemplate> templateLibrary,
-        int stackLevel)
+        DataTable dataSource, CultureInfo culture)
     {
         Word.Paragraph resultEl = (Word.Paragraph)template.CloneNode(true);
         if (String.IsNullOrWhiteSpace(template.InnerText)) return [resultEl];
         resultEl.RemoveAllChildren();
 
+        #region << Process template >>
         //Runs Need to be preprocessed as there is often a problem where the tag is 
         //delivered in different runs
         var queue = new Queue<Word.Run>();
@@ -37,7 +37,7 @@ public partial class WvDocumentFileEngineUtility
         int queueEndTags = 0;
         foreach (var childEl in template.ChildElements)
         {
-            var resultChildElList = _processDocumentElement(childEl, dataSource, culture, templateLibrary, stackLevel);
+            var resultChildElList = _processDocumentElement(childEl, dataSource, culture);
             foreach (var resultChildEl in resultChildElList)
             {
                 var isRun = resultChildEl.GetType().FullName == typeof(Word.Run).FullName;
@@ -52,7 +52,8 @@ public partial class WvDocumentFileEngineUtility
 
                 if (template.ChildElements.Count == 1)
                 {
-                    resultEl.AppendChild(resultChildEl);
+                    if(resultChildEl.InnerText != String.Empty)
+                        resultEl.AppendChild(resultChildEl);
                 }
                 else if (queue.Count == 0)
                 {
@@ -66,7 +67,8 @@ public partial class WvDocumentFileEngineUtility
                     //No queue needed
                     else
                     {
-                        resultEl.AppendChild(resultChildEl);
+                        if(resultChildEl.InnerText != String.Empty)
+                            resultEl.AppendChild(resultChildEl);
                     }
                 }
 
@@ -79,20 +81,21 @@ public partial class WvDocumentFileEngineUtility
                     //Case 2 this is not a Run element (need to process the queue and than add the element
                     if (!isRun)
                     {
-                        _processQueue(queue, resultEl, dataSource, culture, templateLibrary, stackLevel);
-                        resultEl.AppendChild(resultChildEl);
+                        _processQueue(queue, resultEl, dataSource, culture);
+                        if(resultChildEl.InnerText != String.Empty)
+                            resultEl.AppendChild(resultChildEl);
                     }
                     //Case 1 this is the last element
                     else if (childEl == template.ChildElements.Last())
                     {
                         queue.Enqueue((Word.Run)childEl);
-                        _processQueue(queue, resultEl, dataSource, culture, templateLibrary, stackLevel);
+                        _processQueue(queue, resultEl, dataSource, culture);
                     }
                     //Case 3 queue closed and unclose tags are equalised with this run
                     else if ((queueStartTags + startTagsCount) == (queueEndTags + endTagsCount))
                     {
                         queue.Enqueue((Word.Run)childEl);
-                        _processQueue(queue, resultEl, dataSource, culture, templateLibrary, stackLevel);
+                        _processQueue(queue, resultEl, dataSource, culture);
                     }
                     //Enqueue
                     else
@@ -106,13 +109,12 @@ public partial class WvDocumentFileEngineUtility
                 #endregion
             }
         }
-
+        #endregion
         return [resultEl];
     }
 
     private void _processQueue(Queue<Word.Run> queue, Word.Paragraph resultEl,
-        DataTable dataSource, CultureInfo culture, Dictionary<string, WvDocumentFileTemplate> templateLibrary,
-        int stackLevel)
+        DataTable dataSource, CultureInfo culture)
     {
         Word.Run? mergedElement = null;
         StringBuilder sb = new();
@@ -132,7 +134,7 @@ public partial class WvDocumentFileEngineUtility
         mergedElement.AppendChild(textEl);
 
         var resultChildElList =
-            _processDocumentElement(mergedElement, dataSource, culture, templateLibrary, stackLevel);
+            _processDocumentElement(mergedElement, dataSource, culture);
         foreach (var resultChildEl in resultChildElList)
             resultEl.AppendChild(resultChildEl);
     }

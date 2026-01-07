@@ -53,9 +53,7 @@ public partial class WvDocumentFileEngineUtility
 				var procElList = _processDocumentElement(
 					templateEl:headerEl,
 					dataSource:dataSource,
-					culture:culture,
-					templateLibrary:new Dictionary<string,WvDocumentFileTemplate>(),
-					stackLevel:0);
+					culture:culture);
 				if(procElList.Count > 0) processed.Add(procElList[0]);
 			}
 			targetHeader.Header.RemoveAllChildren();
@@ -86,9 +84,7 @@ public partial class WvDocumentFileEngineUtility
 				var procElList = _processDocumentElement(
 					templateEl:footerEl,
 					dataSource:dataSource,
-					culture:culture,
-					templateLibrary:new Dictionary<string,WvDocumentFileTemplate>(),
-					stackLevel:0
+					culture:culture
 					);
 				if(procElList.Count > 0) processed.Add(procElList[0]);
 			}

@@ -10,18 +10,16 @@ public partial class WvDocumentFileEngineUtility
 {
 	private List<OpenXmlElement> _processDocumentElement(
 		OpenXmlElement templateEl,
-		DataTable dataSource, CultureInfo culture,
-		Dictionary<string,WvDocumentFileTemplate> templateLibrary,
-		int stackLevel)
+		DataTable dataSource, CultureInfo culture)
 	{
 		if (templateEl.GetType().FullName == typeof(Paragraph).FullName)
-			return _processDocumentParagaraph((Paragraph)templateEl, dataSource, culture,templateLibrary, stackLevel);
+			return _processDocumentParagaraph((Paragraph)templateEl, dataSource, culture);
 
 		if (templateEl.GetType().FullName == typeof(Word.Run).FullName)
-			return _processDocumentRun((Word.Run)templateEl, dataSource, culture,templateLibrary, stackLevel);
+			return _processDocumentRun((Word.Run)templateEl, dataSource, culture);
 
 		if (templateEl.GetType().FullName == typeof(Word.Table).FullName)
-			return _processDocumentTable((Word.Table)templateEl, dataSource, culture,templateLibrary, stackLevel);
+			return _processDocumentTable((Word.Table)templateEl, dataSource, culture);
 
 		if (templateEl.GetType().FullName == typeof(Word.TableCell).FullName)
 			return new List<OpenXmlElement>(); //Table is processed as a whole
@@ -30,7 +28,7 @@ public partial class WvDocumentFileEngineUtility
 			return new List<OpenXmlElement>(); //Table is processed as a whole
 
 		if (templateEl.GetType().FullName == typeof(Word.Text).FullName)
-			return _processDocumentText((Word.Text)templateEl, dataSource, culture,templateLibrary, stackLevel);
+			return _processDocumentText((Word.Text)templateEl, dataSource, culture);
 
 		if (templateEl.GetType().FullName == typeof(Word.Comment).FullName)
 			return new List<OpenXmlElement>();
@@ -50,12 +48,4 @@ public partial class WvDocumentFileEngineUtility
 		return [templateEl.CloneNode(true)];		
 	}
 
-
-	public List<OpenXmlElement> _preprocessChildElementsForSplittedTags(List<OpenXmlElement> childElements)
-	{
-		var result = new List<OpenXmlElement>();
-
-
-		return result;
-	}
 }

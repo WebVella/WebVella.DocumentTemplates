@@ -27,12 +27,16 @@ public partial class WvTemplateUtility
 			result.Type = WvTemplateTagType.Function;
 			processedDefinition = processedDefinition.Remove(0, 1);
 		}
-        //Function
-        else if (processedDefinition.StartsWith("@"))
+        //Inline start
+        else if (processedDefinition.StartsWith("<"))
         {
-            result.Type = WvTemplateTagType.SubTemplate;
-            processedDefinition = processedDefinition.Remove(0, 1);
+            result.Type = WvTemplateTagType.InlineStart;
         }
+        //Inline end
+        else if (processedDefinition.StartsWith(">"))
+        {
+	        result.Type = WvTemplateTagType.InlineEnd;
+        }		
         //Data
         else
 		{

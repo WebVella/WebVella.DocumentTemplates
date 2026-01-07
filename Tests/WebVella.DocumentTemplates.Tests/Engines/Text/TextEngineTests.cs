@@ -425,4 +425,73 @@ public class TextEngineTests : TestBase
 		Assert.Equal("peter@domain.com", result.ResultItems[1].Result);
 	}
 	#endregion
+	
+	#region << Inline Templates >>
+	[Fact]
+	public void Text_InlineTypeOneRecord()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<}}{{position}} {{sku}} {{name}}{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item1", result.ResultItems[0].Result);
+	}	
+	[Fact]
+	public void Text_InlineTypeTwoRecords()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<}}{{position}} {{sku}} {{name}}{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item12 sku2 item2", result.ResultItems[0].Result);
+	}		
+	[Fact]
+	public void Text_InlineTypeTwoRecordsWithSeparator()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<(S=',')}}{{position}} {{sku}} {{name}}{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item1,2 sku2 item2", result.ResultItems[0].Result);
+	}	
+	
+	[Fact]
+	public void Text_InlineTypeTwoRecordsWithSeparatorInternalIsIgnored()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<(S=',')}}{{<}}{{position}}{{>}} {{sku}} {{name}}{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item1,2 sku2 item2", result.ResultItems[0].Result);
+	}		
+	
+	#endregion
 }

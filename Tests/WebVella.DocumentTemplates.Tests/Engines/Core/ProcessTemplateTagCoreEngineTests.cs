@@ -148,19 +148,6 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
         Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result.Tags[0].Type);
     }
 
-    [Fact]
-    public void TemplateProcessShouldReturnResultsIfTagCanBeProcessedMultiFixedIndexSingle4()
-    {
-        //Given
-        string template = "{{@name}}";
-        DataTable ds = SampleData;
-        //When
-        WvTemplateTagResultList result = new WvTemplateUtility().ProcessTemplateTag(template, ds, DefaultCulture);
-        //Then
-        Assert.NotNull(result);
-        Assert.Single(result.Tags);
-        Assert.Equal(WvTemplateTagType.SubTemplate, result.Tags[0].Type);
-    }
 
     [Fact]
 	public void ProcessValueShouldBeCorrect()

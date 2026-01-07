@@ -906,4 +906,86 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Equal("$A$1:$B$1", result[0].ParamGroups[0].Parameters[0].ValueString);
 		Assert.Equal("$A3:C$3", result[0].ParamGroups[0].Parameters[1].ValueString);
 	}
+	
+	[Fact]
+	public void ExactTemplateShouldReturnOneInlineStartTag()
+	{
+		//Given
+		string template = "{{<}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal("<", result[0].Name);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
+	}	
+	
+	[Fact]
+	public void ExactTemplateShouldReturnOneInlineEndTag()
+	{
+		//Given
+		string template = "{{>}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.InlineEnd, result[0].Type);
+		Assert.Equal(">", result[0].Name);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
+	}		
+	[Fact]
+	public void ExactTemplateShouldReturnTwoInlineTags()
+	{
+		//Given
+		string template = "{{<}}{{>}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Equal(2,result.Count);
+		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
+		Assert.Equal(WvTemplateTagType.InlineEnd, result[1].Type);
+		Assert.NotNull(result[1].ParamGroups);
+		Assert.Empty(result[1].ParamGroups);		
+	}	
+	
+	[Fact]
+	public void ExactTemplateShouldReturnOneStartTagWithParam()
+	{
+		//Given
+		string template = "{{<(F=V)}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.IsType<WvTemplateTagDataFlowParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+	}		
+	[Fact]
+	public void ExactTemplateShouldReturnOneEndTagWithParam()
+	{
+		//Given
+		string template = "{{>(F=V)}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.InlineEnd, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.IsType<WvTemplateTagDataFlowParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+	}		
 }

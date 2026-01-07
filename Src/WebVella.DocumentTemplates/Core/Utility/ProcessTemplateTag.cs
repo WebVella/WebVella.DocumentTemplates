@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Globalization;
+using System.Text;
 
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
@@ -19,6 +20,44 @@ public partial class WvTemplateUtility
 			result.Values.Add(template ?? String.Empty);
 			return result;
 		}
+		//Process inline templates first
+		if (result.Tags.Any(x => x.Type == WvTemplateTagType.InlineStart) &&
+		    result.Tags.Any(x => x.Type == WvTemplateTagType.InlineEnd))
+		{
+			var firstStartTag = result.Tags.First(x => x.Type == WvTemplateTagType.InlineStart);
+			var lastEndTag = result.Tags.Last(x => x.Type == WvTemplateTagType.InlineEnd);
+			var firstTagIndex = template!.IndexOf(firstStartTag.FullString!, StringComparison.Ordinal);
+			var lastTagIndex = template!.LastIndexOf(lastEndTag.FullString!, StringComparison.Ordinal);
+			
+			string templateWithWrappers = template!;
+			templateWithWrappers = templateWithWrappers.Substring(firstTagIndex);
+			templateWithWrappers = templateWithWrappers.Substring(0, (lastTagIndex + lastEndTag.FullString!.Length));
+
+			string templateWithoutWrappers = templateWithWrappers;
+			templateWithoutWrappers = templateWithoutWrappers.Substring(firstStartTag.FullString!.Length);
+			templateWithoutWrappers = templateWithoutWrappers.Substring(0,templateWithoutWrappers.Length - lastEndTag.FullString!.Length);
+			
+			string cleanedTemplate = templateWithoutWrappers;
+			//clean all other inline tags
+			foreach (var tag in result.Tags)
+			{
+				if(tag.Type != WvTemplateTagType.InlineStart && tag.Type != WvTemplateTagType.InlineEnd)
+					continue;
+				cleanedTemplate = cleanedTemplate.Replace(tag.FullString!, "");
+			}
+			var inlineTemplateResult = ProcessTemplateTag(cleanedTemplate,dataSource,culture);
+			if (inlineTemplateResult.Values.Count == 1)
+			{
+				if(inlineTemplateResult.Values[0] is string)
+					template = template.Replace(templateWithWrappers,(string)inlineTemplateResult.Values[0]);
+			}
+			else if(inlineTemplateResult.Values.All(x=> x is string))
+			{
+				var separator = firstStartTag.FlowSeparator ?? "";
+				template = template.Replace(templateWithWrappers,String.Join(separator,inlineTemplateResult.Values.Select(x=> (string)x)));
+			}
+		}
+
 		//if all tags are index - return one with processed template
 		if (result.ShouldGenerateOneResult(dataSource))
 		{
