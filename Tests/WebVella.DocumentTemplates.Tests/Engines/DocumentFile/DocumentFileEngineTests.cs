@@ -716,7 +716,15 @@ public class DocumentFileEngineTests : TestBase
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
-          
+            var mainPart = result.ResultItems[0].WordDocument!.MainDocumentPart!;
+            Assert.NotNull(mainPart.HeaderParts);
+            Assert.Single(mainPart.HeaderParts);
+            Assert.NotNull(mainPart.FooterParts);
+            Assert.Single(mainPart.FooterParts);
+            Assert.NotNull(mainPart.HeaderParts.First().ImageParts);
+            Assert.Equal(2,mainPart.HeaderParts.First().ImageParts.Count());
+            Assert.NotNull(mainPart.FooterParts.First().ImageParts);
+            Assert.Equal(2,mainPart.FooterParts.First().ImageParts.Count());            
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
         }
     }         
@@ -745,28 +753,5 @@ public class DocumentFileEngineTests : TestBase
         }
     }     
     #endregion
-    [Fact]
-    public void DocumentFile_Test()
-    {
-        //Inline does not work in tables
-        lock (locker)
-        {
-            //Given
-            var utils = new TestUtils();
-            var parentFile = "test.docx";
-            var parentTemplate = new WvDocumentFileTemplate
-            {
-                Template = new TestUtils().LoadFileAsStream(parentFile)
-            };
-            var dataSource = SampleData;
-            //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
-                dataSource: dataSource,
-                culture: null);
-            //Then
-            utils.GeneralResultChecks(result);
-          
-            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
-        }
-    }          
+       
 }

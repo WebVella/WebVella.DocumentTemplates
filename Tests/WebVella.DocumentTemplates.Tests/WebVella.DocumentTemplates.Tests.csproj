@@ -296,9 +296,6 @@
     <None Update="Files\Template-Header-Footer-Images.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Files\test.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Files\Template-Urls.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
