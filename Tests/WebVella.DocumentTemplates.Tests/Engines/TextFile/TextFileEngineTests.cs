@@ -192,4 +192,49 @@ public class TextFileEngineTests : TestBase
 			Assert.Null(ex); //not a good way to check if it is plaintext
 		}
 	}
+	
+	[Fact]
+	public void Inline1_Test()
+	{
+		var templateFile = "Inline1.txt";
+
+		lock (locker)
+		{
+			var template = new WvTextFileTemplate
+			{
+				Template =  new TestUtils().LoadFileStream(templateFile)
+			};
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.NotNull(result.ResultItems);
+			Assert.Single(result.ResultItems);
+			Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
+			Assert.Equal($"1 item12 item2", resultString);
+			new TestUtils().SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}	
+	[Fact]
+	public void Inline2_Test()
+	{
+		var templateFile = "Inline2.txt";
+
+		lock (locker)
+		{
+			var template = new WvTextFileTemplate
+			{
+				Template =  new TestUtils().LoadFileStream(templateFile)
+			};
+			var result = template.Process(SampleData, encoding: Encoding.UTF8);
+			Assert.NotNull(result);
+			Assert.NotNull(result.Template);
+			Assert.NotNull(result.ResultItems);
+			// Assert.Equal(4, result.ResultItems.Count);
+			// Assert.NotNull(result.ResultItems[0].Result);
+			var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
+			Assert.Equal($"1 item1{Environment.NewLine}2 item2{Environment.NewLine}", resultString);
+			new TestUtils().SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+		}
+	}		
 }

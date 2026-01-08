@@ -232,14 +232,18 @@ public class DocumentFileEngineTests : TestBase
             Assert.Single(paragraphs);
             var paragraph = paragraphs.First();
             Assert.Equal("item1,item2,item3,item4,item5", paragraph.InnerText);
-            var markRunProp = paragraph.Descendants<Word.ParagraphMarkRunProperties>().FirstOrDefault();
-            Assert.NotNull(markRunProp);
-            var boldProp = paragraph.Descendants<Word.Bold>().FirstOrDefault();
+            Assert.Single(paragraph.ChildElements);
+            var run = paragraph.Descendants<Word.Run>().FirstOrDefault();
+            Assert.NotNull(run);
+            Assert.Equal(2, run.ChildElements.Count);
+            var runProp = run.Descendants<Word.RunProperties>().FirstOrDefault();
+            Assert.NotNull(runProp);
+            var boldProp = runProp.Descendants<Word.Bold>().FirstOrDefault();
             Assert.NotNull(boldProp);
-            var fontSizeProp = paragraph.Descendants<Word.FontSize>().FirstOrDefault();
+            var fontSizeProp = runProp.Descendants<Word.FontSize>().FirstOrDefault();
             Assert.NotNull(fontSizeProp);
             Assert.Equal("32", fontSizeProp.Val);
-            var colorProp = paragraph.Descendants<Word.Color>().FirstOrDefault();
+            var colorProp = runProp.Descendants<Word.Color>().FirstOrDefault();
             Assert.NotNull(colorProp);
             Assert.Equal("FF0000", colorProp.Val);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
@@ -512,10 +516,10 @@ public class DocumentFileEngineTests : TestBase
 
     #endregion
 
-    #region <<Parent & Child >>
+    #region <<Inline >>
 
     [Fact]
-    public void DocumentFile_Parent_Child()
+    public void DocumentFile_Inline()
     {
         lock (locker)
         {
@@ -534,7 +538,7 @@ public class DocumentFileEngineTests : TestBase
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .Descendants<Word.Paragraph>();
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(29, paragraphs.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
@@ -542,7 +546,7 @@ public class DocumentFileEngineTests : TestBase
     }
 
     [Fact]
-    public void DocumentFile_Parent_Child1()
+    public void DocumentFile_Inline1()
     {
         lock (locker)
         {
@@ -561,7 +565,7 @@ public class DocumentFileEngineTests : TestBase
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .Descendants<Word.Paragraph>();
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Empty(paragraphs);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
@@ -569,7 +573,7 @@ public class DocumentFileEngineTests : TestBase
     }
 
     [Fact]
-    public void DocumentFile_Parent_Child2()
+    public void DocumentFile_Inline2()
     {
         lock (locker)
         {
@@ -588,12 +592,105 @@ public class DocumentFileEngineTests : TestBase
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .Descendants<Word.Paragraph>();
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(7, paragraphs.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
         }
     }
+
+    [Fact]
+    public void DocumentFile_Inline3()
+    {
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-3.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+            Assert.NotNull(paragraphs);
+            Assert.Equal(3, paragraphs.Count());
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }
+    
+    [Fact]
+    public void DocumentFile_Inline4()
+    {
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-4.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+            var tables = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Table).FullName);   
+            Assert.NotNull(paragraphs);
+            Assert.Equal(2, paragraphs.Count());
+            Assert.Equal(2, tables.Count());
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }    
+    
+    [Fact]
+    public void DocumentFile_Inline5()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-5.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+            var tables = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Table).FullName).ToList();             
+            Assert.NotNull(paragraphs);
+            Assert.NotNull(tables);
+            Assert.Single(paragraphs);
+            Assert.Single(tables);
+            var table = (Word.Table)tables.First();
+            var tableRows = table
+                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.TableRow).FullName).ToList();               
+            Assert.Equal(5,tableRows.Count);
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }        
 
     #endregion
 }

@@ -3,21 +3,28 @@
 namespace WebVella.DocumentTemplates.Core.Utility;
 public partial class WvTemplateUtility
 {
-	public int? ExtractTagIndexFromGroup(string indexGroup)
+	private List<int> ExtractTagIndexFromGroup(string indexGroup)
 	{
 		if (String.IsNullOrWhiteSpace(indexGroup)
 		|| !indexGroup.StartsWith("[")
-		|| !indexGroup.EndsWith("]")) return null;
+		|| !indexGroup.EndsWith("]")) return new List<int>();
 
 		//Remove leading and end []
 		var processedIndexGroup = indexGroup.Remove(0, 1);
 		processedIndexGroup = processedIndexGroup.Substring(0, processedIndexGroup.Length - 1);
 		processedIndexGroup = processedIndexGroup?.Trim();
-		if (String.IsNullOrWhiteSpace(processedIndexGroup)) return null;
+		if (String.IsNullOrWhiteSpace(processedIndexGroup)) return new List<int>();
 
-		if (int.TryParse(processedIndexGroup, out int outInt))
-			return outInt;
+		var result = new List<int>();
+		var indexArray = processedIndexGroup.Split(',');
+		foreach (var index in indexArray)
+		{
+			if(String.IsNullOrWhiteSpace(index)) continue;
+			
+			if (int.TryParse(index.Trim(), out int outInt))
+				result.Add(outInt);		
+		}
 
-		return null;
+		return result;
 	}
 }

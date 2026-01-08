@@ -45,6 +45,8 @@ public partial class WvTemplateUtility
 		}
 
 		//PARAMETERS
+		//remove empty groups
+		processedDefinition = processedDefinition.Replace("()", String.Empty);
 		foreach (Match matchGroup in Regex.Matches(processedDefinition, @"(\([^()]*\))"))
 		{
 			//Replace the first occurance of the group string
@@ -62,21 +64,25 @@ public partial class WvTemplateUtility
 		//if (String.IsNullOrWhiteSpace(processedDefinition)) return null;
 
 		//INDEX
-		foreach (Match matchGroup in Regex.Matches((processedDefinition ?? String.Empty), @"(\[[^[]]*\]|\[\s*\])"))
+		//Remove empty indices
+		processedDefinition = processedDefinition.Replace("[]", String.Empty);
+		//OLD  @"(\[[^[]]*\]|\[\s*\])";
+		//Pattern matches multiple groups as "[2]","[1,2]","[1][2]"
+		var indexMatchPattern = @"\[\s*\d+(?:\s*,\s*\d+)*\s*\]";
+		foreach (Match matchGroup in Regex.Matches((processedDefinition ?? String.Empty), indexMatchPattern))
 		{
 			//Replace the first occurance of the group string
 			var regex = new Regex(Regex.Escape(matchGroup.Value));
 			processedDefinition = regex.Replace((processedDefinition ?? String.Empty), "", 1);
 
-			var tagIndex = ExtractTagIndexFromGroup(matchGroup.Value);
-			if (tagIndex is null || tagIndex < 0)
+			var indices = ExtractTagIndexFromGroup(matchGroup.Value);
+			if (indices.Count == 0)
 			{
-				//interpred [] or any [invalid] as 0
-				result.IndexList.Add(0);
+				//skip improper indexes
 			}
 			else
 			{
-				result.IndexList.Add(tagIndex.Value);
+				result.IndexList.AddRange(indices);
 			}
 		}
 
