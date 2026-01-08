@@ -720,7 +720,30 @@ public class DocumentFileEngineTests : TestBase
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
         }
     }         
-
+    [Fact]
+    public void DocumentFile_Urls()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Urls.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+          
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }     
     #endregion
     [Fact]
     public void DocumentFile_Test()
@@ -730,7 +753,7 @@ public class DocumentFileEngineTests : TestBase
         {
             //Given
             var utils = new TestUtils();
-            var parentFile = "test1.docx";
+            var parentFile = "test.docx";
             var parentTemplate = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)

@@ -132,6 +132,7 @@ public partial class WvDocumentFileEngineUtility
         _copyHeadersAndFooters(result.WordDocument, resultItem.WordDocument, dataSource, culture);
         _copyFootnotesAndEndnotes(result.WordDocument, resultItem.WordDocument);
         _copyImages(result.WordDocument, resultItem.WordDocument);
+        _copyHyperlinks(result.WordDocument, resultItem.WordDocument);
     }
 
 
