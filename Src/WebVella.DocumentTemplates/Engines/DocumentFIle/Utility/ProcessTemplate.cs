@@ -40,6 +40,7 @@ public partial class WvDocumentFileEngineUtility
         WvTemplateTag? multiParagraphStartTag = null;
         List<OpenXmlElement> multiParagraphTemplateQueue = new();
 
+        #region << Inline Template >>
         //Process inline templates first - inline template in another template is not allowed
         //Option1: inline template single paragraph that is in a paragraph -> should start with the template tag and end with the tag
         //the paragraph will be repeater
@@ -71,11 +72,12 @@ public partial class WvDocumentFileEngineUtility
                         multiParagraphStartTag = paragraphTemplateTags[0];
                         continue;
                     }
+
                     //check for single paragraph inline template start
                     if (paragraphTemplateTags.Count >= 2
-                             // ReSharper disable once MergeIntoPattern
-                             && paragraphTemplateTags[0].Type == WvTemplateTagType.InlineStart
-                             && paragraphTemplateTags.Last().Type == WvTemplateTagType.InlineEnd)
+                        // ReSharper disable once MergeIntoPattern
+                        && paragraphTemplateTags[0].Type == WvTemplateTagType.InlineStart
+                        && paragraphTemplateTags.Last().Type == WvTemplateTagType.InlineEnd)
                     {
                         processedTemplateBodyElements.AddRange(
                             _processSingleParagraphInlineTemplate(paragraphTemplateTags[0], (Paragraph)childEl,
@@ -114,6 +116,8 @@ public partial class WvDocumentFileEngineUtility
                 processedTemplateBodyElements.Add(element);
         }
 
+        #endregion
+
         foreach (var childEl in processedTemplateBodyElements)
         {
             var resultChildElList = _processDocumentElement(
@@ -141,7 +145,7 @@ public partial class WvDocumentFileEngineUtility
             if (tag.IndexList is not null
                 && tag.IndexList.Count > 0
                 && !tag.IndexList.Contains(dataSource.Rows.IndexOf(row))) continue;
-            
+
             DataTable newTable = dataSource.Clone();
             newTable.ImportRow(row);
             result.AddRange(_processDocumentElement(template, newTable, culture));

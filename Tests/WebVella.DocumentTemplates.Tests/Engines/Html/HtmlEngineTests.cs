@@ -245,4 +245,40 @@ public class HtmlEngineTests : TestBase
 		Assert.Equal("<ul><li>john@domain.com</li><li>peter@domain.com</li></ul>", result.ResultItems[0].Result);
 	}
 	#endregion
+	
+	#region << Inline templates >>
+	[Fact]
+	public void HTML_Inline1()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = "{{<}}<div>test:{{position}} {{name}}</div>{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		//The initial and ending spans should be fixed
+		Assert.Equal("<div>test:1 item1</div><div>test:2 item2</div>", result.ResultItems[0].Result);
+	}
+	[Fact]
+	public void HTML_Inline2()
+	{
+		var template = new WvHtmlTemplate()
+		{
+			Template = 
+@"{{<}}
+<div>test:{{position}} {{name}}</div>
+{{>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+		WvHtmlTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		//The initial and ending spans should be fixed
+		Assert.Equal("<div>test:1 item1</div><div>test:2 item2</div>", result.ResultItems[0].Result);
+	}	
+	#endregion
 }

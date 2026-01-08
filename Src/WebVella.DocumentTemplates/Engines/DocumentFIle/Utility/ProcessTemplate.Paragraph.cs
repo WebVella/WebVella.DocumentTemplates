@@ -67,8 +67,17 @@ public partial class WvDocumentFileEngineUtility
                     //No queue needed
                     else
                     {
-                        if(resultChildEl.InnerText != String.Empty)
+                        if (isRun)
+                        {
+                            var run = (Word.Run)resultChildEl;
+                            if(run.ChildElements.Any(x=> x.GetType().FullName != typeof(Word.Text).FullName)
+                               || run.InnerText != String.Empty)
+                                resultEl.AppendChild(resultChildEl);    
+                        }
+                        else
+                        {
                             resultEl.AppendChild(resultChildEl);
+                        }
                     }
                 }
 

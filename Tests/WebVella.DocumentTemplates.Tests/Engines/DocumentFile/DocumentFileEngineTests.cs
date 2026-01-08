@@ -232,7 +232,7 @@ public class DocumentFileEngineTests : TestBase
             Assert.Single(paragraphs);
             var paragraph = paragraphs.First();
             Assert.Equal("item1,item2,item3,item4,item5", paragraph.InnerText);
-            Assert.Single(paragraph.ChildElements);
+            Assert.Equal(2,paragraph.ChildElements.Count);
             var run = paragraph.Descendants<Word.Run>().FirstOrDefault();
             Assert.NotNull(run);
             Assert.Equal(2, run.ChildElements.Count);
@@ -693,4 +693,57 @@ public class DocumentFileEngineTests : TestBase
     }        
 
     #endregion
+
+    #region <<Edge >>
+
+    [Fact]
+    public void DocumentFile_Images_Header_And_Footer()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Header-Footer-Images.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+          
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }         
+
+    #endregion
+    [Fact]
+    public void DocumentFile_Test()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "test1.docx";
+            var parentTemplate = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+          
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+        }
+    }          
 }

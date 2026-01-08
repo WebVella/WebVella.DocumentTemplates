@@ -54,7 +54,7 @@ public partial class WvDocumentFileEngineUtility
 					templateEl:headerEl,
 					dataSource:dataSource,
 					culture:culture);
-				if(procElList.Count > 0) processed.Add(procElList[0]);
+				if(procElList.Count > 0) processed.AddRange(procElList);
 			}
 			targetHeader.Header.RemoveAllChildren();
 			foreach (var procEl in processed)
@@ -86,7 +86,7 @@ public partial class WvDocumentFileEngineUtility
 					dataSource:dataSource,
 					culture:culture
 					);
-				if(procElList.Count > 0) processed.Add(procElList[0]);
+				if(procElList.Count > 0) processed.AddRange(procElList);
 			}
 			targetFooter.Footer.RemoveAllChildren();
 			foreach (var procEl in processed)
