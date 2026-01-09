@@ -20,7 +20,44 @@ public partial class WvTemplateUtility
 			result.Values.Add(template ?? String.Empty);
 			return result;
 		}
-		//Process inline templates first
+
+		if (result.Tags.Any(x => x.Type == WvTemplateTagType.ConditionStart) &&
+		    result.Tags.Any(x => x.Type == WvTemplateTagType.ConditionEnd))
+		{
+			var firstStartTag = result.Tags.First(x => x.Type == WvTemplateTagType.ConditionStart);
+			var lastEndTag = result.Tags.Last(x => x.Type == WvTemplateTagType.ConditionEnd);
+			var firstTagIndex = template!.IndexOf(firstStartTag.FullString!, StringComparison.Ordinal);
+			var lastTagIndex = template!.LastIndexOf(lastEndTag.FullString!, StringComparison.Ordinal);
+			string templateWithWrappers = template!;
+			templateWithWrappers = templateWithWrappers.Substring(firstTagIndex);
+			templateWithWrappers = templateWithWrappers.Substring(0, (lastTagIndex + lastEndTag.FullString!.Length));
+
+			string templateWithoutWrappers = templateWithWrappers;
+			templateWithoutWrappers = templateWithoutWrappers.Substring(firstStartTag.FullString!.Length);
+			templateWithoutWrappers =
+				templateWithoutWrappers.Substring(0, templateWithoutWrappers.Length - lastEndTag.FullString!.Length);
+
+			string cleanedTemplate = templateWithoutWrappers;
+			//clean all other inline tags
+			foreach (var tag in result.Tags)
+			{
+				if (tag.Type != WvTemplateTagType.InlineStart && tag.Type != WvTemplateTagType.InlineEnd)
+					continue;
+				cleanedTemplate = cleanedTemplate.Replace(tag.FullString!, "");
+			}
+
+			if (firstStartTag.ParamGroups.Count > 0)
+			{
+				template = template.Replace(templateWithWrappers,String.Empty);
+			}
+			else
+			{
+				template = template.Replace(templateWithWrappers,cleanedTemplate);
+			}
+			result.Tags = GetTagsFromTemplate(template);
+		}
+
+		//Process inline templates 
 		if (result.Tags.Any(x => x.Type == WvTemplateTagType.InlineStart) &&
 		    result.Tags.Any(x => x.Type == WvTemplateTagType.InlineEnd))
 		{

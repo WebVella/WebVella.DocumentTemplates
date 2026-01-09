@@ -17,13 +17,18 @@ public static class EnumExtensions
 				return description;
 
 			var memInfo = type.GetMember(enumName);
-			var soAttributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-			if (soAttributes.Length > 0)
+			foreach (var item in memInfo)
 			{
-				// we're only getting the first description we find
-				// others will be ignored
-				description = ((DescriptionAttribute)soAttributes[0]).Description;
+				var soAttributes = item.GetCustomAttributes(typeof(DescriptionAttribute), false);
+				if (soAttributes.Length > 0)
+				{
+					// we're only getting the first description we find
+					// others will be ignored
+					description = ((DescriptionAttribute)soAttributes[0]).Description;
+					break;
+				}				
 			}
+
 		}
 
 		return description;

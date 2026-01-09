@@ -252,7 +252,7 @@ public class HtmlEngineTests : TestBase
 	{
 		var template = new WvHtmlTemplate()
 		{
-			Template = "{{<}}<div>test:{{position}} {{name}}</div>{{>}}"
+			Template = "{{<#}}<div>test:{{position}} {{name}}</div>{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);
@@ -268,9 +268,9 @@ public class HtmlEngineTests : TestBase
 		var template = new WvHtmlTemplate()
 		{
 			Template = 
-@"{{<}}
+@"{{<#}}
 <div>test:{{position}} {{name}}</div>
-{{>}}"
+{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvHtmlTemplateProcessResult? result = template.Process(data);

@@ -5,6 +5,7 @@ public class WvTemplateTagDataFlowParameterProcessor : IWvTemplateTagParameterPr
 {
 	public Type Type { get => this.GetType(); }
 	public string Name { get; set; } = "f";
+	public WvTemplateTagParamOperatorType OperatorType { get; set; } = WvTemplateTagParamOperatorType.Unknown;
 	public string? ValueString { get; set; } = null;
 	public WvTemplateTagDataFlow Value { get; set; }
 	public int Priority { get; set; } = 1000;

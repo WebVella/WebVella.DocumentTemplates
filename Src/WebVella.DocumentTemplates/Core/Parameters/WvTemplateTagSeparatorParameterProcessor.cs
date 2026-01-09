@@ -3,6 +3,7 @@ public class WvTemplateTagSeparatorParameterProcessor : IWvTemplateTagParameterP
 {
 	public Type Type { get => this.GetType(); }
 	public string Name { get; set; } = "s";
+	public WvTemplateTagParamOperatorType OperatorType { get; set; } = WvTemplateTagParamOperatorType.Unknown;
 	public string? ValueString { get; set; }
 	public string? Value { get; set; }
 	public int Priority { get; set; } = 1000;

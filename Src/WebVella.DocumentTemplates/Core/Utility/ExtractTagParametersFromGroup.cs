@@ -5,6 +5,7 @@ public partial class WvTemplateUtility
 {
 	public List<IWvTemplateTagParameterProcessorBase> ExtractTagParametersFromGroup(string parameterGroup, WvTemplateTagType tagType)
 	{
+		
 		var result = new List<IWvTemplateTagParameterProcessorBase>();
 		if (String.IsNullOrWhiteSpace(parameterGroup)
 		|| !parameterGroup.StartsWith("(")

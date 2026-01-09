@@ -6,4 +6,6 @@ public enum WvTemplateTagType
 	SpreadsheetFunction = 2,
 	InlineStart = 3,
 	InlineEnd = 4,
+	ConditionStart = 5,
+	ConditionEnd = 6,	
 }

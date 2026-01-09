@@ -432,7 +432,7 @@ public class TextEngineTests : TestBase
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{<}}{{position}} {{sku}} {{name}}{{>}}"
+			Template = "{{<#}}{{position}} {{sku}} {{name}}{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -448,7 +448,7 @@ public class TextEngineTests : TestBase
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{<}}{{position}} {{sku}} {{name}}{{>}}"
+			Template = "{{<#}}{{position}} {{sku}} {{name}}{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -464,7 +464,7 @@ public class TextEngineTests : TestBase
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{<(S=',')}}{{position}} {{sku}} {{name}}{{>}}"
+			Template = "{{<#(S=',')}}{{position}} {{sku}} {{name}}{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -481,7 +481,7 @@ public class TextEngineTests : TestBase
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{<(S=',')}}{{<}}{{position}}{{>}} {{sku}} {{name}}{{>}}"
+			Template = "{{<#(S=',')}}{{<#}}{{position}}{{#>}} {{sku}} {{name}}{{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -494,4 +494,35 @@ public class TextEngineTests : TestBase
 	}		
 	
 	#endregion
+	#region << Condition Tag >>
+	[Fact]
+	public void Text_ConditionOneRecordNoRules()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<?}}{{position}} {{sku}} {{name}}{{?>}}"
+		};
+		var data = SampleData.CreateAsNew(new List<int> { 0 });
+		WvTextTemplateProcessResult? result = template.Process(data);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item1", result.ResultItems[0].Result);
+	}		
+	[Fact]
+	public void Text_ConditionOneRecordOneRules()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<?(position >= 200)}}{{position}} {{sku}} {{name}}{{?>}}"
+		};
+		WvTextTemplateProcessResult? result = template.Process(SampleData);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.True(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	}			
+	#endregion
+	
 }

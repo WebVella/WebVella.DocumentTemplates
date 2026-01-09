@@ -27,16 +27,27 @@ public partial class WvTemplateUtility
 			result.Type = WvTemplateTagType.Function;
 			processedDefinition = processedDefinition.Remove(0, 1);
 		}
+		//Conditional start
+		else if (processedDefinition.StartsWith("<?"))
+		{
+			result.Type = WvTemplateTagType.ConditionStart;
+		}
+		//Conditional end
+		else if (processedDefinition.StartsWith("?>"))
+		{
+			result.Type = WvTemplateTagType.ConditionEnd;
+		}			
         //Inline start
-        else if (processedDefinition.StartsWith("<"))
+        else if (processedDefinition.StartsWith("<#"))
         {
             result.Type = WvTemplateTagType.InlineStart;
         }
         //Inline end
-        else if (processedDefinition.StartsWith(">"))
+        else if (processedDefinition.StartsWith("#>"))
         {
 	        result.Type = WvTemplateTagType.InlineEnd;
         }		
+	
         //Data
         else
 		{
