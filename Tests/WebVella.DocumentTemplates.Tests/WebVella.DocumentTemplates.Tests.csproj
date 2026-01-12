@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\INDUSTRIAL_HUB_VIK_SHABLON.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template-HeaderFooter-1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
