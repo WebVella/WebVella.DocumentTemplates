@@ -1,7 +1,9 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Validation;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Globalization;
-using DocumentFormat.OpenXml;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
@@ -130,9 +132,11 @@ public partial class WvDocumentFileEngineUtility
 
         _copyDocumentStylesAndSettings(result.WordDocument, resultItem.WordDocument);
         _copyHeadersAndFooters(result.WordDocument, resultItem.WordDocument, dataSource, culture);
+        _copyHeadersAndFootersHyperlinks(result.WordDocument, resultItem.WordDocument);
         _copyFootnotesAndEndnotes(result.WordDocument, resultItem.WordDocument);
         _copyImages(result.WordDocument, resultItem.WordDocument);
         _copyHyperlinks(result.WordDocument, resultItem.WordDocument);
+
     }
 
 

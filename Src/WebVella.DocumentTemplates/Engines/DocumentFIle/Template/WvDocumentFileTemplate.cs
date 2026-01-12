@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
 using System.Data;
 using System.Globalization;
 using System.Text;
@@ -65,4 +67,12 @@ public class WvDocumentFileTemplate : WvTemplateBase
 
 		return result;
 	}
+
+    public List<ValidationErrorInfo> Validate(FileFormatVersions version = FileFormatVersions.Microsoft365)
+    {
+        if (Template is null) return new List<ValidationErrorInfo>();
+        using WordprocessingDocument wordDoc = WordprocessingDocument.Open(Template, false);
+        OpenXmlValidator validator = new OpenXmlValidator(version);
+        return validator.Validate(wordDoc).ToList();
+    }
 }

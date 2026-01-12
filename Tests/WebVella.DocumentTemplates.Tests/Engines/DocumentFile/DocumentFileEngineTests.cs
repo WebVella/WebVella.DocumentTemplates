@@ -1,4 +1,7 @@
-﻿using WebVella.DocumentTemplates.Engines.DocumentFile;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
+using WebVella.DocumentTemplates.Engines.DocumentFile;
 using WebVella.DocumentTemplates.Tests.Models;
 using WebVella.DocumentTemplates.Tests.Utils;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
@@ -27,6 +30,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -39,6 +46,9 @@ public class DocumentFileEngineTests : TestBase
             var paragraph = paragraphs.First();
             Assert.Equal("item1item2item3item4item5", paragraph.InnerText);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -54,6 +64,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -77,6 +91,10 @@ public class DocumentFileEngineTests : TestBase
             Assert.IsType<Word.Break>(run.ChildElements[7]);
             Assert.IsType<Word.Text>(run.ChildElements[8]);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -92,6 +110,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -115,6 +137,9 @@ public class DocumentFileEngineTests : TestBase
             Assert.IsType<Word.Break>(run.ChildElements[7]);
             Assert.IsType<Word.Text>(run.ChildElements[8]);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -130,6 +155,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -174,6 +203,9 @@ public class DocumentFileEngineTests : TestBase
             Assert.IsType<Word.Break>(run4.ChildElements[7]);
             Assert.IsType<Word.Text>(run4.ChildElements[8]);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -194,6 +226,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -206,6 +242,9 @@ public class DocumentFileEngineTests : TestBase
             var paragraph = paragraphs.First();
             Assert.Equal("item1,item2,item3,item4,item5", paragraph.InnerText);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -221,6 +260,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -232,7 +275,7 @@ public class DocumentFileEngineTests : TestBase
             Assert.Single(paragraphs);
             var paragraph = paragraphs.First();
             Assert.Equal("item1,item2,item3,item4,item5", paragraph.InnerText);
-            Assert.Equal(2,paragraph.ChildElements.Count);
+            Assert.Equal(2, paragraph.ChildElements.Count);
             var run = paragraph.Descendants<Word.Run>().FirstOrDefault();
             Assert.NotNull(run);
             Assert.Equal(2, run.ChildElements.Count);
@@ -247,6 +290,9 @@ public class DocumentFileEngineTests : TestBase
             Assert.NotNull(colorProp);
             Assert.Equal("FF0000", colorProp.Val);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -262,6 +308,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -274,6 +324,9 @@ public class DocumentFileEngineTests : TestBase
             var paragraph = paragraphs.First();
             Assert.Equal("Lorem ipsum item1,item2,item3,item4,item5 Lorem ipsum", paragraph.InnerText);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -289,6 +342,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -308,6 +365,9 @@ public class DocumentFileEngineTests : TestBase
             Assert.Equal(" Lorem ipsum", paragraphRuns[2].InnerText);
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -323,6 +383,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -341,6 +405,9 @@ public class DocumentFileEngineTests : TestBase
 
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -356,6 +423,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -372,6 +443,9 @@ public class DocumentFileEngineTests : TestBase
 
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -391,6 +465,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -411,6 +489,9 @@ public class DocumentFileEngineTests : TestBase
             Assert.Equal("item2", footerParagraph.InnerText);
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -430,6 +511,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -455,6 +540,9 @@ public class DocumentFileEngineTests : TestBase
             }
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -470,6 +558,10 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = utils.LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
@@ -486,6 +578,9 @@ public class DocumentFileEngineTests : TestBase
             utils.CheckWordTableRowContents(secondRow, new List<string> { "1", "2", "3", "4", "5", });
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -505,12 +600,19 @@ public class DocumentFileEngineTests : TestBase
             {
                 Template = new TestUtils().LoadFileAsStream(templateFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(dataSource);
             //Then
             utils.GeneralResultChecks(result);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -526,22 +628,29 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(29, paragraphs.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -553,22 +662,29 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline-1.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Empty(paragraphs);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -580,22 +696,29 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline-2.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(7, paragraphs.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
 
@@ -607,25 +730,32 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline-3.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(3, paragraphs.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
     }
-    
+
     [Fact]
     public void DocumentFile_Inline4()
     {
@@ -634,28 +764,35 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline-4.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName);
             var tables = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Table).FullName);   
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Table).FullName);
             Assert.NotNull(paragraphs);
             Assert.Equal(2, paragraphs.Count());
             Assert.Equal(2, tables.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
-    }    
-    
+    }
+
     [Fact]
     public void DocumentFile_Inline5()
     {
@@ -665,37 +802,132 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Inline-5.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
             var tables = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.Table).FullName).ToList();             
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Table).FullName).ToList();
             Assert.NotNull(paragraphs);
             Assert.NotNull(tables);
             Assert.Single(paragraphs);
             Assert.Single(tables);
             var table = (Word.Table)tables.First();
             var tableRows = table
-                .ChildElements.Where(x=> x.GetType().FullName == typeof(Word.TableRow).FullName).ToList();               
-            Assert.Equal(5,tableRows.Count);
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.TableRow).FullName).ToList();
+            Assert.Equal(5, tableRows.Count);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
-    }        
+    }
 
     #endregion
 
     #region <<Edge >>
 
+    [Fact]
+    public void DocumentFile_Images_Anchor()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Body-Anchor.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var mainPart = result.ResultItems[0].WordDocument!.MainDocumentPart!;
+            var bodyPart = mainPart.Document.Body;
+            Assert.NotNull(mainPart.HeaderParts);
+            Assert.Empty(mainPart.HeaderParts);
+            Assert.NotNull(mainPart.FooterParts);
+            Assert.Empty(mainPart.FooterParts);
+            Assert.NotNull(bodyPart);
+            Assert.NotEmpty(bodyPart.ChildElements);
+
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+    [Fact]
+    public void DocumentFile_Images_HeaderAnchor()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Header-Anchor.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+
+            var originHeaders = result.WordDocument.MainDocumentPart.HeaderParts;
+            var resultHeaders = result.ResultItems[0].WordDocument.MainDocumentPart.HeaderParts;
+
+            foreach (var originHeader in originHeaders)
+            {
+                var resultHeader = resultHeaders.First(x => x.Uri == originHeader.Uri);
+                var originalChildren = originHeader.Header.ChildElements.ToList();
+                var resultChildren = resultHeader.Header.ChildElements.ToList();
+                Assert.Equal(originalChildren.Count, resultChildren.Count);
+
+                for (var i = 0; i < originalChildren.Count; i++)
+                {
+                    var originSubChildren = originalChildren[i].ChildElements.ToList();
+                    var resultSubChildren = resultChildren[i].ChildElements.ToList();
+                    Assert.Equal(originSubChildren.Count, resultSubChildren.Count);
+                }
+            }
+
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
     [Fact]
     public void DocumentFile_Images_Header_And_Footer()
     {
@@ -705,13 +937,17 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Header-Footer-Images.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
@@ -722,12 +958,15 @@ public class DocumentFileEngineTests : TestBase
             Assert.NotNull(mainPart.FooterParts);
             Assert.Single(mainPart.FooterParts);
             Assert.NotNull(mainPart.HeaderParts.First().ImageParts);
-            Assert.Equal(2,mainPart.HeaderParts.First().ImageParts.Count());
+            Assert.Equal(2, mainPart.HeaderParts.First().ImageParts.Count());
             Assert.NotNull(mainPart.FooterParts.First().ImageParts);
-            Assert.Equal(2,mainPart.FooterParts.First().ImageParts.Count());            
+            Assert.Equal(2, mainPart.FooterParts.First().ImageParts.Count());
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
-    }         
+    }
     [Fact]
     public void DocumentFile_Urls()
     {
@@ -737,21 +976,100 @@ public class DocumentFileEngineTests : TestBase
             //Given
             var utils = new TestUtils();
             var parentFile = "Template-Urls.docx";
-            var parentTemplate = new WvDocumentFileTemplate
+            var template = new WvDocumentFileTemplate
             {
                 Template = new TestUtils().LoadFileAsStream(parentFile)
             };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
             var dataSource = SampleData;
             //When
-            WvDocumentFileTemplateProcessResult? result = parentTemplate.Process(
+            WvDocumentFileTemplateProcessResult? result = template.Process(
                 dataSource: dataSource,
                 culture: null);
             //Then
             utils.GeneralResultChecks(result);
-          
+
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
         }
-    }     
+    }
+    [Fact]
+    public void DocumentFile_Hyperlink()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Hyperlink.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            //var paragraphs = result.ResultItems[0].WordDocument.MainDocumentPart.Document.Body
+            //    .Descendants<Word.Paragraph>();
+            //Assert.NotNull(paragraphs);
+            //Assert.Single(paragraphs);
+
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+    [Fact]
+    public void DocumentFile_Test1()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "INDUSTRIAL_HUB_VIK_SHABLON.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+
+
+
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+
+
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+
+
     #endregion
-       
+
 }

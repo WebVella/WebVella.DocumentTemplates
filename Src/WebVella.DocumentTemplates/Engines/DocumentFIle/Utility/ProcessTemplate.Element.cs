@@ -30,6 +30,9 @@ public partial class WvDocumentFileEngineUtility
 		if (templateEl.GetType().FullName == typeof(Word.Text).FullName)
 			return _processDocumentText((Word.Text)templateEl, dataSource, culture);
 
+		if (templateEl.GetType().FullName == typeof(Word.Hyperlink).FullName)
+			return _processDocumentHyperlink((Word.Hyperlink)templateEl, dataSource, culture);
+
 		if (templateEl.GetType().FullName == typeof(Word.Comment).FullName)
 			return new List<OpenXmlElement>();
 
