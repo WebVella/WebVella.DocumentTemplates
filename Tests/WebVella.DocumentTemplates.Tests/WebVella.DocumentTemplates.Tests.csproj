@@ -62,6 +62,9 @@
     <None Update="Files\Template-Complex-1.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Template-SectionBreak.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template-Table2.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

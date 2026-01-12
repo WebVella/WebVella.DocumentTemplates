@@ -6,49 +6,69 @@ using Word = DocumentFormat.OpenXml.Wordprocessing;
 
 
 namespace WebVella.DocumentTemplates.Engines.DocumentFile.Utility;
+
 public partial class WvDocumentFileEngineUtility
 {
-	private List<OpenXmlElement> _processDocumentElement(
-		OpenXmlElement templateEl,
-		DataTable dataSource, CultureInfo culture)
-	{
-		if (templateEl.GetType().FullName == typeof(Paragraph).FullName)
-			return _processDocumentParagaraph((Paragraph)templateEl, dataSource, culture);
+    private List<OpenXmlElement> _processDocumentElement(
+        OpenXmlElement templateEl,
+        DataTable dataSource, CultureInfo culture)
+    {
+        if (templateEl.GetType().FullName == typeof(Paragraph).FullName)
+            return _processDocumentParagaraph((Paragraph)templateEl, dataSource, culture);
 
-		if (templateEl.GetType().FullName == typeof(Word.Run).FullName)
-			return _processDocumentRun((Word.Run)templateEl, dataSource, culture);
+        if (templateEl.GetType().FullName == typeof(Word.Run).FullName)
+            return _processDocumentRun((Word.Run)templateEl, dataSource, culture);
 
-		if (templateEl.GetType().FullName == typeof(Word.Table).FullName)
-			return _processDocumentTable((Word.Table)templateEl, dataSource, culture);
+        if (templateEl.GetType().FullName == typeof(Word.Table).FullName)
+            return _processDocumentTable((Word.Table)templateEl, dataSource, culture);
 
-		if (templateEl.GetType().FullName == typeof(Word.TableCell).FullName)
-			return new List<OpenXmlElement>(); //Table is processed as a whole
+        if (templateEl.GetType().FullName == typeof(Word.TableCell).FullName)
+            return new List<OpenXmlElement>(); //Table is processed as a whole
 
-		if (templateEl.GetType().FullName == typeof(Word.TableRow).FullName)
-			return new List<OpenXmlElement>(); //Table is processed as a whole
+        if (templateEl.GetType().FullName == typeof(Word.TableRow).FullName)
+            return new List<OpenXmlElement>(); //Table is processed as a whole
 
-		if (templateEl.GetType().FullName == typeof(Word.Text).FullName)
-			return _processDocumentText((Word.Text)templateEl, dataSource, culture);
+        if (templateEl.GetType().FullName == typeof(Word.Text).FullName)
+            return _processDocumentText((Word.Text)templateEl, dataSource, culture);
 
-		if (templateEl.GetType().FullName == typeof(Word.Hyperlink).FullName)
-			return _processDocumentHyperlink((Word.Hyperlink)templateEl, dataSource, culture);
+        if (templateEl.GetType().FullName == typeof(Word.Hyperlink).FullName)
+            return _processDocumentHyperlink((Word.Hyperlink)templateEl, dataSource, culture);
 
-		if (templateEl.GetType().FullName == typeof(Word.Comment).FullName)
-			return new List<OpenXmlElement>();
+        if (templateEl.GetType().FullName == typeof(Word.Comment).FullName)
+            return new List<OpenXmlElement>();
 
-		if (templateEl.GetType().FullName == typeof(Word.ProofError).FullName)
-			return new List<OpenXmlElement>();
+        if (templateEl.GetType().FullName == typeof(Word.ProofError).FullName)
+            return new List<OpenXmlElement>();
 
-		if (templateEl.GetType().FullName == typeof(Word.SectionProperties).FullName)
-			return new List<OpenXmlElement>();
+        if (templateEl.GetType().FullName == typeof(Word.Drawing).FullName)
+            return [templateEl.CloneNode(true)];
 
-		// if (templateEl.GetType().FullName == typeof(Word.ParagraphProperties).FullName)
-		// 	return [templateEl.CloneNode(true)];
-	
-		// if (templateEl.GetType().FullName == typeof(Word.RunProperties).FullName)
-		// 	return [templateEl.CloneNode(true)];
+        //if (templateEl.GetType().FullName == typeof(Word.HeaderReference).FullName)
+        //{
+        //    return [];
+        //}
 
-		return [templateEl.CloneNode(true)];		
-	}
+
+
+        //if (templateEl.GetType().FullName == typeof(Word.ParagraphProperties).FullName)
+        //    return new List<OpenXmlElement>();
+
+        // if (templateEl.GetType().FullName == typeof(Word.RunProperties).FullName)
+        // 	return [templateEl.CloneNode(true)];
+
+        var resultEl = templateEl.CloneNode(true);
+        resultEl.RemoveAllChildren();
+        foreach (var templChildEl in templateEl.ChildElements)
+        {
+            var resultChildren = _processDocumentElement(templChildEl, dataSource, culture);
+            foreach (var resultChild in resultChildren)
+            {
+                resultEl.AppendChild(resultChild);
+            }
+        }
+
+
+        return [resultEl];
+    }
 
 }

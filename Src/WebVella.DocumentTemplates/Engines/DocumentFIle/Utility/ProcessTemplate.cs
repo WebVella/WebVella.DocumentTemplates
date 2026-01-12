@@ -136,7 +136,6 @@ public partial class WvDocumentFileEngineUtility
         _copyFootnotesAndEndnotes(result.WordDocument, resultItem.WordDocument);
         _copyImages(result.WordDocument, resultItem.WordDocument);
         _copyHyperlinks(result.WordDocument, resultItem.WordDocument);
-
     }
 
 

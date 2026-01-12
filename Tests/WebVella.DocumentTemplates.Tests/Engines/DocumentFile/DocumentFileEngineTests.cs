@@ -1034,6 +1034,41 @@ public class DocumentFileEngineTests : TestBase
         }
     }
     [Fact]
+    public void DocumentFile_SectionBreaks()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-SectionBreak.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+
+
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+
+
+    [Fact]
     public void DocumentFile_Test1()
     {
         //Inline does not work in tables
@@ -1051,8 +1086,6 @@ public class DocumentFileEngineTests : TestBase
             Assert.Empty(templateErrors);
 
             var dataSource = SampleData;
-
-
 
             //When
             WvDocumentFileTemplateProcessResult? result = template.Process(
