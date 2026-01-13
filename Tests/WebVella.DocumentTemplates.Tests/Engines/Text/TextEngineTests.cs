@@ -94,6 +94,36 @@ public class TextEngineTests : TestBase
 		Assert.Single(lines);
 		Assert.Equal($"{data.Rows[0]["sku"]}{data.Rows[0]["name"]}", result.ResultItems[0].Result);
 	}
+	[Fact]
+	public void Text_Tag_OneIndex()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{sku[0]}}"
+		};
+		WvTextTemplateProcessResult? result = template.Process(SampleData);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal($"sku1", result.ResultItems[0].Result);
+	}	
+	[Fact]
+	public void Text_Tag_2Index()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{sku[0,1]}}"
+		};
+		WvTextTemplateProcessResult? result = template.Process(SampleData);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines =  new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal($"sku1sku2", result.ResultItems[0].Result);
+	}		
 
 	[Fact]
 	public void Text_Tag2()
@@ -491,11 +521,128 @@ public class TextEngineTests : TestBase
 		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
 		Assert.Equal("1 sku1 item1,2 sku2 item2", result.ResultItems[0].Result);
-	}		
-	
-	#endregion
-	#region << Condition Tag >>
-	[Fact]
+	}
+
+    #endregion
+
+    #region << List Data >>
+    [Fact]
+    public void Text_ListData1()
+    {
+        var template = new WvTextTemplate()
+        {
+            Template = "{{contact.first_name(S=',')}}"
+        };
+        var data = SampleData.CreateAsNew(new List<int> { 0 });
+        WvTextTemplateProcessResult? result = template.Process(data);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+        Assert.Single(lines);
+        Assert.Equal("first_name0,first_name00", result.ResultItems[0].Result);
+    }
+    [Fact]
+    public void Text_ListDataWithStartsWith()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{list1.(S=',')}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("list1.test0,list1.test00,list1.test20,list1.test200", result.ResultItems[0].Result);
+    }           
+    [Fact]
+    public void Text_ListDataWithStartsWith2()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{contact.(S=',')}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0,first_name00,last_name0,last_name00", result.ResultItems[0].Result);
+    }       
+    [Fact]
+    public void Text_ListDataWithStartsWith2MultiRow()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{contact.(S=',')}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0,1 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0,first_name00,last_name0,last_name00,first_name1,first_name11,last_name1,last_name11", result.ResultItems[0].Result);
+    }          
+    [Fact]
+    public void Text_ListDataWithStartsWith2WithIndex()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{contact.[0](S=',')}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0,1 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0,first_name00,last_name0,last_name00", result.ResultItems[0].Result);
+    }       
+    [Fact]
+    public void Text_InlineTemplateListDataWithStartsWith()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{<#contact}}{{first_name}} {{last_name}} {{#>}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0 last_name0 first_name1 last_name1 ", result.ResultItems[0].Result);
+    }    
+    [Fact]
+    public void Text_InlineTemplateListDataWithExactColumnNoMatterThereIsStartWidth()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{<#list1[0]}}test: {{0}} {{#>}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("test: list10 test: list100", result.ResultItems[0].Result);
+    }       
+    
+    #endregion
+
+    #region << Condition Tag >>
+    [Fact]
 	public void Text_ConditionOneRecordNoRules()
 	{
 		var template = new WvTextTemplate()
@@ -524,5 +671,7 @@ public class TextEngineTests : TestBase
 		Assert.True(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 	}			
 	#endregion
+
+
 	
 }

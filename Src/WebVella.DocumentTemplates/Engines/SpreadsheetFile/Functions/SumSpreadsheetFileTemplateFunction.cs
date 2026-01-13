@@ -33,8 +33,8 @@ public class SumSpreadsheetFileTemplateFunction : IWvSpreadsheetFileTemplateFunc
 		if (worksheet is null) throw new ArgumentException(nameof(worksheet));
 		if (tag.Type != WvTemplateTagType.Function)
 			throw new ArgumentException("Template tag is not Function type", nameof(tag));
-		if (String.IsNullOrWhiteSpace(tag.FunctionName))
-			throw new Exception($"Unsupported function name: {tag.Name} in tag");
+		if (String.IsNullOrWhiteSpace(tag.ItemName))
+			throw new Exception($"Unsupported function name: {tag.Operator} in tag");
 		if (String.IsNullOrWhiteSpace(tag.FullString)) return value;
 
 		object? resultValue = null;

@@ -8,13 +8,13 @@ public static partial class WvTemplateTagExtensions
 	{
 		var result = new List<WvSpreadsheetRange>();
 		if (tag.Type == WvTemplateTagType.Data) return result;
-		if (String.IsNullOrWhiteSpace(tag.FunctionName)) return result;
+		if (String.IsNullOrWhiteSpace(tag.ItemName)) return result;
 		if (tag.ParamGroups.Count == 0 || tag.ParamGroups[0].Parameters.Count == 0)
 			return result;
 
 		if (tag.Type == WvTemplateTagType.Function)
 		{
-			if (tag.FunctionName == "sum")
+			if (tag.ItemName == "sum")
 			{
 				foreach (var parameter in tag.ParamGroups[0].Parameters)
 				{
@@ -27,7 +27,7 @@ public static partial class WvTemplateTagExtensions
 		}
 		else if (tag.Type == WvTemplateTagType.SpreadsheetFunction)
 		{
-			if (tag.FunctionName == "sum")
+			if (tag.ItemName == "sum")
 			{
 				foreach (var parameter in tag.ParamGroups[0].Parameters)
 				{

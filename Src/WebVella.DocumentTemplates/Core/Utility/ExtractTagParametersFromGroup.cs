@@ -18,7 +18,8 @@ public partial class WvTemplateUtility
 
 		//string pattern = @"\w+(?:\s*=\s*('[^']*'|\"".*?\""|[^,]*))?";
 		//string pattern = @"[\w:$]+(?:\s*=\s*('[^']*'|\"".*?\""|[^,]*))?";
-		string pattern = @"[\w:$]+(?:\s*=\s*(?:(['""’”])([^'""’”]+)\1|([^,]*)))?";
+		//string pattern = @"[\w:$]+(?:\s*=\s*(?:(['""’”])([^'""’”]+)\1|([^,]*)))?";
+		string pattern = @"[\w:$]+(?:\s*[!<>$^*]*=\s*(?:(['""’”])([^'""’”]+)\1|([^,]*)))?";
 		Regex regex = new Regex(pattern);
 		MatchCollection matches = regex.Matches(processedParameterGroup);
 		foreach (Match match in matches)

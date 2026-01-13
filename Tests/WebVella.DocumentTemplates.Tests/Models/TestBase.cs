@@ -20,6 +20,11 @@ public class TestBase
 			ds.Columns.Add("sku", typeof(string));
 			ds.Columns.Add("name", typeof(string));
 			ds.Columns.Add("price", typeof(decimal));
+			ds.Columns.Add("contact.first_name", typeof(List<string>));
+			ds.Columns.Add("contact.last_name", typeof(List<string>));
+			ds.Columns.Add("list1", typeof(List<string>));
+			ds.Columns.Add("list1.test", typeof(List<string>));
+			ds.Columns.Add("list1.test2", typeof(List<string>));
 
 			for (int i = 0; i < 5; i++)
 			{
@@ -29,6 +34,11 @@ public class TestBase
 				dsrow["sku"] = $"sku{position}";
 				dsrow["name"] = $"item{position}";
 				dsrow["price"] = (decimal)(position * 0.33);
+				dsrow["contact.first_name"] = new List<string>(){ $"first_name{i}", $"first_name{i}{i}"};
+				dsrow["contact.last_name"] = new List<string>(){ $"last_name{i}", $"last_name{i}{i}"};
+				dsrow["list1"] = new List<string>(){ $"list1{i}", $"list1{i}{i}"};
+				dsrow["list1.test"] = new List<string>(){ $"list1.test{i}", $"list1.test{i}{i}"};
+				dsrow["list1.test2"] = new List<string>(){ $"list1.test2{i}", $"list1.test2{i}{i}"};
 				ds.Rows.Add(dsrow);
 			}
 			SampleData = ds;

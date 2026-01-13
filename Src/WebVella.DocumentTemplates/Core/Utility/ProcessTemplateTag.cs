@@ -90,7 +90,7 @@ public partial class WvTemplateUtility
 			}
 			else if(inlineTemplateResult.Values.All(x=> x is string))
 			{
-				var separator = firstStartTag.FlowSeparator ?? "";
+				var separator = firstStartTag.FlowSeparator;
 				template = template.Replace(templateWithWrappers,String.Join(separator,inlineTemplateResult.Values.Select(x=> (string)x)));
 			}
 		}

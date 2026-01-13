@@ -22,13 +22,13 @@ public partial class WvTemplateUtility
 			//if not index is requested get the first if present		
 			if (tag.Type == WvTemplateTagType.Data)
 			{
-				if (String.IsNullOrWhiteSpace(tag.Name)) return (templateResultString, templateResultObject);
+				if (String.IsNullOrWhiteSpace(tag.Operator)) return (templateResultString, templateResultObject);
 				if (tag.Flow == WvTemplateTagDataFlow.Horizontal && contextRowIndex is null)
 				{
 					//If horizontal all items should be return in one template 
 					(templateResultString, newResultObject) = ReplaceAllValuesDataTagInTemplate(templateResultString, templateResultObject, tag, dataSource);
 				}
-				if (tag.Flow == WvTemplateTagDataFlow.Vertical && contextRowIndex is null)
+				else if (tag.Flow == WvTemplateTagDataFlow.Vertical && contextRowIndex is null)
 				{
 					//If vertical all items should be return in one template as well
 					(templateResultString, newResultObject) = ReplaceAllValuesDataTagInTemplate(templateResultString, templateResultObject, tag, dataSource);

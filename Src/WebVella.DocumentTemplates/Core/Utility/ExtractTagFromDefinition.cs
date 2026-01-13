@@ -99,20 +99,23 @@ public partial class WvTemplateUtility
 
 		processedDefinition = processedDefinition?.Trim();
 		//if (String.IsNullOrWhiteSpace(processedDefinition)) return null;
-		result.Name = (processedDefinition ?? String.Empty).ToLowerInvariant();
+		result.Operator = (processedDefinition ?? String.Empty).ToLowerInvariant();
+		result.ItemName = result.Operator;
 
-		if (result.Type == WvTemplateTagType.Function)
+		if (result.Type == WvTemplateTagType.InlineStart)
 		{
-			if (!String.IsNullOrWhiteSpace(result.Name))
+			if (!String.IsNullOrWhiteSpace(result.Operator) && result.Operator != "<#")
 			{
-				result.FunctionName = result.Name;
+					result.ItemName = result.Operator.Replace("<#","");	
+					result.Operator = "<#";	
 			}
 		}
-		if (result.Type == WvTemplateTagType.SpreadsheetFunction)
+		else if (result.Type == WvTemplateTagType.InlineEnd)
 		{
-			if (!String.IsNullOrWhiteSpace(result.Name))
+			if (!String.IsNullOrWhiteSpace(result.Operator) && result.Operator != "#>")
 			{
-				result.FunctionName = result.Name;
+				result.ItemName = result.Operator.Replace("#>","");	
+				result.Operator = "#>";	
 			}
 		}
 		return result;

@@ -37,7 +37,7 @@ public class ConcatSpreadsheetFileTemplateFunction : IWvSpreadsheetFileTemplateF
 
 		object? resultValue = null;
 		List<string> sb = new();
-		string separationString = tag.FlowSeparator ?? String.Empty;
+		string separationString = tag.FlowSeparator;
 
 		var rangeList = new WvSpreadsheetRangeHelpers().GetRangeAddressesForTag(
 							tag: tag,

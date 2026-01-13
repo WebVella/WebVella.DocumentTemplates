@@ -84,7 +84,7 @@ public static class TemplateContextExtensions
 			{
 				if (tag.Type != Core.WvTemplateTagType.SpreadsheetFunction
 					&& tag.Type != Core.WvTemplateTagType.Function) continue;
-				if (String.IsNullOrWhiteSpace(tag.FunctionName)) continue;
+				if (String.IsNullOrWhiteSpace(tag.ItemName)) continue;
 				var valueAddressList = tag.GetApplicableRangeForFunctionTag();
 				if (valueAddressList is null || valueAddressList.Count == 0) continue;
 				foreach (var address in valueAddressList)

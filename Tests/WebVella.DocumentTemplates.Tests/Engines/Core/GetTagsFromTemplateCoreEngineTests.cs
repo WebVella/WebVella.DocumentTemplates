@@ -113,7 +113,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -133,7 +133,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(columnName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -153,7 +153,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template.Trim(), result[0].FullString);
-		Assert.Equal(columnName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(columnName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -173,7 +173,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -193,7 +193,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -213,7 +213,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal("{{" + columnName + "}}", result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -233,7 +233,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal("{{" + columnName + "(\"test\")}}", result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -258,7 +258,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -285,7 +285,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -311,7 +311,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Empty(result[0].IndexList);
@@ -335,13 +335,13 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
-		var column1Tag = result.FirstOrDefault(x => x.Name == columnName);
-		var column2Tag = result.FirstOrDefault(x => x.Name == columnName2);
+		var column1Tag = result.FirstOrDefault(x => x.Operator == columnName);
+		var column2Tag = result.FirstOrDefault(x => x.Operator == columnName2);
 		Assert.NotNull(column1Tag);
 		Assert.NotNull(column2Tag);
 
 		Assert.Equal("{{" + columnName + "}}", column1Tag.FullString);
-		Assert.Equal(columnName, column1Tag.Name);
+		Assert.Equal(columnName, column1Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column1Tag.Type);
 		Assert.NotNull(column1Tag.IndexList);
 		Assert.Empty(column1Tag.IndexList);
@@ -349,7 +349,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Empty(column1Tag.ParamGroups);
 
 		Assert.Equal("{{" + columnName2 + "}}", column2Tag.FullString);
-		Assert.Equal(columnName2, column2Tag.Name);
+		Assert.Equal(columnName2, column2Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column2Tag.Type);
 		Assert.NotNull(column2Tag.IndexList);
 		Assert.Empty(column2Tag.IndexList);
@@ -378,13 +378,13 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
-		var column1Tag = result.FirstOrDefault(x => x.Name == columnName);
-		var column2Tag = result.FirstOrDefault(x => x.Name == columnName2);
+		var column1Tag = result.FirstOrDefault(x => x.Operator == columnName);
+		var column2Tag = result.FirstOrDefault(x => x.Operator == columnName2);
 		Assert.NotNull(column1Tag);
 		Assert.NotNull(column2Tag);
 
 		Assert.Equal("{{" + columnName + "(" + columnNameParam1Name + "=\"" + columnNameParam1Value + "\", " + columnNameParam2Name + "=\"" + columnNameParam2Value + "\")}}", column1Tag.FullString);
-		Assert.Equal(columnName, column1Tag.Name);
+		Assert.Equal(columnName, column1Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column1Tag.Type);
 		Assert.NotNull(column1Tag.IndexList);
 		Assert.Empty(column1Tag.IndexList);
@@ -400,7 +400,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Equal(columnNameParam2Value, column1Param2.ValueString);
 
 		Assert.Equal("{{" + columnName2 + "(" + columnName2Param1Name + "=\"" + columnName2Param1Value + "\", " + columnName2Param2Name + "=\"" + columnName2Param2Value + "\")}}", column2Tag.FullString);
-		Assert.Equal(columnName2, column2Tag.Name);
+		Assert.Equal(columnName2, column2Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column2Tag.Type);
 		Assert.NotNull(column2Tag.IndexList);
 		Assert.Empty(column2Tag.IndexList);
@@ -428,22 +428,99 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Equal(2, result.Count);
-		var column1Tag = result.FirstOrDefault(x => x.Name == columnName);
-		var column2Tag = result.FirstOrDefault(x => x.Name == columnName2);
+		var column1Tag = result.FirstOrDefault(x => x.Operator == columnName);
+		var column2Tag = result.FirstOrDefault(x => x.Operator == columnName2);
 		Assert.NotNull(column1Tag);
 		Assert.NotNull(column2Tag);
 
 		Assert.Equal("{{" + columnName + "}}", column1Tag.FullString);
-		Assert.Equal(columnName, column1Tag.Name);
+		Assert.Equal(columnName, column1Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column1Tag.Type);
 		Assert.Empty(column1Tag.ParamGroups);
 
 		Assert.Equal("{{" + columnName2 + "}}", column2Tag.FullString);
-		Assert.Equal(columnName2, column2Tag.Name);
+		Assert.Equal(columnName2, column2Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column2Tag.Type);
 		Assert.Empty(column2Tag.ParamGroups);
 	}
+	
+	[Fact]
+	public void ExactTemplateShouldWithIndex()
+	{
+		//Given
+		string template = "{{column_name[0]}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.NotNull(result[0]);
 
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+		Assert.Equal("column_name", result[0].ItemName);
+		Assert.Empty(result[0].ParamGroups);
+		Assert.Single(result[0].IndexList);
+		Assert.Equal(0,result[0].IndexList[0]);
+	}		
+
+	[Fact]
+	public void ExactTemplateShouldWith2Index()
+	{
+		//Given
+		string template = "{{column_name[0,1]}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.NotNull(result[0]);
+
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+		Assert.Equal("column_name", result[0].ItemName);
+		Assert.Empty(result[0].ParamGroups);
+		Assert.Equal(2,result[0].IndexList.Count);
+		Assert.Equal(0,result[0].IndexList[0]);
+		Assert.Equal(1,result[0].IndexList[1]);
+	}			
+	
+	[Fact]
+	public void ExactTemplateShouldWith2Index2()
+	{
+		//Given
+		string template = "{{column_name[0,1][2]}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.NotNull(result[0]);
+
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+		Assert.Equal("column_name", result[0].ItemName);
+		Assert.Empty(result[0].ParamGroups);
+		Assert.Equal(3,result[0].IndexList.Count);
+		Assert.Equal(0,result[0].IndexList[0]);
+		Assert.Equal(1,result[0].IndexList[1]);
+		Assert.Equal(2,result[0].IndexList[2]);
+	}		
+	
+	[Fact]
+	public void ExactTemplateShouldWithDot()
+	{
+		//Given
+		string template = "{{column_prefix.(S=',')}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.NotNull(result[0]);
+
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+		Assert.Equal("column_prefix.", result[0].ItemName);
+		Assert.Single(result[0].ParamGroups);
+	}	
+	
 	[Fact]
 	public void ExactTemplateShouldReturnEmptyGroups()
 	{
@@ -455,10 +532,10 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
-		var column1Tag = result.FirstOrDefault(x => x.Name == columnName);
+		var column1Tag = result.FirstOrDefault(x => x.Operator == columnName);
 		Assert.NotNull(column1Tag);
 		Assert.Equal("{{" + columnName + "()(\"test\")(test=1)}}", column1Tag.FullString);
-		Assert.Equal(columnName, column1Tag.Name);
+		Assert.Equal(columnName, column1Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column1Tag.Type);
 		Assert.NotNull(column1Tag.ParamGroups);
 		Assert.Equal(2, column1Tag.ParamGroups.Count);
@@ -488,11 +565,11 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
-		var column1Tag = result.FirstOrDefault(x => x.Name == columnName);
+		var column1Tag = result.FirstOrDefault(x => x.Operator == columnName);
 		Assert.NotNull(column1Tag);
 
 		Assert.Equal("{{column_name(Param1=\"Param =1 Value\")(Param2=\"Param2Valu\")}}", column1Tag.FullString);
-		Assert.Equal(columnName, column1Tag.Name);
+		Assert.Equal(columnName, column1Tag.Operator);
 		Assert.Equal(WvTemplateTagType.Data, column1Tag.Type);
 		Assert.Equal(2, column1Tag.ParamGroups.Count);
 
@@ -519,7 +596,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Single(result[0].IndexList);
@@ -540,7 +617,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Single(result[0].IndexList);
@@ -562,7 +639,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Equal(2, result[0].IndexList.Count);
@@ -585,7 +662,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].IndexList);
 		Assert.Equal(2, result[0].IndexList.Count);
@@ -610,7 +687,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Equal(2, result[0].ParamGroups.Count);
@@ -639,7 +716,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 
 		Assert.NotNull(result[0].ParamGroups);
@@ -669,7 +746,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
@@ -701,7 +778,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 
 		Assert.NotNull(result[0].ParamGroups);
@@ -737,7 +814,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(columnName, result[0].Name);
+		Assert.Equal(columnName, result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
 
 		Assert.NotNull(result[0].ParamGroups);
@@ -765,9 +842,9 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
-		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
-		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
+		Assert.Equal(function.ToLowerInvariant(), result[0].ItemName);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
 		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
@@ -784,9 +861,9 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		//Then
 		Assert.NotNull(result);
 		Assert.Single(result);
-		Assert.Equal(function.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(function.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
-		Assert.Equal(function.ToLowerInvariant(), result[0].FunctionName);
+		Assert.Equal(function.ToLowerInvariant(), result[0].ItemName);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
 		Assert.Equal("A1:B1", result[0].ParamGroups[0].Parameters[0].ValueString);
@@ -804,7 +881,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -822,7 +899,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -840,7 +917,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -858,7 +935,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -877,7 +954,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
@@ -898,7 +975,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
@@ -918,7 +995,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(template, result[0].FullString);
-		Assert.Equal(functionName.ToLowerInvariant(), result[0].Name);
+		Assert.Equal(functionName.ToLowerInvariant(), result[0].Operator);
 		Assert.Equal(WvTemplateTagType.Function, result[0].Type);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
@@ -926,7 +1003,29 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Equal("$A$1:$B$1", result[0].ParamGroups[0].Parameters[0].ValueString);
 		Assert.Equal("$A3:C$3", result[0].ParamGroups[0].Parameters[1].ValueString);
 	}
+	
+	[Fact]
+	public void ExactTemplateMultipleSame()
+	{
+		//Given
+		var columnName = "column_name";
+		string template = "{{" + columnName + "(S=',')(S=';')[0][1]}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(template, result[0].FullString);
+		Assert.Equal(columnName.ToLowerInvariant(), result[0].ItemName);
+		Assert.Equal(WvTemplateTagType.Data, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.NotNull(result[0].IndexList);
+		Assert.Equal(2,result[0].ParamGroups.Count);
+		Assert.Equal(2,result[0].IndexList.Count);
+
+	}	
 	#endregion
+	
 	#region <<Inline template>>
 	[Fact]
 	public void ExactTemplateShouldReturnOneInlineStartTag()
@@ -939,7 +1038,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
-		Assert.Equal("<#", result[0].Name);
+		Assert.Equal("<#", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 	}	
@@ -955,7 +1054,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineEnd, result[0].Type);
-		Assert.Equal("#>", result[0].Name);
+		Assert.Equal("#>", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 	}		
@@ -1049,6 +1148,27 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 
 	}		
 	
+	[Fact]
+	public void ExactTemplateShouldReturnTheColumNameToo()
+	{
+		//Given
+		string template = "{{<#column_name[0,1]}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal("<#", result[0].Operator);
+		Assert.Equal("column_name", result[0].ItemName);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Empty(result[0].ParamGroups);
+		Assert.NotNull(result[0].IndexList);
+		Assert.Equal(2,result[0].IndexList.Count);
+		Assert.Equal(0,result[0].IndexList[0]);
+		Assert.Equal(1,result[0].IndexList[1]);
+	}	
+	
 	#endregion
 	
 	#region <<Conditional>>
@@ -1063,7 +1183,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.ConditionStart, result[0].Type);
-		Assert.Equal("<?", result[0].Name);
+		Assert.Equal("<?", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 	}	
@@ -1079,7 +1199,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.ConditionEnd, result[0].Type);
-		Assert.Equal("?>", result[0].Name);
+		Assert.Equal("?>", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 	}		
@@ -1115,7 +1235,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
-		Assert.IsType<WvTemplateTagDataFlowParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+		Assert.IsType<WvTemplateTagUnknownParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
 	}		
 	[Fact]
 	public void ExactTemplateShouldReturnConditionalOneEndTagWithParam()
@@ -1131,7 +1251,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
-		Assert.IsType<WvTemplateTagDataFlowParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+		Assert.IsType<WvTemplateTagUnknownParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
 	}		
 	
 	[Fact]
@@ -1151,7 +1271,26 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result[0].IndexList);
 		Assert.Single(result[0].IndexList);
 		Assert.Equal(0,result[0].IndexList[0]);
-		Assert.IsType<WvTemplateTagDataFlowParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+		Assert.IsType<WvTemplateTagUnknownParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
+	}			
+	[Fact]
+	public void ExactTemplateShouldReturnConditionalOneEndTagWithIndex3()
+	{
+		//Given
+		string template = "{{<?[0](column_name !*= 'test')}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Single(result);
+		Assert.Equal(WvTemplateTagType.ConditionStart, result[0].Type);
+		Assert.NotNull(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups);
+		Assert.Single(result[0].ParamGroups[0].Parameters);
+		Assert.NotNull(result[0].IndexList);
+		Assert.Single(result[0].IndexList);
+		Assert.Equal(0,result[0].IndexList[0]);
+		Assert.IsType<WvTemplateTagUnknownParameterProcessor>(result[0].ParamGroups[0].Parameters[0]);
 	}			
 	[Fact]
 	public void ExactTemplateShouldReturnConditionalOneEndTagWithIndex2()

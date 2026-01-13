@@ -325,15 +325,15 @@ public partial class WvSpreadsheetFileEngineUtility
 							}
 							else if (tag.Type == WvTemplateTagType.Function)
 							{
-								var processorType = new WvSpreadsheetFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+								var processorType = new WvSpreadsheetFileMetaService().GetFunctionProcessorByName(tag.ItemName ?? String.Empty);
 								if (processorType is null)
 								{
-									throw new Exception($"Unsupported function name: {tag.Name} in tag");
+									throw new Exception($"Unsupported function name: {tag.Operator} in tag");
 								}
 								IWvSpreadsheetFileTemplateFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvSpreadsheetFileTemplateFunctionProcessor;
 								if (processor is null)
 								{
-									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Operator} in tag");
 								}
 								//Need to work here to make it relative
 								var value = processor.Process(
@@ -353,15 +353,15 @@ public partial class WvSpreadsheetFileEngineUtility
 							}
 							else if (tag.Type == WvTemplateTagType.SpreadsheetFunction)
 							{
-								var processorType = new WvSpreadsheetFileMetaService().GetSpreadsheetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+								var processorType = new WvSpreadsheetFileMetaService().GetSpreadsheetFunctionProcessorByName(tag.ItemName ?? String.Empty);
 								if (processorType is null)
 								{
-									throw new Exception($"Unsupported function name: {tag.Name} in tag");
+									throw new Exception($"Unsupported function name: {tag.Operator} in tag");
 								}
 								IWvSpreadsheetFileTemplateSpreadsheetFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvSpreadsheetFileTemplateSpreadsheetFunctionProcessor;
 								if (processor is null)
 								{
-									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+									throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Operator} in tag");
 								}
 								var value = processor.Process(
 													value: tempCell.Value.ToString(),
@@ -392,15 +392,15 @@ public partial class WvSpreadsheetFileEngineUtility
 								}
 								else if (tag.Type == WvTemplateTagType.Function)
 								{
-									var processorType = new WvSpreadsheetFileMetaService().GetFunctionProcessorByName(tag.FunctionName ?? String.Empty);
+									var processorType = new WvSpreadsheetFileMetaService().GetFunctionProcessorByName(tag.ItemName ?? String.Empty);
 									if (processorType is null)
 									{
-										throw new Exception($"Unsupported function name: {tag.Name} in tag");
+										throw new Exception($"Unsupported function name: {tag.Operator} in tag");
 									}
 									IWvSpreadsheetFileTemplateFunctionProcessor? processor = Activator.CreateInstance(processorType) as IWvSpreadsheetFileTemplateFunctionProcessor;
 									if (processor is null)
 									{
-										throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Name} in tag");
+										throw new Exception($"Failed to init processor of type: {processorType.FullName} for function name: {tag.Operator} in tag");
 									}
 									value = processor.Process(
 														value: value.ToString(),
