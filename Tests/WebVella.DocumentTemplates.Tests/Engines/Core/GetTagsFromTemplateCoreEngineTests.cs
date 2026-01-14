@@ -1038,6 +1038,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.Equal("<#", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -1054,6 +1055,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineEnd, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.Equal("#>", result[0].Operator);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
@@ -1069,9 +1071,11 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Equal(2,result.Count);
 		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 		Assert.Equal(WvTemplateTagType.InlineEnd, result[1].Type);
+		Assert.Equal(String.Empty, result[1].ItemName);
 		Assert.NotNull(result[1].ParamGroups);
 		Assert.Empty(result[1].ParamGroups);		
 	}	
@@ -1087,6 +1091,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
@@ -1103,6 +1108,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineEnd, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
@@ -1120,6 +1126,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups);
 		Assert.Single(result[0].ParamGroups[0].Parameters);
@@ -1139,6 +1146,7 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.NotNull(result);
 		Assert.Single(result);
 		//Assert.Equal(WvTemplateTagType.InlineStart, result[0].Type);
+		Assert.Equal(String.Empty, result[0].ItemName);
 		Assert.NotNull(result[0].ParamGroups);
 		Assert.Empty(result[0].ParamGroups);
 		Assert.NotNull(result[0].IndexList);

@@ -18,7 +18,7 @@ public class WvTemplateTagResultList
         //All tags should have indexes or have no index by separator defined
         foreach (WvTemplateTag tag in Tags)
         {
-            if (tag.IndexList.Count == 1) continue;
+            if (tag.IndexList.Count > 0) continue;
             if (tag.Type == WvTemplateTagType.Function) continue;
             if (tag.Type == WvTemplateTagType.SpreadsheetFunction) continue;
             if (tag.Type == WvTemplateTagType.Data)

@@ -478,7 +478,7 @@ public class TextEngineTests : TestBase
 	{
 		var template = new WvTextTemplate()
 		{
-			Template = "{{<#}}{{position}} {{sku}} {{name}}{{#>}}"
+			Template = "{{<#}}{{position}} {{sku}} {{name}} {{#>}}"
 		};
 		var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
 		WvTextTemplateProcessResult? result = template.Process(data);
@@ -487,7 +487,7 @@ public class TextEngineTests : TestBase
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 		Assert.Single(lines);
-		Assert.Equal("1 sku1 item12 sku2 item2", result.ResultItems[0].Result);
+		Assert.Equal("1 sku1 item1 2 sku2 item2 ", result.ResultItems[0].Result);
 	}		
 	[Fact]
 	public void Text_InlineTypeTwoRecordsWithSeparator()
@@ -522,7 +522,22 @@ public class TextEngineTests : TestBase
 		Assert.Single(lines);
 		Assert.Equal("1 sku1 item1,2 sku2 item2", result.ResultItems[0].Result);
 	}
-
+	
+	[Fact]
+	public void Text_InlineTypeTwoRecordsWithSeparatorInternalIsIgnoredWithIndex()
+	{
+		var template = new WvTextTemplate()
+		{
+			Template = "{{<#[0,1](S=',')}}{{<#}}{{position}}{{#>}} {{sku}} {{name}}{{#>}}"
+		};
+		WvTextTemplateProcessResult? result = template.Process(SampleData);
+		Assert.NotNull(result);
+		Assert.Single(result.ResultItems);
+		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+		var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+		Assert.Single(lines);
+		Assert.Equal("1 sku1 item1,2 sku2 item2", result.ResultItems[0].Result);
+	}
     #endregion
 
     #region << List Data >>
@@ -607,11 +622,27 @@ public class TextEngineTests : TestBase
 	    Assert.Equal("first_name0,first_name00,last_name0,last_name00", result.ResultItems[0].Result);
     }       
     [Fact]
-    public void Text_InlineTemplateListDataWithStartsWith()
+    public void Text_InlineTemplateListDataWithStartsWithWithItemName()
     {
 	    var template = new WvTextTemplate()
 	    {
-		    Template = "{{<#contact}}{{first_name}} {{last_name}} {{#>}}"
+		    Template = "{{<#contact.}}{{first_name}} {{last_name}} {{#>}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0,1 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0 last_name0 first_name00 last_name00 first_name1 last_name1 first_name11 last_name11 ", result.ResultItems[0].Result);
+    }        
+    [Fact]
+    public void Text_InlineTemplateListDataWithStartsWithWithItemNameOneRow()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{<#contact.}}{{first_name}} {{last_name}} {{#>}}"
 	    };
 	    var data = SampleData.CreateAsNew(new List<int> { 0 });
 	    WvTextTemplateProcessResult? result = template.Process(data);
@@ -620,14 +651,48 @@ public class TextEngineTests : TestBase
 	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 	    Assert.Single(lines);
-	    Assert.Equal("first_name0 last_name0 first_name1 last_name1 ", result.ResultItems[0].Result);
+	    Assert.Equal("first_name0 last_name0 first_name00 last_name00 ", result.ResultItems[0].Result);
     }    
+    [Fact]
+    public void Text_InlineTemplateListDataWithStartsWithWithItemNameWithIndex()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{<#contact.[0]}}{{first_name}} {{last_name}} {{#>}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0 last_name0 first_name00 last_name00 ", result.ResultItems[0].Result);
+    }       
+    [Fact]
+    public void Text_InlineTemplateListDataWithStartsWithoutItemnName()
+    {
+	    var template = new WvTextTemplate()
+	    {
+		    Template = "{{<#[0]}}{{contact.first_name[0]}} {{contact.last_name[0]}} {{#>}}"
+	    };
+	    var data = SampleData.CreateAsNew(new List<int> { 0 });
+	    WvTextTemplateProcessResult? result = template.Process(data);
+	    Assert.NotNull(result);
+	    Assert.Single(result.ResultItems);
+	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+	    Assert.Single(lines);
+	    Assert.Equal("first_name0first_name00 last_name0last_name00 ", result.ResultItems[0].Result);
+    }      
+    
+    
     [Fact]
     public void Text_InlineTemplateListDataWithExactColumnNoMatterThereIsStartWidth()
     {
 	    var template = new WvTextTemplate()
 	    {
-		    Template = "{{<#list1[0]}}test: {{0}} {{#>}}"
+		    Template = "{{<#list1[0]}}test: {{list1}} {{#>}}"
 	    };
 	    var data = SampleData.CreateAsNew(new List<int> { 0 });
 	    WvTextTemplateProcessResult? result = template.Process(data);

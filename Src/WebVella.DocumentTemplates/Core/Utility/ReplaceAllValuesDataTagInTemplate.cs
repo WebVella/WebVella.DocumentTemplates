@@ -19,9 +19,29 @@ public partial class WvTemplateUtility
             return (templateResultString, templateResultObject);
         }
 
+        List<int> rowIndices = new();
+        if (tag.IndexList.Count > 0)
+        {
+            foreach (var tagIndex in tag.IndexList)
+            {
+                if (dataSource.Rows.Count - 1 >= tagIndex)
+                    rowIndices.Add(tagIndex);
+            }
+            //if all requested indexes are not present add the first row
+            if(rowIndices.Count == 0)
+                rowIndices.Add(0);
+        }
+        else
+        {
+            for (int i = 0; i < dataSource.Rows.Count; i++)
+            {
+                rowIndices.Add(i);
+            }            
+        }
+
         var tagContentList = new List<string>();
         object? columnObject = null;
-        for (int rowIndex = 0; rowIndex < dataSource.Rows.Count; rowIndex++)
+        foreach (var rowIndex in rowIndices)
         {
             foreach (var columnIndex in columnIndices)
             {

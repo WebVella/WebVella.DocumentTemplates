@@ -104,6 +104,7 @@ public partial class WvTemplateUtility
 
 		if (result.Type == WvTemplateTagType.InlineStart)
 		{
+			result.ItemName = String.Empty;
 			if (!String.IsNullOrWhiteSpace(result.Operator) && result.Operator != "<#")
 			{
 					result.ItemName = result.Operator.Replace("<#","");	
@@ -112,6 +113,7 @@ public partial class WvTemplateUtility
 		}
 		else if (result.Type == WvTemplateTagType.InlineEnd)
 		{
+			result.ItemName = String.Empty;
 			if (!String.IsNullOrWhiteSpace(result.Operator) && result.Operator != "#>")
 			{
 				result.ItemName = result.Operator.Replace("#>","");	
