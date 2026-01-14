@@ -6,6 +6,7 @@ using System.Data;
 using System.Globalization;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
+using WebVella.DocumentTemplates.Extensions;
 using Word = DocumentFormat.OpenXml.Wordprocessing;
 
 
@@ -43,6 +44,7 @@ public partial class WvDocumentFileEngineUtility
         List<OpenXmlElement> multiParagraphTemplateQueue = new();
 
         #region << Inline Template >>
+
         //Process inline templates first - inline template in another template is not allowed
         //Option1: inline template single paragraph that is in a paragraph -> should start with the template tag and end with the tag
         //the paragraph will be repeater
@@ -139,41 +141,233 @@ public partial class WvDocumentFileEngineUtility
     }
 
 
-    private List<OpenXmlElement> _processSingleParagraphInlineTemplate(WvTemplateTag tag, Paragraph template,
+    private List<OpenXmlElement> _processSingleParagraphInlineTemplate(WvTemplateTag firstStartTag, Paragraph template,
         DataTable dataSource,
         CultureInfo culture)
     {
         var result = new List<OpenXmlElement>();
-        foreach (DataRow row in dataSource.Rows)
+        //Alter DataSource for spec
+        DataTable templateDt = firstStartTag.IndexList.Count > 0
+            ? dataSource.CreateAsNew(firstStartTag.IndexList)
+            : dataSource;
+        //the general case when we want grouping in the general iteration
+        if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
         {
-            if (tag.IndexList is not null
-                && tag.IndexList.Count > 0
-                && !tag.IndexList.Contains(dataSource.Rows.IndexOf(row))) continue;
-
-            DataTable newTable = dataSource.Clone();
-            newTable.ImportRow(row);
-            result.AddRange(_processDocumentElement(template, newTable, culture));
+            foreach (DataRow row in templateDt.Rows)
+            {
+                DataTable newTable = templateDt.Clone();
+                newTable.ImportRow(row);
+                result.AddRange(_processDocumentElement(template, newTable, culture));
+            }
         }
+        //if there is an item name defined so new datasource should be created
+        else
+        {
+            var columnIndices =
+                new WvTemplateUtility().GetColumnsIndexFromTagItemName(firstStartTag.ItemName, templateDt);
+            //matches no columns:
+            if (columnIndices.Count == 0)
+            {
+                //1. Empty DS returns 
+                return result;
+            }
+
+            //each row should create its own datasource according to the template rules, so the template can be 
+            // rendered with it
+            List<DataColumn> columns = new();
+            foreach (var index in columnIndices)
+            {
+                columns.Add(templateDt.Columns[index]);
+            }
+
+            //Init the new DT
+            var rowDataTable = new DataTable();
+            var originalNameNewNameDict = new Dictionary<string, string>();
+            foreach (var column in columns)
+            {
+                var newName = column.ColumnName.Substring(firstStartTag.ItemName.Length);
+                if (String.IsNullOrWhiteSpace(newName))
+                    newName = firstStartTag.ItemName;
+                originalNameNewNameDict[column.ColumnName] = newName;
+                var newType = column.DataType;
+                var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(column);
+                if (isEnumarable)
+                    newType = dataType!; //should have type if enumarable
+                rowDataTable.Columns.Add(newName, newType);
+            }
+
+            //Process row by row
+            foreach (DataRow templateDtRow in templateDt.Rows)
+            {
+                int rowDtRows = 0; //calculated based on the maximum values found in the columns
+                foreach (var templateDtColumn in columns)
+                {
+                    var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(templateDtColumn);
+                    if (!isEnumarable)
+                        rowDtRows = Math.Max(rowDtRows, 1);
+                    else
+                    {
+                        var valuesCount = ((IEnumerable<object>)templateDtRow[templateDtColumn.ColumnName]).Count();
+                        rowDtRows = Math.Max(rowDtRows, valuesCount);
+                    }
+                }
+
+                if (rowDtRows == 0) continue;
+
+                rowDataTable.Clear();
+                for (int rowDtRowIndex = 0; rowDtRowIndex < rowDtRows; rowDtRowIndex++)
+                {
+                    var dsrow = rowDataTable.NewRow();
+                    foreach (DataColumn templateDtColumn in columns)
+                    {
+                        var templateDtColumnValue = templateDtRow[templateDtColumn.ColumnName];
+                        var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(templateDtColumn);
+                        if (!isEnumarable)
+                        {
+                            dsrow[originalNameNewNameDict[templateDtColumn.ColumnName]] = templateDtColumnValue;
+                        }
+                        else
+                        {
+                            var indexValue =
+                                new WvTemplateUtility().GetItemAt((IEnumerable<object?>)templateDtColumnValue,
+                                    rowDtRowIndex);
+                            if (indexValue is null)
+                                indexValue =
+                                    new WvTemplateUtility().GetItemAt((IEnumerable<object?>)templateDtColumnValue, 0);
+                            dsrow[originalNameNewNameDict[templateDtColumn.ColumnName]] = indexValue;
+                        }
+                    }
+
+                    rowDataTable.Rows.Add(dsrow);
+                }
+
+                foreach (DataRow row in rowDataTable.Rows)
+                {
+                    DataTable newTable = rowDataTable.Clone();
+                    newTable.ImportRow(row);
+                    result.AddRange(_processDocumentElement(template, newTable, culture));
+                }
+            }
+        }
+
 
         return result;
     }
 
-    private List<OpenXmlElement> _processMultiParagraphInlineTemplate(WvTemplateTag tag, List<OpenXmlElement> queue,
+    private List<OpenXmlElement> _processMultiParagraphInlineTemplate(WvTemplateTag firstStartTag,
+        List<OpenXmlElement> queue,
         DataTable dataSource,
         CultureInfo culture)
     {
         var result = new List<OpenXmlElement>();
-        foreach (DataRow row in dataSource.Rows)
-        {
-            if (tag.IndexList is not null
-                && tag.IndexList.Count > 0
-                && !tag.IndexList.Contains(dataSource.Rows.IndexOf(row))) continue;
+        //Alter DataSource for spec
+        DataTable templateDt = firstStartTag.IndexList.Count > 0
+            ? dataSource.CreateAsNew(firstStartTag.IndexList)
+            : dataSource;
 
-            DataTable newTable = dataSource.Clone();
-            newTable.ImportRow(row);
-            foreach (var element in queue)
+        //the general case when we want grouping in the general iteration
+        if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
+        {
+            foreach (DataRow row in templateDt.Rows)
             {
-                result.AddRange(_processDocumentElement(element, newTable, culture));
+                DataTable newTable = templateDt.Clone();
+                newTable.ImportRow(row);
+                foreach (var element in queue)
+                {
+                    result.AddRange(_processDocumentElement(element, newTable, culture));
+                }
+            }
+        }
+        //if there is an item name defined so new datasource should be created
+        else
+        {
+            var columnIndices =
+                new WvTemplateUtility().GetColumnsIndexFromTagItemName(firstStartTag.ItemName, templateDt);
+            //matches no columns:
+            if (columnIndices.Count == 0)
+            {
+                //1. Empty DS returns 
+                return result;
+            }
+
+            //each row should create its own datasource according to the template rules, so the template can be 
+            // rendered with it
+            List<DataColumn> columns = new();
+            foreach (var index in columnIndices)
+            {
+                columns.Add(templateDt.Columns[index]);
+            }
+
+            //Init the new DT
+            var rowDataTable = new DataTable();
+            var originalNameNewNameDict = new Dictionary<string, string>();
+            foreach (var column in columns)
+            {
+                var newName = column.ColumnName.Substring(firstStartTag.ItemName.Length);
+                if (String.IsNullOrWhiteSpace(newName))
+                    newName = firstStartTag.ItemName;
+                originalNameNewNameDict[column.ColumnName] = newName;
+                var newType = column.DataType;
+                var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(column);
+                if (isEnumarable)
+                    newType = dataType!; //should have type if enumarable
+                rowDataTable.Columns.Add(newName, newType);
+            }
+
+            //Process row by row
+            foreach (DataRow templateDtRow in templateDt.Rows)
+            {
+                int rowDtRows = 0; //calculated based on the maximum values found in the columns
+                foreach (var templateDtColumn in columns)
+                {
+                    var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(templateDtColumn);
+                    if (!isEnumarable)
+                        rowDtRows = Math.Max(rowDtRows, 1);
+                    else
+                    {
+                        var valuesCount = ((IEnumerable<object>)templateDtRow[templateDtColumn.ColumnName]).Count();
+                        rowDtRows = Math.Max(rowDtRows, valuesCount);
+                    }
+                }
+
+                if (rowDtRows == 0) continue;
+
+                rowDataTable.Clear();
+                for (int rowDtRowIndex = 0; rowDtRowIndex < rowDtRows; rowDtRowIndex++)
+                {
+                    var dsrow = rowDataTable.NewRow();
+                    foreach (DataColumn templateDtColumn in columns)
+                    {
+                        var templateDtColumnValue = templateDtRow[templateDtColumn.ColumnName];
+                        var (isEnumarable, dataType) = new WvTemplateUtility().CheckEnumerable(templateDtColumn);
+                        if (!isEnumarable)
+                        {
+                            dsrow[originalNameNewNameDict[templateDtColumn.ColumnName]] = templateDtColumnValue;
+                        }
+                        else
+                        {
+                            var indexValue =
+                                new WvTemplateUtility().GetItemAt((IEnumerable<object?>)templateDtColumnValue,
+                                    rowDtRowIndex);
+                            if (indexValue is null)
+                                indexValue =
+                                    new WvTemplateUtility().GetItemAt((IEnumerable<object?>)templateDtColumnValue, 0);
+                            dsrow[originalNameNewNameDict[templateDtColumn.ColumnName]] = indexValue;
+                        }
+                    }
+
+                    rowDataTable.Rows.Add(dsrow);
+                }
+
+                foreach (DataRow row in rowDataTable.Rows)
+                {
+                    DataTable newTable = rowDataTable.Clone();
+                    newTable.ImportRow(row);
+                    foreach (var element in queue)
+                    {
+                        result.AddRange(_processDocumentElement(element, newTable, culture));
+                    }
+                }
             }
         }
 

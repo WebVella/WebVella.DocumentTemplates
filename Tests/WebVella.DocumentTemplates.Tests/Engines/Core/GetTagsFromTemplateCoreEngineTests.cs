@@ -1176,6 +1176,17 @@ public partial class GetTagsFromTemplateCoreEngineTests : TestBase
 		Assert.Equal(0,result[0].IndexList[0]);
 		Assert.Equal(1,result[0].IndexList[1]);
 	}	
+	[Fact]
+	public void ExactTemplateShouldReturnTheColumNameEndingWith2Tags()
+	{
+		//Given
+		string template = "{{<#contact.[0] }}First Name: {{first_name}}Last Name: {{last_name}}{{#>}}";
+		//When
+		List<WvTemplateTag> result = new WvTemplateUtility().GetTagsFromTemplate(template);
+		//Then
+		Assert.NotNull(result);
+		Assert.Equal(4,result.Count);
+	}		
 	
 	#endregion
 	

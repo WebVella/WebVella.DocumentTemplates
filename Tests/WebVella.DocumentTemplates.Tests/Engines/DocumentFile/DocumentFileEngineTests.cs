@@ -836,6 +836,81 @@ public class DocumentFileEngineTests : TestBase
         }
     }
 
+    [Fact]
+    public void DocumentFile_ColumnStart()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-ColumnStart.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+           
+            Assert.Equal(4, paragraphs.Count);
+            Assert.Equal("First Name: first_name0",paragraphs[0].InnerText);
+            Assert.Equal("Last Name: last_name0",paragraphs[1].InnerText);
+            Assert.Equal("First Name: first_name00",paragraphs[2].InnerText);
+            Assert.Equal("Last Name: last_name00",paragraphs[3].InnerText);
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }    
+    [Fact]
+    public void DocumentFile_ColumnStart_SingleLine()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-ColumnStart-SingleLine.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+           
+            Assert.Equal(2,paragraphs.Count);
+            Assert.Equal("First Name: first_name0Last Name: last_name0",paragraphs[0].InnerText);
+            Assert.Equal("First Name: first_name00Last Name: last_name00",paragraphs[1].InnerText);
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }        
+    
     #endregion
 
     #region <<Edge >>
@@ -1067,40 +1142,7 @@ public class DocumentFileEngineTests : TestBase
         }
     }
 
-
-    [Fact]
-    public void DocumentFile_Test1()
-    {
-        //Inline does not work in tables
-        lock (locker)
-        {
-            //Given
-            var utils = new TestUtils();
-            var parentFile = "INDUSTRIAL_HUB_VIK_SHABLON.docx";
-            var template = new WvDocumentFileTemplate
-            {
-                Template = new TestUtils().LoadFileAsStream(parentFile)
-            };
-
-            var templateErrors = template.Validate();
-            Assert.Empty(templateErrors);
-
-            var dataSource = SampleData;
-
-            //When
-            WvDocumentFileTemplateProcessResult? result = template.Process(
-                dataSource: dataSource,
-                culture: null);
-            //Then
-            utils.GeneralResultChecks(result);
-
-
-            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
-
-            var resultErrors = result!.ResultItems[0]!.Validate();
-            Assert.Empty(resultErrors);
-        }
-    }
+   
 
 
     #endregion

@@ -36,14 +36,15 @@ public partial class WvDocumentFileEngineUtility
         var queue = new Queue<Word.Run>();
         int queueStartTags = 0;
         int queueEndTags = 0;
+        var startTagRegex = new Regex(@"{");
+        var endTagRegex = new Regex(@"}");
         foreach (var childEl in template.ChildElements)
         {
+            var innerText = childEl.InnerText;
             var resultChildElList = _processDocumentElement(childEl, dataSource, culture);
             foreach (var resultChildEl in resultChildElList)
             {
                 var isRun = resultChildEl.GetType().FullName == typeof(Word.Run).FullName;
-                var startTagRegex = new Regex(@"{{");
-                var endTagRegex = new Regex(@"}}");
                 var startTagsCount = startTagRegex.Matches(resultChildEl.InnerText).Count;
                 var endTagsCount = endTagRegex.Matches(resultChildEl.InnerText).Count;
                 var hasUnclosedStartTags = startTagsCount > endTagsCount;
@@ -112,7 +113,7 @@ public partial class WvDocumentFileEngineUtility
                     {
                         queue.Enqueue((Word.Run)childEl);
                         queueStartTags += startTagsCount;
-                        queueEndTags += endTagsCount;
+                        queueEndTags += endTagsCount;                        
                     }
                 }
 
