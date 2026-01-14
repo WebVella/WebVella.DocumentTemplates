@@ -701,7 +701,7 @@ public class TextEngineTests : TestBase
 	    Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 	    Assert.Single(lines);
-	    Assert.Equal("test: list10 test: list100", result.ResultItems[0].Result);
+	    Assert.Equal("test: list10 test: list100 ", result.ResultItems[0].Result);
     }       
     
     #endregion

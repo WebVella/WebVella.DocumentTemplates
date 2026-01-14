@@ -72,7 +72,9 @@ public class WvHtmlTemplate : WvTemplateBase
 								}
 							}
 							resultNode.InnerHtml = sb.ToString();
-							docResult.DocumentNode.AppendChild(resultNode);
+							//Some tags leave empty <span></span>
+							if(!String.IsNullOrWhiteSpace(resultNode.InnerHtml))
+								docResult.DocumentNode.AppendChild(resultNode);
 						}
 					}
 					catch (Exception ex) {

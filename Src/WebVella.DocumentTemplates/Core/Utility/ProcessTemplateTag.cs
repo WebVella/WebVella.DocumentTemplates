@@ -137,6 +137,8 @@ public partial class WvTemplateUtility
                 foreach (var column in columns)
                 {
                     var newName = column.ColumnName.Substring(firstStartTag.ItemName.Length);
+                    if (String.IsNullOrWhiteSpace(newName))
+                        newName = firstStartTag.ItemName;
                     originalNameNewNameDict[column.ColumnName] = newName;
                     var newType = column.DataType;
                     var (isEnumarable, dataType) = CheckEnumerable(column);
