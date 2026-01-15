@@ -124,23 +124,6 @@ public partial class WvTextTemplateProcess
         CultureInfo culture)
     {
         var processedItems = new List<string>();
-        //foreach (DataRow row in dataSource.Rows)
-        //{
-        //    if (tag.IndexGroups.Count > 0
-        //        && !tag.IndexGroups[0].Indexes.Contains(dataSource.Rows.IndexOf(row))) continue;
-
-        //    DataTable newTable = dataSource.Clone();
-        //    newTable.ImportRow(row);
-        //    var tagProcessResult =
-        //        new WvTemplateUtility().ProcessTemplateTag(template, newTable, culture);
-        //    foreach (var value in tagProcessResult.Values)
-        //    {
-        //        var stringValue = value.ToString();
-        //        if (string.IsNullOrWhiteSpace(stringValue)) continue;
-        //        processedItems.Add(stringValue);
-        //    }
-        //}
-
         var tagProcessResult =
             new WvTemplateUtility().ProcessTemplateTag(template, dataSource, culture);
         foreach (var value in tagProcessResult.Values)
@@ -158,25 +141,6 @@ public partial class WvTextTemplateProcess
         CultureInfo culture)
     {
         var result = new List<string>();
-        //foreach (DataRow row in dataSource.Rows)
-        //{
-        //    if (tag.IndexGroups.Count > 0
-        //        && !tag.IndexGroups[0].Indexes.Contains(dataSource.Rows.IndexOf(row))) continue;
-
-        //    DataTable newTable = dataSource.Clone();
-        //    newTable.ImportRow(row);
-        //    foreach (var line in queue)
-        //    {
-        //        var tagProcessResult =
-        //            new WvTemplateUtility().ProcessTemplateTag(line, newTable, culture);
-        //        foreach (var value in tagProcessResult.Values)
-        //        {
-        //            var stringValue = value.ToString();
-        //            if (string.IsNullOrWhiteSpace(stringValue)) continue;
-        //            result.Add(stringValue);
-        //        }
-        //    }
-        //}
         var sb = new StringBuilder();
         foreach (var line in queue)
         {

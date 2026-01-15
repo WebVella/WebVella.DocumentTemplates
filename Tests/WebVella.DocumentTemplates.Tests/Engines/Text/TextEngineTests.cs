@@ -709,7 +709,7 @@ public class TextEngineTests : TestBase
     {
         var template = new WvTextTemplate()
         {
-            Template = "{{<#list.[0]}}{{position[0]}}{{#>}}"
+            Template = "{{<#contact.[0]}}{{first_name[1]}}{{#>}}"
         };
         WvTextTemplateProcessResult? result = template.Process(SampleData);
         Assert.NotNull(result);
@@ -717,7 +717,7 @@ public class TextEngineTests : TestBase
         Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
         var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
         Assert.Single(lines);
-        Assert.Equal("1", result.ResultItems[0].Result);
+        Assert.Equal("first_name00", result.ResultItems[0].Result);
     }
 
     [Fact]
