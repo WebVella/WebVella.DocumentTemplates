@@ -10,6 +10,7 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
 	private static readonly object locker = new();
 	public ProcessTemplateTagCoreEngineTests() : base() { }
 
+	#region << ProcessTemplateTag >>
 	[Fact]
 	public void TemplateProcessShouldReturnNoResultsIfEmpty()
 	{
@@ -147,8 +148,6 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
         Assert.Single(result.Tags);
         Assert.Equal(WvTemplateTagType.SpreadsheetFunction, result.Tags[0].Type);
     }
-
-
     [Fact]
 	public void ProcessValueShouldBeCorrect()
 	{
@@ -182,4 +181,201 @@ public partial class ProcessTemplateTagCoreEngineTests : TestBase
 			Thread.CurrentThread.CurrentUICulture = currentUICulture;
 		}
 	}
+	#endregion
+	#region << CheckEnumarable >>
+	[Fact]
+	public void CheckEnumarableString()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(string));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.False(isEnumarable);
+		Assert.Null(type);
+		//Assert.True(isEnumarable);
+		//Assert.Equal(typeof(string),type);
+	}	
+	[Fact]
+	public void CheckEnumarableInt()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(int));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.False(isEnumarable);
+		Assert.Null(type);
+		//Assert.True(isEnumarable);
+		//Assert.Equal(typeof(string),type);
+	}		
+	[Fact]
+	public void CheckEnumarableDecimal()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(decimal));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.False(isEnumarable);
+		Assert.Null(type);
+		//Assert.True(isEnumarable);
+		//Assert.Equal(typeof(string),type);
+	}			
+	[Fact]
+	public void CheckEnumarableGuid()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(Guid));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.False(isEnumarable);
+		Assert.Null(type);
+		//Assert.True(isEnumarable);
+		//Assert.Equal(typeof(string),type);
+	}			
+	[Fact]
+	public void CheckEnumarableDataTime()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(DateTime));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.False(isEnumarable);
+		Assert.Null(type);
+		//Assert.True(isEnumarable);
+		//Assert.Equal(typeof(string),type);
+	}		
+	
+	
+	[Fact]
+	public void CheckEnumarableEnumarableString()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(string[]));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(string),type);
+	}	
+	[Fact]
+	public void CheckEnumarableEnumarableInt()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(int[]));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(int),type);
+	}		
+	[Fact]
+	public void CheckEnumarableEnumarableDecimal()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(decimal[]));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(decimal),type);
+	}			
+	[Fact]
+	public void CheckEnumarableEnumarableGuid()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(Guid[]));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(Guid),type);
+	}			
+	[Fact]
+	public void CheckEnumarableEnumarableDataTime()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(DateTime[]));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(DateTime),type);
+	}			
+	
+	[Fact]
+	public void CheckEnumarableListString()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(List<string>));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(string),type);
+	}	
+	[Fact]
+	public void CheckEnumarableListInt()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(List<int>));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(int),type);
+	}		
+	[Fact]
+	public void CheckEnumarableListDecimal()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(List<decimal>));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(decimal),type);
+	}			
+	[Fact]
+	public void CheckEnumarableListGuid()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(List<Guid>));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(Guid),type);
+	}			
+	[Fact]
+	public void CheckEnumarableListDataTime()
+	{
+		//Given
+		var dt = new DataTable();
+		dt.Columns.Add("name", typeof(List<DateTime>));
+		//When
+		var(isEnumarable,type) = new WvTemplateUtility().CheckEnumerable(dt.Columns[0]);
+		//Then
+		Assert.True(isEnumarable);
+		Assert.Equal(typeof(DateTime),type);
+	}		
+	
+	#endregion
 }

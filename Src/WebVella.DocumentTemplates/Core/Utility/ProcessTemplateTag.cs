@@ -180,13 +180,15 @@ public partial class WvTemplateUtility
                             else
                             {
                                 var indexValue = GetItemAt((IEnumerable<object?>)templateDtColumnValue, rowDtRowIndex);
-                                if(indexValue is null)
+                                if (indexValue is null)
                                     indexValue = GetItemAt((IEnumerable<object?>)templateDtColumnValue, 0);
                                 dsrow[originalNameNewNameDict[templateDtColumn.ColumnName]] = indexValue;
                             }
                         }
+
                         rowDataTable.Rows.Add(dsrow);
                     }
+
                     var inlineTemplateResult = ProcessTemplateTag(cleanedTemplate, rowDataTable, culture);
                     if (inlineTemplateResult.Values.Count == 1)
                     {
@@ -198,7 +200,7 @@ public partial class WvTemplateUtility
                         var separator = firstStartTag.FlowSeparator;
                         template = template.Replace(templateWithWrappers,
                             String.Join(separator, inlineTemplateResult.Values.Select(x => (string)x)));
-                    }                    
+                    }
                 }
             }
         }
@@ -293,13 +295,19 @@ public partial class WvTemplateUtility
             throw new ArgumentNullException(nameof(column));
 
         var columnType = column.DataType;
+        if(columnType == typeof(string))
+            return (false, null);
 
         // Look for the generic IEnumerable<T> interface in the type's implemented interfaces
         foreach (var iface in columnType.GetInterfaces())
         {
             if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                return (true, columnType.GetGenericArguments()[0]);
+                var genericArguments = iface.GetGenericArguments().ToList();
+                if (genericArguments.Count > 0)
+                    return (true, genericArguments[0]);
+                else
+                    return (true, iface.GetGenericTypeDefinition());
             }
         }
 
@@ -311,7 +319,7 @@ public partial class WvTemplateUtility
     {
         if (enumerable is null)
             return null;
-        
+
         // Optional: validate index range early for efficiency
         using var enumerator = enumerable.GetEnumerator();
         int i = 0;
@@ -324,5 +332,4 @@ public partial class WvTemplateUtility
 
         return null;
     }
-    
 }
