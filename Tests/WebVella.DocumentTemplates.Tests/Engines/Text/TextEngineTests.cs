@@ -702,8 +702,56 @@ public class TextEngineTests : TestBase
 	    var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
 	    Assert.Single(lines);
 	    Assert.Equal("test: list10 test: list100 ", result.ResultItems[0].Result);
-    }       
-    
+    }
+
+    [Fact]
+    public void Text_InlineTemplateWithIndexInTemplate()
+    {
+        var template = new WvTextTemplate()
+        {
+            Template = "{{<#list.[0]}}{{position[0]}}{{#>}}"
+        };
+        WvTextTemplateProcessResult? result = template.Process(SampleData);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+        Assert.Single(lines);
+        Assert.Equal("1", result.ResultItems[0].Result);
+    }
+
+    [Fact]
+    public void Text_NormalListDataWithNoIndex()
+    {
+        var template = new WvTextTemplate()
+        {
+            Template = "{{list1[0]}}"
+        };
+        WvTextTemplateProcessResult? result = template.Process(SampleData);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+        Assert.Single(lines);
+        Assert.Equal("list10list100", result.ResultItems[0].Result);
+    }
+
+    [Fact]
+    public void Text_NormalListDataWithTwoIndexes()
+    {
+        var template = new WvTextTemplate()
+        {
+            Template = "{{list1[0][1]}}"
+        };
+        WvTextTemplateProcessResult? result = template.Process(SampleData);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        var lines = new TestUtils().GetLines(result.ResultItems[0].Result ?? String.Empty);
+        Assert.Single(lines);
+        Assert.Equal("list100", result.ResultItems[0].Result);
+    }
+
     #endregion
 
     #region << Condition Tag >>

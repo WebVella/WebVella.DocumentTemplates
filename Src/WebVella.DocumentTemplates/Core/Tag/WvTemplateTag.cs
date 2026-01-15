@@ -9,7 +9,7 @@ public class WvTemplateTag
 	public WvTemplateTagType Type { get; set; } = WvTemplateTagType.Data;
 	//as in the sheet name there cannot be used [] and in all cases that there is a list of data matched
 	//in the methods the first one is always 0 by default
-	public List<int> IndexList { get; set; } = new List<int>();
+	public List<WvTemplateTagIndexGroup> IndexGroups { get; set; } = new();
 	public WvTemplateTagDataFlow? Flow
 	{
 		get

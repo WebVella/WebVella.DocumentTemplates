@@ -86,14 +86,14 @@ public partial class WvTemplateUtility
 			var regex = new Regex(Regex.Escape(matchGroup.Value));
 			processedDefinition = regex.Replace((processedDefinition ?? String.Empty), "", 1);
 
-			var indices = ExtractTagIndexFromGroup(matchGroup.Value);
-			if (indices.Count == 0)
+			var indexes = ExtractTagIndexFromGroup(matchGroup.Value);
+			if (indexes.Count == 0)
 			{
 				//skip improper indexes
 			}
 			else
 			{
-				result.IndexList.AddRange(indices);
+				result.IndexGroups.Add(new WvTemplateTagIndexGroup(indexes));
 			}
 		}
 

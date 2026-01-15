@@ -227,7 +227,7 @@ public class TextFileEngineTests : TestBase
 				Template =  new TestUtils().LoadFileStream(templateFile)
 			};
 			var result = template.Process(SampleData, encoding: Encoding.UTF8);
-			Assert.NotNull(result);
+            Assert.NotNull(result);
 			Assert.NotNull(result.Template);
 			Assert.NotNull(result.ResultItems);
 			// Assert.Equal(4, result.ResultItems.Count);

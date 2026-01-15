@@ -147,8 +147,8 @@ public partial class WvDocumentFileEngineUtility
     {
         var result = new List<OpenXmlElement>();
         //Alter DataSource for spec
-        DataTable templateDt = firstStartTag.IndexList.Count > 0
-            ? dataSource.CreateAsNew(firstStartTag.IndexList)
+        DataTable templateDt = firstStartTag.IndexGroups.Count > 0
+            ? dataSource.CreateAsNew(firstStartTag.IndexGroups[0].Indexes)
             : dataSource;
         //the general case when we want grouping in the general iteration
         if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
@@ -261,8 +261,8 @@ public partial class WvDocumentFileEngineUtility
     {
         var result = new List<OpenXmlElement>();
         //Alter DataSource for spec
-        DataTable templateDt = firstStartTag.IndexList.Count > 0
-            ? dataSource.CreateAsNew(firstStartTag.IndexList)
+        DataTable templateDt = firstStartTag.IndexGroups.Count > 0
+            ? dataSource.CreateAsNew(firstStartTag.IndexGroups[0].Indexes)
             : dataSource;
 
         //the general case when we want grouping in the general iteration

@@ -92,8 +92,8 @@ public partial class WvTemplateUtility
                 cleanedTemplate = cleanedTemplate.Replace(tag.FullString!, "");
             }
 
-            DataTable templateDt = firstStartTag.IndexList.Count > 0
-                ? dataSource.CreateAsNew(firstStartTag.IndexList)
+            DataTable templateDt = firstStartTag.IndexGroups.Count > 0
+                ? dataSource.CreateAsNew(firstStartTag.IndexGroups[0].Indexes)
                 : dataSource;
             //the general case when we want grouping in the general iteration
             if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
@@ -148,6 +148,7 @@ public partial class WvTemplateUtility
                 }
 
                 //Process row by row
+                var templateDtRowResults = new List<string>();
                 foreach (DataRow templateDtRow in templateDt.Rows)
                 {
                     int rowDtRows = 0; //calculated based on the maximum values found in the columns
@@ -193,15 +194,23 @@ public partial class WvTemplateUtility
                     if (inlineTemplateResult.Values.Count == 1)
                     {
                         if (inlineTemplateResult.Values[0] is string)
-                            template = template.Replace(templateWithWrappers, (string)inlineTemplateResult.Values[0]);
+                            templateDtRowResults.Add(template.Replace(templateWithWrappers, (string)inlineTemplateResult.Values[0]));
                     }
-                    else if (inlineTemplateResult.Values.All(x => x is string))
+                    else
                     {
-                        var separator = firstStartTag.FlowSeparator;
-                        template = template.Replace(templateWithWrappers,
-                            String.Join(separator, inlineTemplateResult.Values.Select(x => (string)x)));
+                        var subSeparator = firstStartTag.FlowSeparator;
+                        if (firstStartTag.FlowSeparatorList.Count > 1)
+                        {
+                            subSeparator = firstStartTag.FlowSeparatorList[1];
+                        }
+
+                        templateDtRowResults.Add(template.Replace(templateWithWrappers,
+                            String.Join(subSeparator, inlineTemplateResult.Values.Select(x => x?.ToString()))));
                     }
                 }
+                var separator = firstStartTag.FlowSeparator;
+                template = template.Replace(templateWithWrappers,
+                            String.Join(separator, templateDtRowResults));
             }
         }
 
@@ -295,7 +304,7 @@ public partial class WvTemplateUtility
             throw new ArgumentNullException(nameof(column));
 
         var columnType = column.DataType;
-        if(columnType == typeof(string))
+        if (columnType == typeof(string))
             return (false, null);
 
         // Look for the generic IEnumerable<T> interface in the type's implemented interfaces

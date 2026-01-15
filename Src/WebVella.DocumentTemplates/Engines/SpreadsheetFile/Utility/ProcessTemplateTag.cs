@@ -24,7 +24,7 @@ public partial class WvSpreadsheetFileEngineUtility
 			if (tag.Type == WvTemplateTagType.Data)
 			{
 				//If not indexed and no separator is defined return the row count
-				if (tag.IndexList.Count == 0 && !hasSeparator)
+				if (tag.IndexGroups.Count == 0 && !hasSeparator)
 				{
 					if (result.ExpandCount < dataSource.Rows.Count)
 						result.ExpandCount = dataSource.Rows.Count;

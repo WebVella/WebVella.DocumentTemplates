@@ -123,9 +123,8 @@ public partial class WvTextTemplateProcess
         var processedItems = new List<string>();
         foreach (DataRow row in dataSource.Rows)
         {
-            if (tag.IndexList is not null
-                && tag.IndexList.Count > 0
-                && !tag.IndexList.Contains(dataSource.Rows.IndexOf(row))) continue;
+            if (tag.IndexGroups.Count > 0
+                && !tag.IndexGroups[0].Indexes.Contains(dataSource.Rows.IndexOf(row))) continue;
 
             DataTable newTable = dataSource.Clone();
             newTable.ImportRow(row);
@@ -149,9 +148,8 @@ public partial class WvTextTemplateProcess
         var result = new List<string>();
         foreach (DataRow row in dataSource.Rows)
         {
-            if (tag.IndexList is not null
-                && tag.IndexList.Count > 0
-                && !tag.IndexList.Contains(dataSource.Rows.IndexOf(row))) continue;
+            if (tag.IndexGroups.Count > 0
+                && !tag.IndexGroups[0].Indexes.Contains(dataSource.Rows.IndexOf(row))) continue;
 
             DataTable newTable = dataSource.Clone();
             newTable.ImportRow(row);
