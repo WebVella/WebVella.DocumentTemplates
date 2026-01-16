@@ -275,10 +275,10 @@ public class DocumentFileEngineTests : TestBase
             Assert.Single(paragraphs);
             var paragraph = paragraphs.First();
             Assert.Equal("item1,item2,item3,item4,item5", paragraph.InnerText);
-            Assert.Equal(2, paragraph.ChildElements.Count);
+            Assert.Equal(3, paragraph.ChildElements.Count);
             var run = paragraph.Descendants<Word.Run>().FirstOrDefault();
             Assert.NotNull(run);
-            Assert.Equal(2, run.ChildElements.Count);
+            Assert.Single(run.ChildElements);
             var runProp = run.Descendants<Word.RunProperties>().FirstOrDefault();
             Assert.NotNull(runProp);
             var boldProp = runProp.Descendants<Word.Bold>().FirstOrDefault();
@@ -358,11 +358,11 @@ public class DocumentFileEngineTests : TestBase
             var paragraph = paragraphs.First();
             Assert.Equal("Lorem ipsum item1,item2,item3,item4,item5 Lorem ipsum", paragraph.InnerText);
 
-            var paragraphRuns = paragraph.Descendants<Word.Run>().ToList();
-            Assert.Equal(3, paragraphRuns.Count());
-            Assert.Equal("Lorem ipsum ", paragraphRuns[0].InnerText);
-            Assert.Equal("item1,item2,item3,item4,item5", paragraphRuns[1].InnerText);
-            Assert.Equal(" Lorem ipsum", paragraphRuns[2].InnerText);
+            var paraTexts = paragraph.Descendants<Word.Text>().ToList();
+            Assert.Equal(3, paraTexts.Count());
+            Assert.Equal("Lorem ipsum ", paraTexts[0].InnerText);
+            Assert.Equal("item1,item2,item3,item4,item5", paraTexts[1].InnerText);
+            Assert.Equal(" Lorem ipsum", paraTexts[2].InnerText);
 
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 
@@ -835,6 +835,7 @@ public class DocumentFileEngineTests : TestBase
             Assert.Empty(resultErrors);
         }
     }
+ 
 
     [Fact]
     public void DocumentFile_ColumnStart()
@@ -862,12 +863,16 @@ public class DocumentFileEngineTests : TestBase
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
                 .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
-           
-            Assert.Equal(4, paragraphs.Count);
+            Assert.Equal(2, paragraphs.Count);
             Assert.Equal("First Name: first_name0",paragraphs[0].InnerText);
             Assert.Equal("Last Name: last_name0",paragraphs[1].InnerText);
-            Assert.Equal("First Name: first_name00",paragraphs[2].InnerText);
-            Assert.Equal("Last Name: last_name00",paragraphs[3].InnerText);
+
+            var para1Text = paragraphs[0].Descendants<Word.Text>().ToList();
+            Assert.Equal(2, para1Text.Count);
+            //Verify whitespaces will be preserved
+            Assert.True(SpaceProcessingModeValues.Preserve.Equals(para1Text[0].Space));
+            Assert.True(SpaceProcessingModeValues.Preserve.Equals(para1Text[1].Space));
+           
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
 
             var resultErrors = result!.ResultItems[0]!.Validate();
@@ -900,16 +905,86 @@ public class DocumentFileEngineTests : TestBase
             utils.GeneralResultChecks(result);
             var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
                 .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
-           
-            Assert.Equal(2,paragraphs.Count);
-            Assert.Equal("First Name: first_name0Last Name: last_name0",paragraphs[0].InnerText);
-            Assert.Equal("First Name: first_name00Last Name: last_name00",paragraphs[1].InnerText);
+            Assert.Single(paragraphs);
+            Assert.Equal("First Name: first_name0first_name00Last Name: last_name0last_name00",paragraphs[0].InnerText);
             utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
 
             var resultErrors = result!.ResultItems[0]!.Validate();
             Assert.Empty(resultErrors);
         }
-    }        
+    }
+
+    [Fact]
+    public void DocumentFile_Inline_ParagraphWithIndex()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-Paragraph-Index.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+
+            Assert.Single(paragraphs);
+            Assert.Equal("first_name00", paragraphs[0].InnerText);
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+
+    [Fact]
+    public void DocumentFile_Inline_MultiParagraphWithIndex()
+    {
+        //Inline does not work in tables
+        lock (locker)
+        {
+            //Given
+            var utils = new TestUtils();
+            var parentFile = "Template-Inline-MultiParagraph-Index.docx";
+            var template = new WvDocumentFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(parentFile)
+            };
+
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+
+            var dataSource = SampleData;
+            //When
+            WvDocumentFileTemplateProcessResult? result = template.Process(
+                dataSource: dataSource,
+                culture: null);
+            //Then
+            utils.GeneralResultChecks(result);
+            var paragraphs = result.ResultItems[0].WordDocument!.MainDocumentPart!.Document!.Body!
+                .ChildElements.Where(x => x.GetType().FullName == typeof(Word.Paragraph).FullName).ToList();
+
+            Assert.Single(paragraphs);
+            Assert.Equal("first_name00", paragraphs[0].InnerText);
+            utils.SaveFileFromStream(result!.ResultItems[0]!.Result!, parentFile);
+
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }    
     
     #endregion
 
@@ -1108,6 +1183,7 @@ public class DocumentFileEngineTests : TestBase
             Assert.Empty(resultErrors);
         }
     }
+
     [Fact]
     public void DocumentFile_SectionBreaks()
     {

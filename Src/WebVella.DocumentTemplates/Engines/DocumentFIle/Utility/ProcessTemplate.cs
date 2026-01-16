@@ -37,6 +37,8 @@ public partial class WvDocumentFileEngineUtility
         }
 
         //Process Body
+        IsolateTemplateTags(result.WordDocument); //Ensures tags are not split across multiple texts
+        result.WordDocument.Save();        
         var templateBody = result.WordDocument.MainDocumentPart.Document!.Body!;
         var resultBody = resultItem.WordDocument.MainDocumentPart!.Document!.Body!;
         var processedTemplateBodyElements = new List<OpenXmlElement>();
@@ -150,6 +152,10 @@ public partial class WvDocumentFileEngineUtility
         DataTable templateDt = firstStartTag.IndexGroups.Count > 0
             ? dataSource.CreateAsNew(firstStartTag.IndexGroups[0].Indexes)
             : dataSource;
+
+        Paragraph cleanTemplate = (Paragraph)_cleanInlineTemplateTags((OpenXmlElement)template);
+       
+        
         //the general case when we want grouping in the general iteration
         if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
         {
@@ -241,12 +247,13 @@ public partial class WvDocumentFileEngineUtility
                     rowDataTable.Rows.Add(dsrow);
                 }
 
-                foreach (DataRow row in rowDataTable.Rows)
-                {
-                    DataTable newTable = rowDataTable.Clone();
-                    newTable.ImportRow(row);
-                    result.AddRange(_processDocumentElement(template, newTable, culture));
-                }
+                result.AddRange(_processDocumentElement(cleanTemplate, rowDataTable, culture));
+                // foreach (DataRow row in rowDataTable.Rows)
+                // {
+                //     DataTable newTable = rowDataTable.Clone();
+                //     newTable.ImportRow(row);
+                //     result.AddRange(_processDocumentElement(cleanTemplate, newTable, culture));
+                // }
             }
         }
 
@@ -358,20 +365,61 @@ public partial class WvDocumentFileEngineUtility
 
                     rowDataTable.Rows.Add(dsrow);
                 }
-
-                foreach (DataRow row in rowDataTable.Rows)
+                foreach (var element in queue)
                 {
-                    DataTable newTable = rowDataTable.Clone();
-                    newTable.ImportRow(row);
-                    foreach (var element in queue)
-                    {
-                        result.AddRange(_processDocumentElement(element, newTable, culture));
-                    }
+                    var cleanElement = _cleanInlineTemplateTags(element);
+                    result.AddRange(_processDocumentElement(cleanElement, rowDataTable, culture));
                 }
             }
         }
 
         queue.Clear();
         return result;
+    }
+
+    private OpenXmlElement _cleanInlineTemplateTags(OpenXmlElement element)
+    {
+        var resultEl = element.CloneNode(true);
+        if (element.GetType().FullName == typeof(Word.Text).FullName)
+        {
+            var textEl = (Word.Text)resultEl;
+            var innerText = textEl.InnerText;
+            if (!String.IsNullOrWhiteSpace(innerText))
+            {
+                var tagsInTemplate = new WvTemplateUtility().GetTagsFromTemplate(innerText);
+                foreach (var tag in tagsInTemplate)
+                {
+                    if (String.IsNullOrWhiteSpace(tag.FullString)) continue;
+                    if (tag.Type != WvTemplateTagType.InlineStart
+                        && tag.Type != WvTemplateTagType.InlineEnd)
+                        continue;
+                    innerText = innerText.Replace(tag.FullString, string.Empty);
+                }
+
+                if (textEl.InnerText != innerText)
+                {
+                    textEl.Space = SpaceProcessingModeValues.Preserve;
+                    textEl.Text = innerText;
+                }
+            }
+
+        }
+        else
+        {
+            resultEl.RemoveAllChildren();
+            foreach (var child in element.ChildElements)
+            {
+                var cleaned = _cleanInlineTemplateTags(child);
+                if (cleaned.GetType().FullName == typeof(Word.Text).FullName
+                    && String.IsNullOrEmpty(cleaned.InnerText))
+                    continue;
+                if (cleaned.GetType().FullName == typeof(Word.Run).FullName 
+                    && cleaned.ChildElements.Count == 0)
+                    continue;
+                
+                resultEl.AppendChild(cleaned);
+            }
+        }
+        return resultEl;
     }
 }

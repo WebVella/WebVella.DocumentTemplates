@@ -12,6 +12,7 @@ public partial class WvDocumentFileEngineUtility
 		DataTable dataSource, CultureInfo culture)
 	{
 		Word.Text resultEl = (Word.Text)template.CloneNode(true);
+		resultEl.Space = SpaceProcessingModeValues.Preserve;
 		resultEl.Text = String.Empty;
 		if (String.IsNullOrWhiteSpace(template.InnerText)) return [resultEl];
 
