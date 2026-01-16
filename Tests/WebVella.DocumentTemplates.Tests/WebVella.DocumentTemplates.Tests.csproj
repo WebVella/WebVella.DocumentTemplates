@@ -32,6 +32,12 @@
     <None Update="Files\INDUSTRIAL_HUB_VIK_SHABLON.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Inline4.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Inline3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Template-Body-Anchor.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

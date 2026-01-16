@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Globalization;
+using DocumentFormat.OpenXml.Packaging;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Core.Utility;
 using WebVella.DocumentTemplates.Extensions;
@@ -35,10 +36,8 @@ public partial class WvDocumentFileEngineUtility
             var mainPart = resultItem.WordDocument.AddMainDocumentPart();
             mainPart.Document = new Document(new Word.Body());
         }
-
         //Process Body
         IsolateTemplateTags(result.WordDocument); //Ensures tags are not split across multiple texts
-        result.WordDocument.Save();        
         var templateBody = result.WordDocument.MainDocumentPart.Document!.Body!;
         var resultBody = resultItem.WordDocument.MainDocumentPart!.Document!.Body!;
         var processedTemplateBodyElements = new List<OpenXmlElement>();
@@ -76,6 +75,7 @@ public partial class WvDocumentFileEngineUtility
                         paragraphTemplateTags[0].Type == WvTemplateTagType.InlineStart)
                     {
                         multiParagraphStartTag = paragraphTemplateTags[0];
+                        multiParagraphTemplateQueue.Add(childEl);
                         continue;
                     }
 
@@ -104,6 +104,7 @@ public partial class WvDocumentFileEngineUtility
             // ReSharper disable once MergeIntoPattern
             if (paragraphTemplateTags.Count == 1 && paragraphTemplateTags[0].Type == WvTemplateTagType.InlineEnd)
             {
+                multiParagraphTemplateQueue.Add(childEl);
                 processedTemplateBodyElements.AddRange(_processMultiParagraphInlineTemplate(multiParagraphStartTag!,
                     multiParagraphTemplateQueue, dataSource, culture));
                 multiParagraphStartTag = null;
@@ -154,8 +155,8 @@ public partial class WvDocumentFileEngineUtility
             : dataSource;
 
         Paragraph cleanTemplate = (Paragraph)_cleanInlineTemplateTags((OpenXmlElement)template);
-       
-        
+
+
         //the general case when we want grouping in the general iteration
         if (String.IsNullOrWhiteSpace(firstStartTag.ItemName))
         {
@@ -221,8 +222,12 @@ public partial class WvDocumentFileEngineUtility
                 if (rowDtRows == 0) continue;
 
                 rowDataTable.Clear();
+                var rowDataTableIndex = 0;
                 for (int rowDtRowIndex = 0; rowDtRowIndex < rowDtRows; rowDtRowIndex++)
                 {
+                    if (firstStartTag.IndexGroups.Count > 1
+                        && !firstStartTag.IndexGroups[1].Indexes.Contains(rowDataTableIndex++))
+                        continue;
                     var dsrow = rowDataTable.NewRow();
                     foreach (DataColumn templateDtColumn in columns)
                     {
@@ -281,7 +286,18 @@ public partial class WvDocumentFileEngineUtility
                 newTable.ImportRow(row);
                 foreach (var element in queue)
                 {
-                    result.AddRange(_processDocumentElement(element, newTable, culture));
+                    var cleanElement = _cleanInlineTemplateTags(element);
+
+                    //skip empty paragraphs that may had inline tags
+                    if (cleanElement.GetType().FullName == typeof(Paragraph).FullName
+                        && String.IsNullOrEmpty(cleanElement.InnerText))
+                    {
+                        var tags = new WvTemplateUtility().GetTagsFromTemplate(element.InnerText);
+                        if (tags.Any(x => x.Type == WvTemplateTagType.InlineStart)
+                            || tags.Any(x => x.Type == WvTemplateTagType.InlineEnd))
+                            continue;
+                    }
+                    result.AddRange(_processDocumentElement(cleanElement, newTable, culture));
                 }
             }
         }
@@ -365,10 +381,30 @@ public partial class WvDocumentFileEngineUtility
 
                     rowDataTable.Rows.Add(dsrow);
                 }
-                foreach (var element in queue)
+                var rowDataTableIndex = 0;
+                foreach (DataRow row in rowDataTable.Rows)
                 {
-                    var cleanElement = _cleanInlineTemplateTags(element);
-                    result.AddRange(_processDocumentElement(cleanElement, rowDataTable, culture));
+                    if (firstStartTag.IndexGroups.Count > 1 
+                        && !firstStartTag.IndexGroups[1].Indexes.Contains(rowDataTableIndex++))
+                        continue;
+
+                    DataTable newTable = rowDataTable.Clone();
+                    newTable.ImportRow(row);
+                    foreach (var element in queue)
+                    {
+                        var cleanElement = _cleanInlineTemplateTags(element);
+                        //skip empty paragraphs that may had inline tags
+                        if (cleanElement.GetType().FullName == typeof(Paragraph).FullName
+                            && String.IsNullOrEmpty(cleanElement.InnerText))
+                        {
+                            var tags = new WvTemplateUtility().GetTagsFromTemplate(element.InnerText);
+                            if (tags.Any(x => x.Type == WvTemplateTagType.InlineStart)
+                                || tags.Any(x => x.Type == WvTemplateTagType.InlineEnd))
+                                continue;
+                        }
+
+                        result.AddRange(_processDocumentElement(cleanElement, newTable, culture));
+                    }
                 }
             }
         }
@@ -413,10 +449,10 @@ public partial class WvDocumentFileEngineUtility
                 if (cleaned.GetType().FullName == typeof(Word.Text).FullName
                     && String.IsNullOrEmpty(cleaned.InnerText))
                     continue;
-                if (cleaned.GetType().FullName == typeof(Word.Run).FullName 
+                if (cleaned.GetType().FullName == typeof(Word.Run).FullName
                     && cleaned.ChildElements.Count == 0)
                     continue;
-                
+
                 resultEl.AppendChild(cleaned);
             }
         }

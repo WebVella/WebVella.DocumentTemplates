@@ -236,5 +236,49 @@ public class TextFileEngineTests : TestBase
 			Assert.Equal($"1 item1{Environment.NewLine}2 item2{Environment.NewLine}", resultString);
 			new TestUtils().SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
 		}
-	}		
+	}
+    [Fact]
+    public void Inline3_Test()
+    {
+        var templateFile = "Inline3.txt";
+
+        lock (locker)
+        {
+            var template = new WvTextFileTemplate
+            {
+                Template = new TestUtils().LoadFileStream(templateFile)
+            };
+            var result = template.Process(SampleData, encoding: Encoding.UTF8);
+            Assert.NotNull(result);
+            Assert.NotNull(result.Template);
+            Assert.NotNull(result.ResultItems);
+            Assert.Single(result.ResultItems);
+            Assert.NotNull(result.ResultItems[0].Result);
+            var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
+            Assert.Equal($"first_name00", resultString);
+            new TestUtils().SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+        }
+    }
+    [Fact]
+    public void Inline4_Test()
+    {
+        var templateFile = "Inline4.txt";
+
+        lock (locker)
+        {
+            var template = new WvTextFileTemplate
+            {
+                Template = new TestUtils().LoadFileStream(templateFile)
+            };
+            var result = template.Process(SampleData, encoding: Encoding.UTF8);
+            Assert.NotNull(result);
+            Assert.NotNull(result.Template);
+            Assert.NotNull(result.ResultItems);
+            Assert.Single(result.ResultItems);
+            Assert.NotNull(result.ResultItems[0].Result);
+            var resultString = Encoding.UTF8.GetString(result.ResultItems[0].Result?.ToArray() ?? new byte[0]);
+            Assert.Equal($"first_name00", resultString);
+            new TestUtils().SaveFileFromStream(result!.ResultItems[0]!.Result!, templateFile);
+        }
+    }
 }

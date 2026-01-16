@@ -54,7 +54,7 @@ public partial class WvDocumentFileEngineUtility
 
                 if (template.ChildElements.Count == 1)
                 {
-                    if(resultChildEl.InnerText != String.Empty)
+                    if (resultChildEl.InnerText != String.Empty)
                         resultEl.AppendChild(resultChildEl);
                 }
                 else if (queue.Count == 0)
@@ -72,9 +72,9 @@ public partial class WvDocumentFileEngineUtility
                         if (isRun)
                         {
                             var run = (Word.Run)resultChildEl;
-                            if(run.ChildElements.Any(x=> x.GetType().FullName != typeof(Word.Text).FullName)
+                            if (run.ChildElements.Any(x => x.GetType().FullName != typeof(Word.Text).FullName)
                                || run.InnerText != String.Empty)
-                                resultEl.AppendChild(resultChildEl);    
+                                resultEl.AppendChild(resultChildEl);
                         }
                         else
                         {
@@ -93,7 +93,7 @@ public partial class WvDocumentFileEngineUtility
                     if (!isRun)
                     {
                         _processQueue(queue, resultEl, dataSource, culture);
-                        if(resultChildEl.InnerText != String.Empty)
+                        if (resultChildEl.InnerText != String.Empty)
                             resultEl.AppendChild(resultChildEl);
                     }
                     //Case 1 this is the last element
@@ -113,7 +113,7 @@ public partial class WvDocumentFileEngineUtility
                     {
                         queue.Enqueue((Word.Run)childEl);
                         queueStartTags += startTagsCount;
-                        queueEndTags += endTagsCount;                        
+                        queueEndTags += endTagsCount;
                     }
                 }
 
@@ -121,6 +121,16 @@ public partial class WvDocumentFileEngineUtility
             }
         }
         #endregion
+        //Filter out empty paragraphs that may contained inline tags
+        if (String.IsNullOrEmpty(resultEl.InnerText))
+        {
+            var tags = new WvTemplateUtility().GetTagsFromTemplate(template.InnerText);
+            if (tags.Any(x => x.Type == WvTemplateTagType.InlineStart)
+                || tags.Any(x => x.Type == WvTemplateTagType.InlineEnd))
+                return [];
+        }
+
+
         return [resultEl];
     }
 
