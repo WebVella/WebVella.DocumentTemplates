@@ -18,6 +18,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -47,6 +49,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			new TestUtils().CompareColumnProperties(tempWs.Column(2), resultWs.Column(2));
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -61,6 +66,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -73,6 +80,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			Assert.Equal(2, result!.ResultItems[0]!.Workbook!.Worksheets.Count);
 			Assert.Equal(3, result!.ResultItems[0]!.Contexts.Count);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -87,6 +97,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -124,6 +136,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -138,6 +153,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -156,6 +173,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[0].Range!, 1, 1, 5, 1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -170,6 +190,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -198,6 +220,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[3].Range!, 6, 2, 6, 2);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -212,6 +237,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -246,6 +273,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[4].Range!, 6, 6, 6, 6);
 			new TestUtils().CheckRangeDimensions(result!.ResultItems[0]!.Contexts[5].Range!, 6, 7, 6, 7);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 
 		}
 	}
@@ -261,6 +291,8 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -291,6 +323,9 @@ public partial class PlacementSpreadsheetEngineTests : TestBase
 			new TestUtils().CheckRangeDimensions(resultItem.Contexts[2].Range!, 1, 4, 1, 4);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 
 		}
 	}

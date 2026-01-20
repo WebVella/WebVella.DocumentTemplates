@@ -103,7 +103,11 @@ public class WvEmailTemplate : WvTemplateBase
 								culture: culture);
 							if (attachment is not null) resultItem.Result.AttachmentItems.Add(attachment);
 						}
+
+						attachmentDsIndex++;
 					}
+
+					attachmentIndex++;
 				}
 			}
 			catch (Exception ex)

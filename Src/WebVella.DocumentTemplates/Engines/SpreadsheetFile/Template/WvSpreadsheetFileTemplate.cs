@@ -1,6 +1,9 @@
 ﻿using ClosedXML.Excel;
 using System.Data;
 using System.Globalization;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Validation;
 using WebVella.DocumentTemplates.Core;
 using WebVella.DocumentTemplates.Engines.SpreadsheetFile.Utility;
 using WebVella.DocumentTemplates.Extensions;
@@ -8,6 +11,7 @@ namespace WebVella.DocumentTemplates.Engines.SpreadsheetFile;
 public class WvSpreadsheetFileTemplate : WvTemplateBase
 {
 	public MemoryStream? Template { get; set; }
+
 	public WvSpreadsheetFileTemplateProcessResult Process(DataTable? dataSource, CultureInfo? culture = null)
 	{
 		if (culture == null) culture = new CultureInfo("en-US");
@@ -71,5 +75,12 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 		}
 		return result;
 	}
+	public List<ValidationErrorInfo> Validate(FileFormatVersions version = FileFormatVersions.Microsoft365)
+	{
+		if (Template is null) return new List<ValidationErrorInfo>();
+		using SpreadsheetDocument excelDoc = SpreadsheetDocument.Open(Template, false);
+		OpenXmlValidator validator = new OpenXmlValidator(version);
+		return validator.Validate(excelDoc).ToList();
+	}	
 
 }

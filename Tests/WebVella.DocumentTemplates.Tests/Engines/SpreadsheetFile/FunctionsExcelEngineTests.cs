@@ -20,6 +20,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -42,6 +44,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -56,6 +61,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -78,6 +85,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -92,6 +102,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -146,6 +158,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	[Fact]
@@ -159,6 +174,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -213,6 +230,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -230,6 +250,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			SampleData.Rows[0]["position"] = -100;
 			var dataSource = SampleData;
 			//When
@@ -250,6 +272,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("86", worksheet.Cell(7, 1).Value.ToString());
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -266,6 +291,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -286,6 +313,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("3", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 AVERAGE: 3", worksheet.Cell(8, 1).Value.ToString());
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -302,6 +332,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -321,6 +353,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("item5", worksheet.Cell(6, 1).Value.ToString());
 			Assert.Equal("item1item2item3item4item5", worksheet.Cell(7, 1).Value.ToString());
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -337,6 +372,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -357,6 +394,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("5", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 MAX: 5", worksheet.Cell(8, 1).Value.ToString());
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -373,6 +413,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -393,6 +435,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("1", worksheet.Cell(7, 1).Value.ToString());
 			Assert.Equal("item1 MIN: 1", worksheet.Cell(8, 1).Value.ToString());
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -409,6 +454,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -442,6 +489,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal("10", worksheet.Cell(6, 3).Value.ToString());
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -456,6 +506,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -486,6 +538,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal(15, worksheet.Cell(7, 2).Value);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -500,6 +555,8 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -533,6 +590,9 @@ public partial class FunctionsSpreadsheetEngineTests : TestBase
 			Assert.Equal(6, worksheet.Cell(6, 3).Value);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion

@@ -25,6 +25,9 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
+			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -46,6 +49,9 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			}
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);			
 		}
 	}
 
@@ -60,6 +66,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -81,6 +89,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			}
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -95,6 +105,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -122,6 +134,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			}
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -165,6 +179,7 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			{
 				Template = ms
 			};
+			
 			var resultItem = new WvSpreadsheetFileTemplateProcessResultItem()
 			{
 				Workbook = new XLWorkbook()
@@ -204,6 +219,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -244,6 +261,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 			new TestUtils().CompareStyle(tempF1, resultF1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -263,6 +282,8 @@ public partial class DataSpreadsheetFileEngineTests : TestBase
 				Template = new TestUtils().LoadFileAsStream(templateFile),
 				GroupDataByColumns = new List<string> { "sku" }
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			dataSource.Rows[1]["sku"] = dataSource.Rows[0]["sku"];
 			//When

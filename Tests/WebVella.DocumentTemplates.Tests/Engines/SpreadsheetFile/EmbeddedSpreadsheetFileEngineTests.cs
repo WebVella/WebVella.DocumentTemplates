@@ -19,6 +19,8 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -31,6 +33,9 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	[Fact]
@@ -44,6 +49,8 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -56,6 +63,9 @@ public partial class EmbeddedSpreadsheetFileEngineTests : TestBase
 			Assert.Single(result!.ResultItems[0]!.Workbook!.Worksheets);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 

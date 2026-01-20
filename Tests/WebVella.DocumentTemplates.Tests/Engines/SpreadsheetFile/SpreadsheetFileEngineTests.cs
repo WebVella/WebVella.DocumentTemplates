@@ -22,6 +22,8 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			WvSpreadsheetFileTemplateProcessResult? result = null;
 			//When
 			var action = () => result = template.Process(null, DefaultCulture);
@@ -48,6 +50,8 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -65,6 +69,9 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			var error = errorCell.Value.GetError();
 			Assert.Equal(XLError.IncompatibleValue, error);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	[Fact]
@@ -78,6 +85,7 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+
 			var dataSource = SampleData;
 			WvSpreadsheetFileTemplateProcessResult? result = null;
 			//When
@@ -86,6 +94,8 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			Assert.NotNull(ex);
 			Assert.IsType<Exception>(ex);
 			Assert.StartsWith("The provided template memory stream cannot be opened", ex.Message);
+			
+
 		}
 	}
 

@@ -21,6 +21,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -43,6 +45,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("SUM(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	[Fact]
@@ -56,6 +61,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -78,6 +85,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("SUM(A2:A6,B2:B6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -92,6 +102,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -153,6 +165,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("SUM(A7:A7,B7:B7)", SpreadsheetFunctionCell3.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -167,6 +182,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -228,6 +245,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("SUM(A7:A7,B7:B7)", SpreadsheetFunctionCell3.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -245,6 +265,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -267,6 +289,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("ABS(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -283,6 +308,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -305,6 +332,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("AVERAGE(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -321,6 +351,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -343,6 +375,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("_xlfn.CONCAT(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -359,6 +394,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -381,6 +418,9 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("MAX(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
+			
 		}
 	}
 	#endregion
@@ -397,6 +437,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -419,6 +461,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.Equal("MIN(A2:A6)", SpreadsheetFunctionCell.FormulaA1);
 
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion
@@ -435,6 +479,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			var templateErrors = template.Validate();
+			Assert.Empty(templateErrors);			
 			var dataSource = SampleData;
 			//When
 			WvSpreadsheetFileTemplateProcessResult? result = template.Process(dataSource);
@@ -473,6 +519,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.True(worksheet.Cell(6, 3).HasFormula);
 			Assert.Equal("SUM(A6:A6,B6:B6)", worksheet.Cell(6, 3).FormulaA1);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -518,6 +566,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.True(worksheet.Cell(7, 2).HasFormula);
 			Assert.Equal("SUM(B2:B6)", worksheet.Cell(7, 2).FormulaA1);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 
@@ -568,6 +618,8 @@ public partial class SpreadsheetFunctionsSpreadsheetFileEngineTests : TestBase
 			Assert.True(worksheet.Cell(6, 3).HasFormula);
 			Assert.Equal("SUM(A2:A2,B6:B6)", worksheet.Cell(6, 3).FormulaA1);
 			new TestUtils().SaveWorkbook(result!.ResultItems[0]!.Workbook!, templateFile);
+			var resultErrors = result!.ResultItems[0]!.Validate();
+			Assert.Empty(resultErrors);					
 		}
 	}
 	#endregion

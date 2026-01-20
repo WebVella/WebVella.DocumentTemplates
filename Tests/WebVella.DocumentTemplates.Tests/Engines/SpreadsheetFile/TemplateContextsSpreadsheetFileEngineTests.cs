@@ -44,6 +44,7 @@ public partial class TemplateContextsSpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
+			
 			//When
 			var action = () => new WvSpreadsheetFileEngineUtility().ProcessSpreadsheetTemplateInitTemplateContexts(result);
 			//Then
