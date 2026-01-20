@@ -272,6 +272,9 @@
     <None Update="Files\TemplatePlacement7.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\Test.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\wv-logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

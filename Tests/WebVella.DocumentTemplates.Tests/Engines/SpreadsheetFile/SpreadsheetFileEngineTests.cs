@@ -34,7 +34,9 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			var argEx = (ArgumentException)ex;
 			Assert.Equal("dataSource", argEx.ParamName);
 			Assert.StartsWith("No datasource provided!", argEx.Message);
-		}
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
 	}
 	#endregion
 
@@ -127,10 +129,51 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			{
 				Template = new TestUtils().LoadFileAsStream(templateFile)
 			};
-			WvSpreadsheetFileTemplateProcessResult? result = template.Process(ds);
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+            WvSpreadsheetFileTemplateProcessResult? result = template.Process(ds);
 			
 			new TestUtils().SaveFileFromStream(result.ResultItems[0].Result!,"TemplateDoc1.xlsx");
-		}
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
 	}
-	#endregion
+    [Fact]
+    public void Test()
+    {
+        lock (locker)
+        {
+            var templateFile = "Test.xlsx";
+            var ds = new DataTable();
+            ds.Columns.Add("position", typeof(int));
+            ds.Columns.Add("sku", typeof(string));
+            ds.Columns.Add("item", typeof(string));
+            ds.Columns.Add("price", typeof(decimal));
+
+            for (int i = 1; i < 6; i++)
+            {
+                var dsrow = ds.NewRow();
+                dsrow["position"] = i;
+                dsrow["sku"] = $"SKU{i}";
+                dsrow["item"] = $"item {i} description text";
+                dsrow["price"] = i * (decimal)0.98;
+                ds.Rows.Add(dsrow);
+            }
+
+            var template = new WvSpreadsheetFileTemplate
+            {
+                Template = new TestUtils().LoadFileAsStream(templateFile)
+            };
+            var templateErrors = template.Validate();
+            Assert.Empty(templateErrors);
+            WvSpreadsheetFileTemplateProcessResult? result = template.Process(ds);
+
+            new TestUtils().SaveFileFromStream(result.ResultItems[0].Result!, "Test.xlsx");
+            var resultErrors = result!.ResultItems[0]!.Validate();
+            Assert.Empty(resultErrors);
+        }
+    }
+    #endregion
+
+    
 }
