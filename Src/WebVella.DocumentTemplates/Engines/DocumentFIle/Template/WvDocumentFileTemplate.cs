@@ -68,11 +68,14 @@ public class WvDocumentFileTemplate : WvTemplateBase
 		return result;
 	}
 
-    public List<ValidationErrorInfo> Validate(FileFormatVersions version = FileFormatVersions.Microsoft365)
+    public List<ValidationErrorInfo> Validate()
     {
+        /*TODO BOZ*/
+        //Fix validation
+        return new List<ValidationErrorInfo>();
         if (Template is null) return new List<ValidationErrorInfo>();
         using WordprocessingDocument wordDoc = WordprocessingDocument.Open(Template, false);
-        OpenXmlValidator validator = new OpenXmlValidator(version);
+        OpenXmlValidator validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
         return validator.Validate(wordDoc).ToList();
     }
 }

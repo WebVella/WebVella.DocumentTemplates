@@ -55,7 +55,8 @@ public class WvHtmlTemplate : WvTemplateBase
 					|| templateNode.NodeType == HtmlNodeType.Comment)
 				{
 					var resultNode = docResult.CreateElement("span");
-					var context = new WvHtmlTemplateProcessContext();
+                    CopyAttributes(source: templateNode, target: resultNode);
+                    var context = new WvHtmlTemplateProcessContext();
 					context.HtmlNode = resultNode;
 					try
 					{
@@ -101,7 +102,8 @@ public class WvHtmlTemplate : WvTemplateBase
 		if (String.IsNullOrWhiteSpace(templateNode.InnerHtml))
 		{
 			var resultNode = resultDoc.CreateElement(templateNode.Name);
-			var context = new WvHtmlTemplateProcessContext();
+			CopyAttributes(source:templateNode, target:resultNode);
+            var context = new WvHtmlTemplateProcessContext();
 			context.HtmlNode = templateNode;
 			resultParentNode.AppendChild(resultNode);
 			contexts.Add(context);
@@ -120,7 +122,8 @@ public class WvHtmlTemplate : WvTemplateBase
 		for (var i = 0; i < expandCount; i++)
 		{
 			var resultNode = resultDoc.CreateElement(templateNode.Name);
-			var context = new WvHtmlTemplateProcessContext
+            CopyAttributes(source: templateNode, target: resultNode);
+            var context = new WvHtmlTemplateProcessContext
 			{
 				HtmlNode = resultNode,
 				Errors = new List<string>()
@@ -156,4 +159,21 @@ public class WvHtmlTemplate : WvTemplateBase
 			contexts.Add(context);
 		}
 	}
+
+    private void CopyAttributes(HtmlNode target, HtmlNode source)
+    {
+        if (target == null || source == null) return;
+
+        // Remove existing attributes from target
+        foreach (var attr in target.Attributes.ToList())
+        {
+            target.Attributes.Remove(attr);
+        }
+
+        // Copy all attributes from source to target
+        foreach (var attr in source.Attributes)
+        {
+            target.Attributes.Add(attr.Name, attr.Value);
+        }
+    }
 }

@@ -215,10 +215,42 @@ public class HtmlEngineTests : TestBase
 		Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
 		Assert.Equal("<p>test</p><p>item1</p><p>item2</p>", result.ResultItems[0].Result);
 	}
-	#endregion
+    #endregion
 
-	#region << Site examples >>
-	[Fact]
+    #region << Link >>
+
+    [Fact]
+    public void HTML_Link1()
+    {
+        var template = new WvHtmlTemplate()
+        {
+            Template = "<p>test:<a href='https://test.com'>test.com</a></p>"
+        };
+        var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+        WvHtmlTemplateProcessResult? result = template.Process(data);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        Assert.Equal("<p>test:<a href=\"https://test.com\">test.com</a></p>", result.ResultItems[0].Result);
+    }
+    [Fact]
+    public void HTML_Link2()
+    {
+        var template = new WvHtmlTemplate()
+        {
+            Template = "<p>test:<a href=\"https://test.com\">{{name}}</a></p>"
+        };
+        var data = SampleData.CreateAsNew(new List<int> { 0, 1 });
+        WvHtmlTemplateProcessResult? result = template.Process(data);
+        Assert.NotNull(result);
+        Assert.Single(result.ResultItems);
+        Assert.False(String.IsNullOrWhiteSpace(result.ResultItems[0].Result));
+        Assert.Equal("<p>test:<a href=\"https://test.com\">item1</a><a href=\"https://test.com\">item2</a></p>", result.ResultItems[0].Result);
+    }
+    #endregion
+
+    #region << Site examples >>
+    [Fact]
 	public void HTML_SiteExample1()
 	{
 		DataTable dt = new DataTable();

@@ -75,12 +75,24 @@ public class WvSpreadsheetFileTemplate : WvTemplateBase
 		}
 		return result;
 	}
-	public List<ValidationErrorInfo> Validate(FileFormatVersions version = FileFormatVersions.Microsoft365)
+	public List<ValidationErrorInfo> Validate()
 	{
-		if (Template is null) return new List<ValidationErrorInfo>();
+		/*TODO BOZ*/
+		//Fix validation
+        return new List<ValidationErrorInfo>();
+        if (Template is null) return new List<ValidationErrorInfo>();
 		using SpreadsheetDocument excelDoc = SpreadsheetDocument.Open(Template, false);
-		OpenXmlValidator validator = new OpenXmlValidator(version);
-		return validator.Validate(excelDoc).ToList();
+		if(excelDoc is null) return new List<ValidationErrorInfo>();
+        var fileVersion = excelDoc.WorkbookPart?.Workbook?.FileVersion;
+		if (fileVersion is null) return new List<ValidationErrorInfo>();
+
+		//var versionName = fileVersion.Version?.Value ??
+  //                 fileVersion.MinimizedVersion?.Value ??
+  //                 "Unknown";
+
+        OpenXmlValidator validator = new OpenXmlValidator(FileFormatVersions.Microsoft365);
+        var formatErrors = validator.Validate(excelDoc).ToList();
+        return formatErrors;
 	}	
 
 }

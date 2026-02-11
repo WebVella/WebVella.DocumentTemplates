@@ -34,8 +34,7 @@ public partial class SpreadsheetFileEngineTests : TestBase
 			var argEx = (ArgumentException)ex;
 			Assert.Equal("dataSource", argEx.ParamName);
 			Assert.StartsWith("No datasource provided!", argEx.Message);
-            var resultErrors = result!.ResultItems[0]!.Validate();
-            Assert.Empty(resultErrors);
+            Assert.Null(result);
         }
 	}
 	#endregion
